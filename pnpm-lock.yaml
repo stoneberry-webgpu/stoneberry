@@ -1,0 +1,13 @@
+lockfileVersion: 5.4
+
+specifiers:
+  '@webgpu/types': ^0.1.31
+
+devDependencies:
+  '@webgpu/types': 0.1.31
+
+packages:
+
+  /@webgpu/types/0.1.31:
+    resolution: {integrity: sha512-ozP2mEPjnJvtE7Q8Fz0/FnW00gcM0ySV+hi/Q+ddLX/hQk4xoaRT1NtQQVSS3mbEUWkVC5pizEkwS40qe0GK+g==}
+    dev: true

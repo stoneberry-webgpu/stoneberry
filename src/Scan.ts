@@ -1,0 +1,112 @@
+/**
+ * A discussion sketch of the api for prefix scan.
+ * Not all issues discussed in email are included yet!
+ */
+
+/** create a new prefix scan shader! */
+export function prefixScan<T>(
+  device: GPUDevice,
+  config: ScannerConfig
+): Scanner<T> {
+  return null as any;
+}
+
+export interface ScannerConfig<V = number> {
+  /** type of scan */
+  template: ScanTemplate;
+
+  /** source data to be scanned */
+  src: GPUBuffer;
+
+  /** initial value for scan (defaults to template identity) */
+  initialValue?: V;
+
+  /** start index in src buffer of range to scan  (0 if undefined) */
+  start?: number;
+
+  /** end index (exclusive) in src buffer (src.length if undefined) */
+  end?: number;
+
+  /** attach this debug label to gpu objects */
+  label?: string;
+
+  /** cache for GPUComputePipeline or GPURenderPipeline */
+  pipelineCache?: <T extends object>() => Cache<T>; // cache
+
+  /* defaults to max workgroup size (setting manually is useful for testing) */
+  workgroupLength?: number;
+}
+
+/** API use the scanner */
+export interface Scanner<T = number> extends ComposableShader {
+  /** launch an immediate scan, returning the result in an array */
+  scan(): Promise<T[]>;
+
+  /** buffer containing scanned results on GPU */
+  readonly scanResult: GPUBuffer;
+
+  /** update parameters. (See Scan2.ts for alternatives to update() ) */
+  update(partialConfig: Partial<ScannerConfig>): void;
+}
+
+/**
+ * All core shaders implement this, so users can configure their shaders and have a 'machine'
+ * that runs a whole bunch fo shaders.
+ */
+export interface ComposableShader {
+  commands(encoder: GPUCommandEncoder): void;
+}
+
+/** API for pluggable cache */
+export interface Cache<V extends object> {
+  get(key: string): V | undefined;
+  set(key: string, value: V): void;
+}
+
+/** string filling template for patching up the wgsl for this type of scan */
+export interface ScanTemplate {
+  binaryOp: string; // combine two elements, e.g. sum. aka flatMap, join
+  identityOp: string; // return identity element, e.g. zero.
+}
+
+/** publish some standard templates */
+export const sumU32: ScanTemplate = null as any;
+export const sumF32: ScanTemplate = null as any;
+
+/* --- examples --- */
+/** an example showing use of the scan api to run, rerun, modify params, etc. */
+async function example(): Promise<void> {
+  const config: ScannerConfig = { src: null as any, template: sumU32 };
+  const device: GPUDevice = null as any;
+  const scanner = prefixScan(device, config);
+
+  // run the scanner and fetch the result
+  const result = await scanner.scan();
+
+  // run again on the same buffer (i.e. after changing src buffer)
+  const result2 = await scanner.scan();
+
+  // scan a different a buffer
+  const newBuf: GPUBuffer = null as any;
+  scanner.update({ src: newBuf });
+  const result3 = await scanner.scan();
+
+  // scan a different range in the same burger
+  scanner.update({ start: 200 });
+  const result4 = await scanner.scan();
+}
+
+/** an example showing use of the scan api to run, rerun, modify params, etc. */
+function composedExample(): void {
+  const config: ScannerConfig = { src: null as any, template: sumU32 };
+  const device: GPUDevice = null as any;
+  const scan = prefixScan(device, config);
+  const postScan = null as any; // a pretend shader
+  const preScan = null as any; // .
+  const shaders = [preScan, scan, postScan];
+
+  // run all the shaders
+  const encoder = device.createCommandEncoder();
+  shaders.forEach((s) => s.commands(encoder));
+  device.queue.submit([encoder.finish()]);
+}
