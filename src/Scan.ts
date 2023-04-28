@@ -1,12 +1,11 @@
 /**
  * A discussion sketch of the api for prefix scan.
  * TBD:
- *  . expose destroy() method
  *  . inclusive vs exclusive
- *  . custom load op?  skip this unless we find a use case 
  *  . initial value? - should this be dynamic or fixed in template?
- *  . generater for one workgroup size? - I don't understand this one fully.
+ *  . generator for one workgroup size? - I don't understand this one fully.
  *  . support for a debug error context
+ *  . custom load op?  skip this unless we find a use case 
  *  . sharing bind groups? - no proposal here
  */
 
@@ -53,6 +52,9 @@ export interface Scanner<T = number> extends ComposableShader, ScannerConfig {
 
   /** buffer containing scanned results on GPU */
   readonly scanResult: GPUBuffer;
+
+  /** destroy the scanResult buffer (or any other buffers allocated internally) */
+  destroy(): void;
 }
 
 /**
