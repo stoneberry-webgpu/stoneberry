@@ -1,6 +1,13 @@
 /**
  * A discussion sketch of the api for prefix scan.
- * Not all issues discussed in email are included yet!
+ * TBD:
+ *  . expose destroy() method
+ *  . inclusive vs exclusive
+ *  . custom load op?  skip this unless we find a use case 
+ *  . initial value? - should this be dynamic or fixed in template?
+ *  . generater for one workgroup size? - I don't understand this one fully.
+ *  . support for a debug error context
+ *  . sharing bind groups? - no proposal here
  */
 
 /** create a new prefix scan shader! */
