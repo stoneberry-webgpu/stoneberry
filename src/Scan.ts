@@ -11,24 +11,26 @@ export function prefixScan<T>(
   return null as any;
 }
 
+type ValueOrFn<T> = T | (() => T);
+
 export interface ScannerConfig<V = number> {
   /** type of scan */
-  template: ScanTemplate;
+  readonly template: ScanTemplate;
 
   /** source data to be scanned */
-  src: GPUBuffer;
+  src: ValueOrFn<GPUBuffer>;
 
   /** initial value for scan (defaults to template identity) */
-  initialValue?: V;
+  initialValue?: ValueOrFn<V>;
 
   /** start index in src buffer of range to scan  (0 if undefined) */
-  start?: number;
+  start?: ValueOrFn<number>;
 
   /** end index (exclusive) in src buffer (src.length if undefined) */
-  end?: number;
+  end?: ValueOrFn<number>;
 
   /** attach this debug label to gpu objects */
-  label?: string;
+  readonly label?: string;
 
   /** cache for GPUComputePipeline or GPURenderPipeline */
   pipelineCache?: <T extends object>() => Cache<T>; // cache
@@ -38,15 +40,12 @@ export interface ScannerConfig<V = number> {
 }
 
 /** API use the scanner */
-export interface Scanner<T = number> extends ComposableShader {
+export interface Scanner<T = number> extends ComposableShader, ScannerConfig {
   /** launch an immediate scan, returning the result in an array */
   scan(): Promise<T[]>;
 
   /** buffer containing scanned results on GPU */
   readonly scanResult: GPUBuffer;
-
-  /** update parameters. (See Scan2.ts for alternatives to update() ) */
-  update(partialConfig: Partial<ScannerConfig>): void;
 }
 
 /**
@@ -88,11 +87,11 @@ async function example(): Promise<void> {
 
   // scan a different a buffer
   const newBuf: GPUBuffer = null as any;
-  scanner.update({ src: newBuf });
+  scanner.src = newBuf;
   const result3 = await scanner.scan();
 
   // scan a different range in the same burger
-  scanner.update({ start: 200 });
+  scanner.start = 200;
   const result4 = await scanner.scan();
 }
 
