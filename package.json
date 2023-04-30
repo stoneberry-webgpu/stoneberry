@@ -1,5 +1,36 @@
 {
-	"devDependencies": {
-		"@webgpu/types": "^0.1.31"
-	}
+  "name": "shader-core",
+  "version": "0.0.1",
+  "description": "core WebGPU shaders",
+  "type": "module",
+  "scripts": {
+    "prepublish": "rimraf dist && pnpm run build && pnpm run build:types",
+    "build": "esbuild src/*/*.ts --format=esm --loader:.wgsl=text --sourcemap --outdir=dist",
+    "build:types": "tsc --project tsconfig.build.json",
+    "mac-canary": "$npm_execPath open -a 'Google Chrome Canary' --args --disable-dawn-features=disallow_unsafe_apis ",
+    "test": "vitest",
+    "organize": "organize-imports-cli tsconfig.json",
+    "format": "prettier-eslint \"src/**/*.ts\" --write",
+    "lint": "eslint ."
+  },
+  "files": [
+    "dist",
+    "src"
+  ],
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^5.59.1",
+    "@typescript-eslint/parser": "^5.59.1",
+    "@webgpu/types": "^0.1.31",
+    "esbuild": "^0.17.18",
+    "eslint": "^8.39.0",
+    "eslint-config-prettier": "^8.8.0",
+    "organize-imports-cli": "^0.10.0",
+    "prettier-eslint-cli": "^7.1.0",
+    "rimraf": "^5.0.0",
+    "typescript": "^5.0.4",
+    "vitest": "^0.30.1"
+  }
 }
