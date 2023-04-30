@@ -5,15 +5,12 @@
  *  . initial value? - should this be dynamic or fixed in template?
  *  . generator for one workgroup size? - I don't understand this one fully.
  *  . support for a debug error context
- *  . custom load op?  skip this unless we find a use case 
+ *  . custom load op?  skip this unless we find a use case
  *  . sharing bind groups? - no proposal here
  */
 
 /** create a new prefix scan shader! */
-export function prefixScan<T>(
-  device: GPUDevice,
-  config: ScannerConfig
-): Scanner<T> {
+export function prefixScan<T>(device: GPUDevice, config: ScannerConfig): Scanner<T> {
   return null as any;
 }
 
@@ -115,6 +112,6 @@ function composedExample(): void {
 
   // run all the shaders
   const encoder = device.createCommandEncoder();
-  shaders.forEach((s) => s.commands(encoder));
+  shaders.forEach(s => s.commands(encoder));
   device.queue.submit([encoder.finish()]);
 }
