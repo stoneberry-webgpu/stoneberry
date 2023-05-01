@@ -32,5 +32,10 @@
     "rimraf": "^5.0.0",
     "typescript": "^5.0.4",
     "vitest": "^0.30.1"
+  },
+  "dependencies": {
+    "@reactively/core": "^0.0.8",
+    "@reactively/decorate": "^0.0.3",
+    "thimbleberry": "^0.1.2"
   }
 }
