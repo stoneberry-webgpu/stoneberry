@@ -1,4 +1,4 @@
-import { labeledGpuDevice } from 'thimbleberry/dist/shader-util/LabeledGpuDevice';
+import { labeledGpuDevice } from "thimbleberry";
 import {expect, it} from "vitest";
 // import { makeBuffer } from "./MakeBuffer";
 // import { prefixSum } from "./PrefixSum";

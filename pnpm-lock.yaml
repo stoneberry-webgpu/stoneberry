@@ -7,6 +7,7 @@ specifiers:
   '@typescript-eslint/parser': ^5.59.2
   '@vitest/browser': ^0.31.0
   '@webgpu/types': ^0.1.31
+  berry-pretty: ^0.0.1
   cypress: ^12.11.0
   esbuild: ^0.17.18
   eslint: ^8.39.0
@@ -16,6 +17,7 @@ specifiers:
   rimraf: ^5.0.0
   thimbleberry: file:../thimbleberry
   typescript: ^5.0.4
+  vite-tsconfig-paths: ^4.2.0
   vitest: ^0.31.0
   webdriverio: ^8.9.0
 
@@ -29,6 +31,7 @@ devDependencies:
   '@typescript-eslint/parser': 5.59.2_iacogk7kkaymxepzhgcbytyi7q
   '@vitest/browser': 0.31.0_vitest@0.31.0
   '@webgpu/types': 0.1.31
+  berry-pretty: 0.0.1
   cypress: 12.11.0
   esbuild: 0.17.18
   eslint: 8.39.0
@@ -37,6 +40,7 @@ devDependencies:
   prettier-eslint-cli: 7.1.0
   rimraf: 5.0.0
   typescript: 5.0.4
+  vite-tsconfig-paths: 4.2.0_typescript@5.0.4
   vitest: 0.31.0_lc7aaeg33lta6njypo5af64kpy
   webdriverio: 8.9.0_typescript@5.0.4
 
@@ -1109,6 +1113,12 @@ packages:
     resolution: {integrity: sha512-qeFIXtP4MSoi6NLqO12WfqARWWuCKi2Rn/9hJLEmtB5yTNr9DqFWkJRCf2qShWzPeAMRnOgCrq0sg/KLv5ES9w==}
     dependencies:
       tweetnacl: 0.14.5
+    dev: true
+
+  /berry-pretty/0.0.1:
+    resolution: {integrity: sha512-NRJX+im7yFKLOC1v1lWQWxvFbsDysm7VcU2IfZ6J8BeRcr3JD/ZU3VUes6/hu8GCaxvadz6I09TWnMNKBj3O+A==}
+    dependencies:
+      lodash: 4.17.21
     dev: true
 
   /bl/4.1.0:
@@ -2518,6 +2528,10 @@ packages:
       ignore: 5.2.4
       merge2: 1.4.1
       slash: 3.0.0
+    dev: true
+
+  /globrex/0.1.2:
+    resolution: {integrity: sha512-uHJgbwAMwNFf5mLst7IWLNg14x1CkeqglJb/K3doi4dw6q2IvAAmM/Y81kevy83wP+Sst+nutFTYOGg3d1lsxg==}
     dev: true
 
   /gopd/1.0.1:
@@ -4328,6 +4342,19 @@ packages:
       code-block-writer: 11.0.3
     dev: true
 
+  /tsconfck/2.1.1_typescript@5.0.4:
+    resolution: {integrity: sha512-ZPCkJBKASZBmBUNqGHmRhdhM8pJYDdOXp4nRgj/O0JwUwsMq50lCDRQP/M5GBNAA0elPrq4gAeu4dkaVCuKWww==}
+    engines: {node: ^14.13.1 || ^16 || >=18}
+    hasBin: true
+    peerDependencies:
+      typescript: ^4.3.5 || ^5.0.0
+    peerDependenciesMeta:
+      typescript:
+        optional: true
+    dependencies:
+      typescript: 5.0.4
+    dev: true
+
   /tsconfig/7.0.0:
     resolution: {integrity: sha512-vZXmzPrL+EmC4T/4rVlT2jNVMWCi/O4DIiSj3UHg1OE5kCKbk4mfrXc6dZksLgRM/TZlKnousKH9bbTazUWRRw==}
     dependencies:
@@ -4499,6 +4526,22 @@ packages:
       - sugarss
       - supports-color
       - terser
+    dev: true
+
+  /vite-tsconfig-paths/4.2.0_typescript@5.0.4:
+    resolution: {integrity: sha512-jGpus0eUy5qbbMVGiTxCL1iB9ZGN6Bd37VGLJU39kTDD6ZfULTTb1bcc5IeTWqWJKiWV5YihCaibeASPiGi8kw==}
+    peerDependencies:
+      vite: '*'
+    peerDependenciesMeta:
+      vite:
+        optional: true
+    dependencies:
+      debug: 4.3.4
+      globrex: 0.1.2
+      tsconfck: 2.1.1_typescript@5.0.4
+    transitivePeerDependencies:
+      - supports-color
+      - typescript
     dev: true
 
   /vite/4.3.4_@types+node@18.16.3:

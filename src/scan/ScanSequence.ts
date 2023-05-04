@@ -1,14 +1,14 @@
 import { HasReactive, reactively } from "@reactively/decorate";
-import { BinOpTemplate, sumTemplateUnsigned } from "thimbleberry/shader-util";
-import { limitWorkgroupLength } from "thimbleberry/shader-util";
-import { MemoCache } from "thimbleberry/shader-util";
+import { BinOpTemplate, sumTemplateUnsigned } from "thimbleberry";
+import { limitWorkgroupLength } from "thimbleberry";
+import { MemoCache } from "thimbleberry";
 import {
   assignParams,
   CanBeReactive,
   reactiveTrackUse
-} from "thimbleberry/shader-util";
-import { ShaderComponent } from "thimbleberry/shader-util";
-import { trackContext, trackUse } from "thimbleberry/shader-util";
+} from "thimbleberry";
+import { ShaderComponent } from "thimbleberry";
+import { trackContext, trackUse } from "thimbleberry";
 import { ApplyScanBlocksShader } from "./ApplyScanBlocksShader";
 import { PrefixScanShader } from "./PrefixScanShader";
 

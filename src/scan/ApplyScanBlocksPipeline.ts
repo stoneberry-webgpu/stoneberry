@@ -1,6 +1,6 @@
-import { BinOpTemplate, sumTemplateUnsigned } from "thimbleberry/shader-util";
-import { memoizeWithDevice } from "thimbleberry/shader-util";
-import { applyTemplate } from "thimbleberry/shader-util";
+import { BinOpTemplate, sumTemplateUnsigned } from "thimbleberry";
+import { memoizeWithDevice } from "thimbleberry";
+import { applyTemplate } from "thimbleberry";
 import shaderWGSL from "./ApplyScanBlocks.wgsl?raw";
 
 export interface ApplyScanBlocksPipelineArgs {
