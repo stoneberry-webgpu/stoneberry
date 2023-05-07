@@ -1,4 +1,4 @@
-import { Vec2 } from "thimbleberry/shader-util";
+import { Vec2 } from "thimbleberry";
 
 export function insertCanvas(
   fbSize: Vec2,
