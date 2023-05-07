@@ -47,7 +47,7 @@ const defaults: Partial<ScanSequenceArgs> = {
  * Each level of summing reduces the data set by a factor of the workgroup size.
  * So three levels handles e.g. 16M elements (256 ** 3).
  */
-export class ScanSequence extends HasReactive implements ShaderComponent {
+export class Scanner extends HasReactive implements ShaderComponent {
   @reactively reduceTemplate!: BinOpTemplate;
   @reactively source!: GPUBuffer;
   @reactively workgroupLength?: number;
@@ -58,7 +58,7 @@ export class ScanSequence extends HasReactive implements ShaderComponent {
 
   constructor(args: ScanSequenceArgs) {
     super();
-    assignParams<ScanSequence>(this, args, defaults);
+    assignParams<Scanner>(this, args, defaults);
   }
 
   encodeCommands(commandEncoder: GPUCommandEncoder): void {

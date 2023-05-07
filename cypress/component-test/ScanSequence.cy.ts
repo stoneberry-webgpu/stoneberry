@@ -8,7 +8,7 @@ import {
   withBufferCopy,
   withLeakTrack,
 } from "thimbleberry";
-import { ScanSequence } from "../../src/scan/ScanSequence.js";
+import { Scanner } from "../../src/scan/ScanSequence.js";
 import { makeBuffer } from "./util/MakeBuffer.js";
 import { prefixSum } from "./util/PrefixSum.js";
 
@@ -19,7 +19,7 @@ it("scan sequence: unevenly sized buffer, two workgroups, one level block scanni
 
     const srcData = [0, 1, 2, 3, 4, 5, 6];
 
-    const scan = new ScanSequence({
+    const scan = new Scanner({
       device,
       source: makeBuffer(device, srcData, "source", Uint32Array),
       reduceTemplate: sumTemplateUnsigned,
@@ -50,7 +50,7 @@ it("scan sequence: large buffer, two levels of block scanning", async () => {
       .fill(0)
       .map((_, i) => i);
 
-    const scan = new ScanSequence({
+    const scan = new Scanner({
       device,
       source: makeBuffer(device, srcData, "source", Uint32Array),
       reduceTemplate: sumTemplateUnsigned,
@@ -76,7 +76,7 @@ it("scan sequence: large buffer, three levels of block scanning", async () => {
       .map((_, i) => i);
 
     await withLeakTrack(async () => {
-      const scan = new ScanSequence({
+      const scan = new Scanner({
         device,
         source: makeBuffer(device, srcData, "source", Uint32Array),
         reduceTemplate: sumTemplateUnsigned,
