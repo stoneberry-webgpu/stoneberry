@@ -8,7 +8,7 @@ import {
   withBufferCopy,
   withLeakTrack,
 } from "thimbleberry";
-import { Scanner } from "../../src/scan/ScanSequence.js";
+import { Scanner } from "../../src/scan/Scanner.js";
 import { makeBuffer } from "./util/MakeBuffer.js";
 import { prefixSum } from "./util/PrefixSum.js";
 
