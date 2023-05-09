@@ -86,7 +86,7 @@ export class Scanner extends HasReactive implements ShaderComponent {
       device: this.device,
       source: this.source,
       emitBlockSums: true,
-      reduceTemplate: this.reduceTemplate,
+      template: this.reduceTemplate,
       workgroupLength: this.workgroupLength,
       label: "sourceScan",
       pipelineCache: this.pipelineCache
@@ -109,7 +109,7 @@ export class Scanner extends HasReactive implements ShaderComponent {
         device: this.device,
         source,
         emitBlockSums: !last,
-        reduceTemplate: this.reduceTemplate,
+        template: this.reduceTemplate,
         workgroupLength: this.workgroupLength,
         label: `blockToBlock ${labelNum++}`,
         pipelineCache: this.pipelineCache

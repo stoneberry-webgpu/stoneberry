@@ -1,5 +1,4 @@
 import { HasReactive, reactively } from "@reactively/decorate";
-import { BinOpTemplate, sumTemplateUnsigned } from "thimbleberry";
 import { createDebugBuffer } from "thimbleberry";
 import { gpuTiming } from "thimbleberry";
 import { limitWorkgroupLength } from "thimbleberry";
@@ -8,6 +7,7 @@ import { CanBeReactive, assignParams, reactiveTrackUse } from "thimbleberry";
 import { ShaderComponent } from "thimbleberry";
 import { trackContext } from "thimbleberry";
 import { getWorkgroupScanPipeline } from "./PrefixScanPipeline";
+import { ScanTemplate, sumU32 } from "./ScanTemplate.js";
 
 export interface PrefixScanParams {
   device: GPUDevice;
@@ -15,7 +15,7 @@ export interface PrefixScanParams {
   emitBlockSums?: CanBeReactive<boolean>;
   workgroupLength?: CanBeReactive<number>;
   label?: CanBeReactive<string>;
-  reduceTemplate?: CanBeReactive<BinOpTemplate>;
+  template?: CanBeReactive<ScanTemplate>;
   pipelineCache?: <T extends object>() => MemoCache<T>;
 }
 
@@ -23,7 +23,7 @@ const defaults: Partial<PrefixScanParams> = {
   emitBlockSums: true,
   pipelineCache: undefined,
   label: "prefix scan",
-  reduceTemplate: sumTemplateUnsigned,
+  template: sumU32,
 };
 
 /**
@@ -38,7 +38,7 @@ const defaults: Partial<PrefixScanParams> = {
 export class PrefixScanShader extends HasReactive implements ShaderComponent {
   @reactively source!: GPUBuffer;
   @reactively workgroupLength?: number;
-  @reactively reduceTemplate!: BinOpTemplate;
+  @reactively template!: ScanTemplate;
   @reactively emitBlockSums!: boolean;
   @reactively label!: string;
 
@@ -77,7 +77,7 @@ export class PrefixScanShader extends HasReactive implements ShaderComponent {
         device: this.device,
         workgroupSize: this.actualWorkgroupLength,
         blockSums: this.emitBlockSums,
-        reduceTemplate: this.reduceTemplate,
+        template: this.template,
       },
       this.pipelineCache
     );

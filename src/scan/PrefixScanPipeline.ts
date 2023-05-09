@@ -1,13 +1,13 @@
-import { BinOpTemplate, sumTemplateUnsigned } from "thimbleberry";
 import { memoizeWithDevice } from "thimbleberry";
 import { applyTemplate } from "thimbleberry";
 import shaderWGSL from "./PrefixScan.wgsl?raw";
+import { ScanTemplate, sumU32 } from "./ScanTemplate.js";
 
 interface WorkGroupScanPipelineArgs {
   device: GPUDevice;
   workgroupSize: number;
   blockSums: boolean;
-  reduceTemplate: BinOpTemplate;
+  template: ScanTemplate;
 }
 
 export const getWorkgroupScanPipeline = memoizeWithDevice(createWorkgroupScanPipeline);
@@ -16,15 +16,15 @@ function createWorkgroupScanPipeline(
   params: WorkGroupScanPipelineArgs
 ): GPUComputePipeline {
   const { device, workgroupSize, blockSums = true } = params;
-  const { reduceTemplate = sumTemplateUnsigned } = params;
+  const { template = sumU32 } = params;
   let blockSumsEntry: GPUBindGroupLayoutEntry[] = [];
   if (blockSums) {
     blockSumsEntry = [
       {
         binding: 3, // output block sums
         visibility: GPUShaderStage.COMPUTE,
-        buffer: { type: "storage" }
-      }
+        buffer: { type: "storage" },
+      },
     ];
   }
 
@@ -39,38 +39,38 @@ function createWorkgroupScanPipeline(
       {
         binding: 1, // src buffer
         visibility: GPUShaderStage.COMPUTE,
-        buffer: { type: "read-only-storage" }
+        buffer: { type: "read-only-storage" },
       },
       {
         binding: 2, // output prefix sums
         visibility: GPUShaderStage.COMPUTE,
-        buffer: { type: "storage" }
+        buffer: { type: "storage" },
       },
       ...blockSumsEntry,
       {
         binding: 11, // debug buffer
         visibility: GPUShaderStage.COMPUTE,
-        buffer: { type: "storage" }
-      }
-    ]
+        buffer: { type: "storage" },
+      },
+    ],
   });
 
   const processedWGSL = applyTemplate(shaderWGSL, {
     workgroupSizeX: workgroupSize,
     blockSums,
-    ...reduceTemplate
+    ...template,
   });
 
   const module = device.createShaderModule({
-    code: processedWGSL
+    code: processedWGSL,
   });
 
   const pipeline = device.createComputePipeline({
     compute: {
       module,
-      entryPoint: "workgroupPrefixScan"
+      entryPoint: "workgroupPrefixScan",
     },
-    layout: device.createPipelineLayout({ bindGroupLayouts: [firstBindGroupLayout] })
+    layout: device.createPipelineLayout({ bindGroupLayouts: [firstBindGroupLayout] }),
   });
 
   return pipeline;

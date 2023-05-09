@@ -9,6 +9,8 @@
  *  . sharing bind groups? - no proposal here
  */
 
+import { ScanTemplate, sumU32 } from "./ScanTemplate.js";
+
 /** create a new prefix scan shader! */
 export function prefixScan<T>(device: GPUDevice, config: ScannerConfig): Scanner<T> {
   return null as any;
@@ -68,15 +70,6 @@ export interface Cache<V extends object> {
   set(key: string, value: V): void;
 }
 
-/** string filling template for patching up the wgsl for this type of scan */
-export interface ScanTemplate {
-  binaryOp: string; // combine two elements, e.g. sum. aka flatMap, join
-  identityOp: string; // return identity element, e.g. zero.
-}
-
-/** publish some standard templates */
-export const sumU32: ScanTemplate = null as any;
-export const sumF32: ScanTemplate = null as any;
 
 /* --- examples --- */
 /** an example showing use of the scan api to run, rerun, modify params, etc. */
