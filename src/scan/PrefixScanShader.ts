@@ -2,20 +2,20 @@ import { HasReactive, reactively } from "@reactively/decorate";
 import { createDebugBuffer } from "thimbleberry";
 import { gpuTiming } from "thimbleberry";
 import { limitWorkgroupLength } from "thimbleberry";
-import { CanBeReactive, assignParams, reactiveTrackUse } from "thimbleberry";
+import { assignParams, reactiveTrackUse } from "thimbleberry";
 import { ShaderComponent } from "thimbleberry";
 import { trackContext } from "thimbleberry";
 import { getWorkgroupScanPipeline } from "./PrefixScanPipeline";
 import { ScanTemplate, sumU32 } from "./ScanTemplate.js";
-import { Cache } from "./Scan.js";
+import { Cache, ValueOrFn } from "./Scan.js";
 
 export interface PrefixScanParams {
   device: GPUDevice;
-  source: CanBeReactive<GPUBuffer>;
-  emitBlockSums?: CanBeReactive<boolean>;
-  workgroupLength?: CanBeReactive<number>;
-  label?: CanBeReactive<string>;
-  template?: CanBeReactive<ScanTemplate>;
+  source: ValueOrFn<GPUBuffer>;
+  emitBlockSums?: ValueOrFn<boolean>;
+  workgroupLength?: ValueOrFn<number>;
+  label?: ValueOrFn<string>;
+  template?: ValueOrFn<ScanTemplate>;
   pipelineCache?: <T extends object>() => Cache<T>;
 }
 

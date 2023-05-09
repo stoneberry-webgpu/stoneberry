@@ -16,7 +16,7 @@ export function prefixScan<T>(device: GPUDevice, config: ScannerConfig): Scanner
   return null as any;
 }
 
-type ValueOrFn<T> = T | (() => T);
+export type ValueOrFn<T> = T | (() => T);
 
 export interface ScannerConfig<V = number> {
   /** type of scan */
