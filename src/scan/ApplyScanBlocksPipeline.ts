@@ -1,12 +1,12 @@
-import { BinOpTemplate, sumTemplateUnsigned } from "thimbleberry";
 import { memoizeWithDevice } from "thimbleberry";
 import { applyTemplate } from "thimbleberry";
 import shaderWGSL from "./ApplyScanBlocks.wgsl?raw";
+import { ScanTemplate, sumU32 } from "./ScanTemplate.js";
 
 export interface ApplyScanBlocksPipelineArgs {
   device: GPUDevice;
   workgroupLength: number;
-  reduceTemplate?: BinOpTemplate;
+  template?: ScanTemplate;
 }
 
 export const getApplyBlocksPipeline = memoizeWithDevice(createApplyBlocksPipeline);
@@ -14,7 +14,7 @@ export const getApplyBlocksPipeline = memoizeWithDevice(createApplyBlocksPipelin
 function createApplyBlocksPipeline(
   args: ApplyScanBlocksPipelineArgs
 ): GPUComputePipeline {
-  const { device, workgroupLength, reduceTemplate = sumTemplateUnsigned } = args;
+  const { device, workgroupLength, template = sumU32} = args;
   const firstBindGroupLayout = device.createBindGroupLayout({
     label: "apply scan blocks",
     entries: [
@@ -43,7 +43,7 @@ function createApplyBlocksPipeline(
 
   const processedWGSL = applyTemplate(shaderWGSL, {
     workgroupSizeX: workgroupLength,
-    ...reduceTemplate
+    ...template
   });
 
   const module = device.createShaderModule({

@@ -1,5 +1,4 @@
 import { HasReactive, reactively } from "@reactively/decorate";
-import { BinOpTemplate, sumTemplateUnsigned } from "thimbleberry";
 import { limitWorkgroupLength } from "thimbleberry";
 import { MemoCache } from "thimbleberry";
 import {
@@ -11,18 +10,19 @@ import { ShaderComponent } from "thimbleberry";
 import { trackContext, trackUse } from "thimbleberry";
 import { ApplyScanBlocksShader } from "./ApplyScanBlocksShader";
 import { PrefixScanShader } from "./PrefixScanShader";
+import { ScanTemplate, sumU32 } from "./ScanTemplate.js";
 
 export interface ScanSequenceArgs {
   device: GPUDevice;
   source: CanBeReactive<GPUBuffer>;
-  reduceTemplate?: CanBeReactive<BinOpTemplate>;
+  template?: CanBeReactive<ScanTemplate>;
   workgroupLength?: CanBeReactive<number>;
   pipelineCache?: <T extends object>() => MemoCache<T>;
 }
 
 const defaults: Partial<ScanSequenceArgs> = {
   workgroupLength: undefined,
-  reduceTemplate: sumTemplateUnsigned,
+  template: sumU32,
   pipelineCache: undefined
 };
 
@@ -48,7 +48,7 @@ const defaults: Partial<ScanSequenceArgs> = {
  * So three levels handles e.g. 16M elements (256 ** 3).
  */
 export class Scanner extends HasReactive implements ShaderComponent {
-  @reactively reduceTemplate!: BinOpTemplate;
+  @reactively template!: ScanTemplate;
   @reactively source!: GPUBuffer;
   @reactively workgroupLength?: number;
 
@@ -86,7 +86,7 @@ export class Scanner extends HasReactive implements ShaderComponent {
       device: this.device,
       source: this.source,
       emitBlockSums: true,
-      template: this.reduceTemplate,
+      template: this.template,
       workgroupLength: this.workgroupLength,
       label: "sourceScan",
       pipelineCache: this.pipelineCache
@@ -109,7 +109,7 @@ export class Scanner extends HasReactive implements ShaderComponent {
         device: this.device,
         source,
         emitBlockSums: !last,
-        template: this.reduceTemplate,
+        template: this.template,
         workgroupLength: this.workgroupLength,
         label: `blockToBlock ${labelNum++}`,
         pipelineCache: this.pipelineCache
@@ -155,7 +155,7 @@ export class Scanner extends HasReactive implements ShaderComponent {
         device: this.device,
         partialScan: targetPrefixes[i],
         blockSums,
-        reduceTemplate: this.reduceTemplate,
+        template: this.template,
         workgroupLength: this.actualWorkgroupLength,
         label: `applyBlock ${i}`,
         pipelineCache: this.pipelineCache

@@ -22,7 +22,7 @@ it("scan sequence: unevenly sized buffer, two workgroups, one level block scanni
     const scan = new Scanner({
       device,
       source: makeBuffer(device, srcData, "source", Uint32Array),
-      reduceTemplate: sumTemplateUnsigned,
+      template: sumTemplateUnsigned,
       workgroupLength: 4,
     });
     const shaderGroup = new ShaderGroup(device, scan);
@@ -53,7 +53,7 @@ it("scan sequence: large buffer, two levels of block scanning", async () => {
     const scan = new Scanner({
       device,
       source: makeBuffer(device, srcData, "source", Uint32Array),
-      reduceTemplate: sumTemplateUnsigned,
+      template: sumTemplateUnsigned,
       workgroupLength: 4,
     });
     const shaderGroup = new ShaderGroup(device, scan);
@@ -79,7 +79,7 @@ it("scan sequence: large buffer, three levels of block scanning", async () => {
       const scan = new Scanner({
         device,
         source: makeBuffer(device, srcData, "source", Uint32Array),
-        reduceTemplate: sumTemplateUnsigned,
+        template: sumTemplateUnsigned,
         workgroupLength: 4,
       });
       trackUse(scan);

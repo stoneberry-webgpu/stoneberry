@@ -1,6 +1,7 @@
 import { HasReactive, reactively } from "@reactively/decorate";
-import { BinOpTemplate, MemoCache, ShaderComponent, createDebugBuffer, gpuTiming, reactiveTrackUse, sumTemplateUnsigned, trackContext } from "thimbleberry";
+import { MemoCache, ShaderComponent, createDebugBuffer, gpuTiming, reactiveTrackUse, trackContext } from "thimbleberry";
 import { getApplyBlocksPipeline } from "./ApplyScanBlocksPipeline";
+import { ScanTemplate, sumU32 } from "./ScanTemplate.js";
 
 export interface ApplyScanBlocksParams {
   device: GPUDevice;
@@ -8,7 +9,7 @@ export interface ApplyScanBlocksParams {
   blockSums: GPUBuffer;
   workgroupLength?: number;
   label?: string;
-  reduceTemplate?: BinOpTemplate;
+  template?: ScanTemplate;
   pipelineCache?: <T extends object>() => MemoCache<T>;
 }
 
@@ -17,7 +18,7 @@ export class ApplyScanBlocksShader extends HasReactive implements ShaderComponen
   @reactively partialScan: GPUBuffer;
   @reactively blockSums: GPUBuffer;
   @reactively proposedWorkgroupLength?: number;
-  @reactively reduceTemplate: BinOpTemplate;
+  @reactively template: ScanTemplate;
   @reactively label: string;
 
   private device: GPUDevice;
@@ -31,7 +32,7 @@ export class ApplyScanBlocksShader extends HasReactive implements ShaderComponen
     this.proposedWorkgroupLength = params.workgroupLength;
     this.blockSums = params.blockSums;
     this.label = params.label || "apply scan blocks";
-    this.reduceTemplate = params.reduceTemplate || sumTemplateUnsigned;
+    this.template = params.template || sumU32;
   }
 
   encodeCommands(commandEncoder: GPUCommandEncoder): void {
@@ -63,7 +64,7 @@ export class ApplyScanBlocksShader extends HasReactive implements ShaderComponen
       {
         device: this.device,
         workgroupLength: this.workgroupLength,
-        reduceTemplate: this.reduceTemplate,
+        template: this.template,
       },
       this.pipelineCache
     );
