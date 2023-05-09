@@ -8,8 +8,8 @@ import {
 } from "thimbleberry";
 import { ShaderComponent } from "thimbleberry";
 import { trackContext, trackUse } from "thimbleberry";
-import { ApplyScanBlocksShader } from "./ApplyScanBlocksShader";
-import { PrefixScanShader } from "./PrefixScanShader";
+import { ApplyScanBlocksShader } from "./ApplyScanBlocksShader.js";
+import { PrefixScanShader } from "./PrefixScanShader.js";
 import { ScanTemplate, sumU32 } from "./ScanTemplate.js";
 
 export interface ScanSequenceArgs {
