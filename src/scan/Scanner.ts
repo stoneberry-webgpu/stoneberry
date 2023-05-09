@@ -1,12 +1,11 @@
 import { HasReactive, reactively } from "@reactively/decorate";
 import { limitWorkgroupLength } from "thimbleberry";
 import { assignParams, reactiveTrackUse } from "thimbleberry";
-import { ShaderComponent } from "thimbleberry";
 import { trackContext, trackUse } from "thimbleberry";
 import { ApplyScanBlocksShader } from "./ApplyScanBlocksShader.js";
 import { PrefixScanShader } from "./PrefixScanShader.js";
 import { ScanTemplate, sumU32 } from "./ScanTemplate.js";
-import { Cache, ValueOrFn } from "./Scan.js";
+import { Cache, ComposableShader, ValueOrFn } from "./Scan.js";
 
 export interface ScanSequenceArgs {
   device: GPUDevice;
@@ -43,7 +42,7 @@ const defaults: Partial<ScanSequenceArgs> = {
  * Each level of summing reduces the data set by a factor of the workgroup size.
  * So three levels handles e.g. 16M elements (256 ** 3).
  */
-export class Scanner extends HasReactive implements ShaderComponent {
+export class Scanner extends HasReactive implements ComposableShader {
   @reactively template!: ScanTemplate;
   @reactively source!: GPUBuffer;
   @reactively workgroupLength?: number;
@@ -57,8 +56,8 @@ export class Scanner extends HasReactive implements ShaderComponent {
     assignParams<Scanner>(this, args, defaults);
   }
 
-  encodeCommands(commandEncoder: GPUCommandEncoder): void {
-    this.shaders.forEach(s => s.encodeCommands(commandEncoder));
+  commands(commandEncoder: GPUCommandEncoder): void {
+    this.shaders.forEach(s => s.commands(commandEncoder));
   }
 
   destroy(): void {
@@ -73,7 +72,7 @@ export class Scanner extends HasReactive implements ShaderComponent {
     }
   }
 
-  @reactively private get shaders(): ShaderComponent[] {
+  @reactively private get shaders(): ComposableShader[] {
     return [this.sourceScan, ...this.blockScans, ...this.applyScans];
   }
 

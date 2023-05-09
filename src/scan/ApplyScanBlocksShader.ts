@@ -1,6 +1,5 @@
 import { HasReactive, reactively } from "@reactively/decorate";
 import {
-  ShaderComponent,
   createDebugBuffer,
   gpuTiming,
   reactiveTrackUse,
@@ -8,7 +7,7 @@ import {
 } from "thimbleberry";
 import { getApplyBlocksPipeline } from "./ApplyScanBlocksPipeline";
 import { ScanTemplate, sumU32 } from "./ScanTemplate.js";
-import { Cache } from "./Scan.js";
+import { Cache, ComposableShader } from "./Scan.js";
 
 export interface ApplyScanBlocksParams {
   device: GPUDevice;
@@ -21,7 +20,7 @@ export interface ApplyScanBlocksParams {
 }
 
 /** Shader stage used in a prefix scan, applies block summaries to block elements */
-export class ApplyScanBlocksShader extends HasReactive implements ShaderComponent {
+export class ApplyScanBlocksShader extends HasReactive implements ComposableShader{
   @reactively partialScan: GPUBuffer;
   @reactively blockSums: GPUBuffer;
   @reactively proposedWorkgroupLength?: number;
@@ -42,7 +41,7 @@ export class ApplyScanBlocksShader extends HasReactive implements ShaderComponen
     this.template = params.template || sumU32;
   }
 
-  encodeCommands(commandEncoder: GPUCommandEncoder): void {
+  commands(commandEncoder: GPUCommandEncoder): void {
     const timestampWrites = gpuTiming?.timestampWrites(this.label) ?? [];
     const passEncoder = commandEncoder.beginComputePass({ timestampWrites });
     passEncoder.label = this.label;
