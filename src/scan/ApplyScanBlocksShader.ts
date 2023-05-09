@@ -1,7 +1,14 @@
 import { HasReactive, reactively } from "@reactively/decorate";
-import { MemoCache, ShaderComponent, createDebugBuffer, gpuTiming, reactiveTrackUse, trackContext } from "thimbleberry";
+import {
+  ShaderComponent,
+  createDebugBuffer,
+  gpuTiming,
+  reactiveTrackUse,
+  trackContext,
+} from "thimbleberry";
 import { getApplyBlocksPipeline } from "./ApplyScanBlocksPipeline";
 import { ScanTemplate, sumU32 } from "./ScanTemplate.js";
+import { Cache } from "./Scan.js";
 
 export interface ApplyScanBlocksParams {
   device: GPUDevice;
@@ -10,7 +17,7 @@ export interface ApplyScanBlocksParams {
   workgroupLength?: number;
   label?: string;
   template?: ScanTemplate;
-  pipelineCache?: <T extends object>() => MemoCache<T>;
+  pipelineCache?: <T extends object>() => Cache<T>;
 }
 
 /** Shader stage used in a prefix scan, applies block summaries to block elements */
@@ -23,7 +30,7 @@ export class ApplyScanBlocksShader extends HasReactive implements ShaderComponen
 
   private device: GPUDevice;
   private usageContext = trackContext();
-  private pipelineCache?: <T extends object>() => MemoCache<T>;
+  private pipelineCache?: <T extends object>() => Cache<T>;
 
   constructor(params: ApplyScanBlocksParams) {
     super();

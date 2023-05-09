@@ -2,12 +2,12 @@ import { HasReactive, reactively } from "@reactively/decorate";
 import { createDebugBuffer } from "thimbleberry";
 import { gpuTiming } from "thimbleberry";
 import { limitWorkgroupLength } from "thimbleberry";
-import { MemoCache } from "thimbleberry";
 import { CanBeReactive, assignParams, reactiveTrackUse } from "thimbleberry";
 import { ShaderComponent } from "thimbleberry";
 import { trackContext } from "thimbleberry";
 import { getWorkgroupScanPipeline } from "./PrefixScanPipeline";
 import { ScanTemplate, sumU32 } from "./ScanTemplate.js";
+import { Cache } from "./Scan.js";
 
 export interface PrefixScanParams {
   device: GPUDevice;
@@ -16,7 +16,7 @@ export interface PrefixScanParams {
   workgroupLength?: CanBeReactive<number>;
   label?: CanBeReactive<string>;
   template?: CanBeReactive<ScanTemplate>;
-  pipelineCache?: <T extends object>() => MemoCache<T>;
+  pipelineCache?: <T extends object>() => Cache<T>;
 }
 
 const defaults: Partial<PrefixScanParams> = {
@@ -43,7 +43,7 @@ export class PrefixScanShader extends HasReactive implements ShaderComponent {
   @reactively label!: string;
 
   private device!: GPUDevice;
-  private pipelineCache?: <T extends object>() => MemoCache<T>;
+  private pipelineCache?: <T extends object>() => Cache<T>;
   private usageContext = trackContext();
 
   constructor(params: PrefixScanParams) {

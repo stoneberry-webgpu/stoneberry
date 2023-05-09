@@ -1,36 +1,32 @@
 import { HasReactive, reactively } from "@reactively/decorate";
 import { limitWorkgroupLength } from "thimbleberry";
-import { MemoCache } from "thimbleberry";
-import {
-  assignParams,
-  CanBeReactive,
-  reactiveTrackUse
-} from "thimbleberry";
+import { assignParams, CanBeReactive, reactiveTrackUse } from "thimbleberry";
 import { ShaderComponent } from "thimbleberry";
 import { trackContext, trackUse } from "thimbleberry";
 import { ApplyScanBlocksShader } from "./ApplyScanBlocksShader.js";
 import { PrefixScanShader } from "./PrefixScanShader.js";
 import { ScanTemplate, sumU32 } from "./ScanTemplate.js";
+import { Cache } from "./Scan.js";
 
 export interface ScanSequenceArgs {
   device: GPUDevice;
   source: CanBeReactive<GPUBuffer>;
   template?: CanBeReactive<ScanTemplate>;
   workgroupLength?: CanBeReactive<number>;
-  pipelineCache?: <T extends object>() => MemoCache<T>;
+  pipelineCache?: <T extends object>() => Cache<T>;
 }
 
 const defaults: Partial<ScanSequenceArgs> = {
   workgroupLength: undefined,
   template: sumU32,
-  pipelineCache: undefined
+  pipelineCache: undefined,
 };
 
 /**
  * A cascade of shaders to do a prefix scan operation, based on a shader that
  * does a prefix scan of a workgroup sized chunk of data (e.g. perhaps 64 or 256 elements).
- * 
- * The scan operation is parameterized by a template mechanism. The user can 
+ *
+ * The scan operation is parameterized by a template mechanism. The user can
  * instantiate a ScanSequence with sum to get prefix-sum, or use another template for
  * other parallel scan applications.
  *
@@ -54,7 +50,7 @@ export class Scanner extends HasReactive implements ShaderComponent {
 
   private device!: GPUDevice;
   private usageContext = trackContext();
-  private pipelineCache?: <T extends object>() => MemoCache<T>;
+  private pipelineCache?: <T extends object>() => Cache<T>;
 
   constructor(args: ScanSequenceArgs) {
     super();
@@ -89,7 +85,7 @@ export class Scanner extends HasReactive implements ShaderComponent {
       template: this.template,
       workgroupLength: this.workgroupLength,
       label: "sourceScan",
-      pipelineCache: this.pipelineCache
+      pipelineCache: this.pipelineCache,
     });
     reactiveTrackUse(shader, this.usageContext);
     return shader;
@@ -112,7 +108,7 @@ export class Scanner extends HasReactive implements ShaderComponent {
         template: this.template,
         workgroupLength: this.workgroupLength,
         label: `blockToBlock ${labelNum++}`,
-        pipelineCache: this.pipelineCache
+        pipelineCache: this.pipelineCache,
       });
       source = blockScan.blockSums;
       shaders.push(blockScan);
@@ -122,7 +118,7 @@ export class Scanner extends HasReactive implements ShaderComponent {
     return shaders;
   }
 
-  @reactively get sourceSize():number {
+  @reactively get sourceSize(): number {
     return this.source.size;
   }
 
@@ -158,7 +154,7 @@ export class Scanner extends HasReactive implements ShaderComponent {
         template: this.template,
         workgroupLength: this.actualWorkgroupLength,
         label: `applyBlock ${i}`,
-        pipelineCache: this.pipelineCache
+        pipelineCache: this.pipelineCache,
       });
       blockSums = applyBlocks.prefixScan;
       return applyBlocks;
