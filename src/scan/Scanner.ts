@@ -8,12 +8,12 @@ import {
 } from "thimbleberry";
 import { ApplyScanBlocksShader } from "./ApplyScanBlocksShader.js";
 import { PrefixScanShader } from "./PrefixScanShader.js";
-import { Cache, ComposableShader, ValueOrFn } from "./Scan.js";
+import { Cache, ComposableShader, ScannerApi, ValueOrFn } from "./Scan.js";
 import { ScanTemplate, sumU32 } from "./ScanTemplate.js";
 
 export interface ScanSequenceArgs {
   device: GPUDevice;
-  source: ValueOrFn<GPUBuffer>;
+  src: ValueOrFn<GPUBuffer>;
   template?: ValueOrFn<ScanTemplate>;
   workgroupLength?: ValueOrFn<number>;
   pipelineCache?: <T extends object>() => Cache<T>;
@@ -46,18 +46,21 @@ const defaults: Partial<ScanSequenceArgs> = {
  * Each level of summing reduces the data set by a factor of the workgroup size.
  * So three levels handles e.g. 16M elements (256 ** 3).
  */
-export class Scanner extends HasReactive implements ComposableShader {
+export class Scanner<T = number>
+  extends HasReactive
+  implements ComposableShader, ScannerApi<T>
+{
   @reactively template!: ScanTemplate;
-  @reactively source!: GPUBuffer;
+  @reactively src!: GPUBuffer;
   @reactively workgroupLength?: number;
 
   private device!: GPUDevice;
   private usageContext = trackContext();
-  private pipelineCache?: <T extends object>() => Cache<T>;
+  pipelineCache?: <T extends object>() => Cache<T>;
 
   constructor(args: ScanSequenceArgs) {
     super();
-    assignParams<Scanner>(this, args, defaults);
+    assignParams<Scanner<T>>(this, args, defaults);
   }
 
   commands(commandEncoder: GPUCommandEncoder): void {
@@ -68,7 +71,11 @@ export class Scanner extends HasReactive implements ComposableShader {
     this.usageContext.finish();
   }
 
-  @reactively get prefixScan(): GPUBuffer {
+  scan(): Promise<T[]> {
+    throw new Error("nyi");
+  }
+
+  @reactively get result(): GPUBuffer {
     if (this.fitsInWorkGroup) {
       return this.sourceScan.prefixScan;
     } else {
@@ -83,7 +90,7 @@ export class Scanner extends HasReactive implements ComposableShader {
   @reactively get sourceScan(): PrefixScanShader {
     const shader = new PrefixScanShader({
       device: this.device,
-      source: this.source,
+      source: this.src,
       emitBlockSums: true,
       template: this.template,
       workgroupLength: this.workgroupLength,
@@ -122,7 +129,7 @@ export class Scanner extends HasReactive implements ComposableShader {
   }
 
   @reactively get sourceSize(): number {
-    return this.source.size;
+    return this.src.size;
   }
 
   @reactively get fitsInWorkGroup(): boolean {

@@ -1,13 +1,13 @@
 import {
   ShaderGroup,
   labeledGpuDevice,
-  sumTemplateUnsigned,
   trackRelease,
   trackUse,
   withAsyncUsage,
   withBufferCopy,
   withLeakTrack,
 } from "thimbleberry";
+import { sumU32 } from "../../src/scan/ScanTemplate.js";
 import { Scanner } from "../../src/scan/Scanner.js";
 import { makeBuffer } from "./util/MakeBuffer.js";
 import { prefixSum } from "./util/PrefixSum.js";
@@ -21,8 +21,8 @@ it("scan sequence: unevenly sized buffer, two workgroups, one level block scanni
 
     const scan = new Scanner({
       device,
-      source: makeBuffer(device, srcData, "source", Uint32Array),
-      template: sumTemplateUnsigned,
+      src: makeBuffer(device, srcData, "source", Uint32Array),
+      template: sumU32,
       workgroupLength: 4,
     });
     const shaderGroup = new ShaderGroup(device, scan);
@@ -35,7 +35,7 @@ it("scan sequence: unevenly sized buffer, two workgroups, one level block scanni
       expect([...data]).deep.equals([6, 21]);
     });
     const expected = prefixSum(srcData);
-    await withBufferCopy(device, scan.prefixScan, "u32", data => {
+    await withBufferCopy(device, scan.result, "u32", data => {
       expect([...data]).deep.equals(expected);
     });
   });
@@ -52,15 +52,15 @@ it("scan sequence: large buffer, two levels of block scanning", async () => {
 
     const scan = new Scanner({
       device,
-      source: makeBuffer(device, srcData, "source", Uint32Array),
-      template: sumTemplateUnsigned,
+      src: makeBuffer(device, srcData, "source", Uint32Array),
+      template: sumU32,
       workgroupLength: 4,
     });
     const shaderGroup = new ShaderGroup(device, scan);
     shaderGroup.dispatch();
 
     const expected = prefixSum(srcData);
-    await withBufferCopy(device, scan.prefixScan, "u32", data => {
+    await withBufferCopy(device, scan.result, "u32", data => {
       expect([...data]).deep.equals(expected);
     });
   });
@@ -78,8 +78,8 @@ it("scan sequence: large buffer, three levels of block scanning", async () => {
     await withLeakTrack(async () => {
       const scan = new Scanner({
         device,
-        source: makeBuffer(device, srcData, "source", Uint32Array),
-        template: sumTemplateUnsigned,
+        src: makeBuffer(device, srcData, "source", Uint32Array),
+        template: sumU32,
         workgroupLength: 4,
       });
       trackUse(scan);
@@ -87,7 +87,7 @@ it("scan sequence: large buffer, three levels of block scanning", async () => {
       shaderGroup.dispatch();
 
       const expected = prefixSum(srcData);
-      await withBufferCopy(device, scan.prefixScan, "u32", data => {
+      await withBufferCopy(device, scan.result, "u32", data => {
         expect([...data]).deep.equals(expected);
       });
       trackRelease(scan);

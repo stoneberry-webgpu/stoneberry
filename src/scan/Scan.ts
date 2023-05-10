@@ -12,13 +12,13 @@
 import { ScanTemplate, sumU32 } from "./ScanTemplate.js";
 
 /** create a new prefix scan shader! */
-export function prefixScan<T>(device: GPUDevice, config: ScannerConfig): Scanner<T> {
+export function prefixScan<T>(device: GPUDevice, config: ScannerConfig): ScannerApi<T> {
   return null as any;
 }
 
 export type ValueOrFn<T> = T | (() => T);
 
-export interface ScannerConfig<V = number> {
+export interface ScannerConfig {
   /** type of scan */
   readonly template: ScanTemplate;
 
@@ -26,7 +26,7 @@ export interface ScannerConfig<V = number> {
   src: ValueOrFn<GPUBuffer>;
 
   /** initial value for scan (defaults to template identity) */
-  initialValue?: ValueOrFn<V>;
+  // initialValue?: ValueOrFn<V>;
 
   /** start index in src buffer of range to scan  (0 if undefined) */
   start?: ValueOrFn<number>;
@@ -45,12 +45,12 @@ export interface ScannerConfig<V = number> {
 }
 
 /** API use the scanner */
-export interface Scanner<T = number> extends ComposableShader, ScannerConfig {
+export interface ScannerApi<T = number> extends ComposableShader, ScannerConfig {
   /** launch an immediate scan, returning the result in an array */
   scan(): Promise<T[]>;
 
   /** buffer containing scanned results on GPU */
-  readonly scanResult: GPUBuffer;
+  readonly result: GPUBuffer;
 
   /** destroy the scanResult buffer (or any other buffers allocated internally) */
   destroy(): void;
@@ -69,7 +69,6 @@ export interface Cache<V extends object> {
   get(key: string): V | undefined;
   set(key: string, value: V): void;
 }
-
 
 /* --- examples --- */
 /** an example showing use of the scan api to run, rerun, modify params, etc. */
