@@ -12,7 +12,7 @@
 import { ScanTemplate, sumU32 } from "./ScanTemplate.js";
 
 /** create a new prefix scan shader! */
-export function prefixScan<T>(device: GPUDevice, config: ScannerConfig): ScannerApi<T> {
+export function prefixScan<T>(device: GPUDevice, config: ScannerConfig): ScannerApi {
   return null as any;
 }
 
@@ -45,9 +45,9 @@ export interface ScannerConfig {
 }
 
 /** API use the scanner */
-export interface ScannerApi<T = number> extends ComposableShader, ScannerConfig {
+export interface ScannerApi extends ComposableShader, ScannerConfig {
   /** launch an immediate scan, returning the result in an array */
-  scan(): Promise<T[]>;
+  scan(): Promise<number[]>;
 
   /** buffer containing scanned results on GPU */
   readonly result: GPUBuffer;

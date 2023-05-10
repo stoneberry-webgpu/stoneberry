@@ -5,6 +5,7 @@ import {
   reactiveTrackUse,
   trackContext,
   trackUse,
+  withBufferCopy,
 } from "thimbleberry";
 import { ApplyScanBlocksShader } from "./ApplyScanBlocksShader.js";
 import { PrefixScanShader } from "./PrefixScanShader.js";
@@ -14,6 +15,7 @@ import { ScanTemplate, sumU32 } from "./ScanTemplate.js";
 export interface ScanSequenceArgs {
   device: GPUDevice;
   src: ValueOrFn<GPUBuffer>;
+  label?: string;
   template?: ValueOrFn<ScanTemplate>;
   workgroupLength?: ValueOrFn<number>;
   pipelineCache?: <T extends object>() => Cache<T>;
@@ -48,15 +50,16 @@ const defaults: Partial<ScanSequenceArgs> = {
  */
 export class Scanner<T = number>
   extends HasReactive
-  implements ComposableShader, ScannerApi<T>
+  implements ComposableShader, ScannerApi
 {
   @reactively template!: ScanTemplate;
   @reactively src!: GPUBuffer;
   @reactively workgroupLength?: number;
+  @reactively label?: string; // TODO pass label down
 
   private device!: GPUDevice;
   private usageContext = trackContext();
-  pipelineCache?: <T extends object>() => Cache<T>;
+  pipelineCache?: <C extends object>() => Cache<C>;
 
   constructor(args: ScanSequenceArgs) {
     super();
@@ -71,8 +74,13 @@ export class Scanner<T = number>
     this.usageContext.finish();
   }
 
-  scan(): Promise<T[]> {
-    throw new Error("nyi");
+  async scan(): Promise<number[]> {
+    const commands = this.device.createCommandEncoder({ label: this.label });
+    this.commands(commands);
+    this.device.queue.submit([commands.finish()]);
+    await this.device.queue.onSubmittedWorkDone();
+    const data = await withBufferCopy(this.device, this.result, "u32", data => data.slice());
+    return [...data];
   }
 
   @reactively get result(): GPUBuffer {
