@@ -1,11 +1,15 @@
 import { HasReactive, reactively } from "@reactively/decorate";
-import { limitWorkgroupLength } from "thimbleberry";
-import { assignParams, reactiveTrackUse } from "thimbleberry";
-import { trackContext, trackUse } from "thimbleberry";
+import {
+  assignParams,
+  limitWorkgroupLength,
+  reactiveTrackUse,
+  trackContext,
+  trackUse,
+} from "thimbleberry";
 import { ApplyScanBlocksShader } from "./ApplyScanBlocksShader.js";
 import { PrefixScanShader } from "./PrefixScanShader.js";
-import { ScanTemplate, sumU32 } from "./ScanTemplate.js";
 import { Cache, ComposableShader, ValueOrFn } from "./Scan.js";
+import { ScanTemplate, sumU32 } from "./ScanTemplate.js";
 
 export interface ScanSequenceArgs {
   device: GPUDevice;
