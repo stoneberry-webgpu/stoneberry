@@ -12,6 +12,20 @@ import { Scanner } from "../../src/scan/Scanner.js";
 import { makeBuffer } from "./util/MakeBuffer.js";
 import { prefixSum } from "./util/PrefixSum.js";
 
+it("scan api", async () => {
+  await withAsyncUsage(async () => {
+    const device = trackUse(await labeledGpuDevice());
+    const srcData = [0, 1, 2, 3, 4, 5, 6];
+    const expected = prefixSum(srcData);
+    const src = makeBuffer(device, srcData, "source", Uint32Array);
+
+    const scan = new Scanner({ device, src });
+    const data = await scan.scan();
+
+    expect([...data]).deep.equals(expected);
+  });
+});
+
 it("scan sequence: unevenly sized buffer, two workgroups, one level block scanning", async () => {
   await withAsyncUsage(async () => {
     const device = await labeledGpuDevice();
