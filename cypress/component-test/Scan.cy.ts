@@ -20,9 +20,9 @@ it("scan api", async () => {
     const src = makeBuffer(device, srcData, "source", Uint32Array);
 
     const scan = new Scanner({ device, src });
-    const data = await scan.scan();
+    const result = await scan.scan();
 
-    expect([...data]).deep.equals(expected);
+    expect(result).deep.equals(expected);
   });
 });
 
