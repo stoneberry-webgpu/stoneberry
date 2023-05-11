@@ -58,11 +58,11 @@ fn sumSrcLayer(localX: u32, gridX: u32) {
     if (gridX >= arrayLength(&src)) { // unevenly sized array
         value = identityOp(); 
     } else if (localX == 0u) {
-        value = inputOp(src[gridX]);
+        value = loadOp(src[gridX]);
     } else {
-        let a = inputOp(src[gridX - 1u]);
-        let b = inputOp(src[gridX]);
-        value = flatMapOp(a, b);
+        let a = loadOp(src[gridX - 1u]);
+        let b = loadOp(src[gridX]);
+        value = binaryOp(a, b);
     }
     bankA[localX] = value;
     workgroupBarrier();
@@ -92,7 +92,7 @@ fn sumAtoB(localX: u32, offset: u32) {
     } else {
         let a = bankA[localX - offset];
         let b = bankA[localX];
-        bankB[localX] = flatMapOp(a, b);
+        bankB[localX] = binaryOp(a, b);
     }
 }
 
@@ -103,7 +103,7 @@ fn sumBtoA(localX: u32, offset: u32) {
     } else {
         let a = bankB[localX - offset];
         let b = bankB[localX];
-        bankA[localX] = flatMapOp(a, b);
+        bankA[localX] = binaryOp(a, b);
     }
 }
     
@@ -126,7 +126,7 @@ fn sumFinalLayerA(localX: u32, gridX: u32, workGridX: u32) {
         } else {
             let a = bankA[localX - offset];
             let b = bankA[localX];
-            result = flatMapOp(a, b);
+            result = binaryOp(a, b);
         }
         prefixScan[gridX] = result;
 
@@ -146,7 +146,7 @@ fn sumFinalLayerB(localX: u32, gridX: u32, workGridX: u32) {
         } else {
             let a = bankB[localX - offset];
             let b = bankB[localX];
-            result = flatMapOp(a, b);
+            result = binaryOp(a, b);
         }
         prefixScan[gridX] = result;
 
@@ -156,14 +156,14 @@ fn sumFinalLayerB(localX: u32, gridX: u32, workGridX: u32) {
     }
 }
 
-fn inputOp(a: Input) -> Output {
-    return Output(a.sum);  //! "return Output(a.sum);"=inputOp
+fn loadOp(a: Input) -> Output {
+    return Output(a.sum);  //! "return Output(a.sum);"=loadOp
 }
 
 fn identityOp() -> Output {
     return Output(0); //! "return Output(0);"=identityOp
 }
 
-fn flatMapOp(a: Output, b: Output) -> Output {
-    return Output(a.sum + b.sum);  //! "return Output(a.sum + b.sum);"=flatMapOp
+fn binaryOp(a: Output, b: Output) -> Output {
+    return Output(a.sum + b.sum);  //! "return Output(a.sum + b.sum);"=binaryOp
 }

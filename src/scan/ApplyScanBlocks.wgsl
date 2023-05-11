@@ -21,10 +21,10 @@ fn applyScanBlocks(
     } else {
         let a = partialScan[grid.x];
         let b = blockSum[workGrid.x - 1u];
-        prefixScan[grid.x] = flatMapOp(a, b);
+        prefixScan[grid.x] = binaryOp(a, b);
     }
 }
 
-fn flatMapOp(a: Output, b: Output) -> Output {
-    return Output(a.sum + b.sum);  //! "return Output(a.sum + b.sum);"=flatMapOp
+fn binaryOp(a: Output, b: Output) -> Output {
+    return Output(a.sum + b.sum);  //! "return Output(a.sum + b.sum);"=binaryOp
 }
