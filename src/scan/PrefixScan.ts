@@ -25,6 +25,7 @@ const defaults: Partial<PrefixScanArgs> = {
   workgroupLength: undefined,
   template: sumU32,
   pipelineCache: undefined,
+  label: undefined,
 };
 
 /**
