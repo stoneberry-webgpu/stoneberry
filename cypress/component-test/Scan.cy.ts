@@ -26,6 +26,7 @@ it("scan api", async () => {
   });
 });
 
+
 it("scan sequence: unevenly sized buffer, two workgroups, one level block scanning", async () => {
   await withAsyncUsage(async () => {
     const device = await labeledGpuDevice();
