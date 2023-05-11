@@ -8,7 +8,7 @@ import {
   withLeakTrack,
 } from "thimbleberry";
 import { sumU32 } from "../../src/scan/ScanTemplate.js";
-import { PrefixScan } from "../../src/scan/Scanner.js";
+import { PrefixScan } from "../../src/scan/PrefixScan.js";
 import { makeBuffer } from "./util/MakeBuffer.js";
 import { prefixSum } from "./util/PrefixSum.js";
 
