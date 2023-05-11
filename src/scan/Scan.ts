@@ -5,7 +5,6 @@
  *  . initial value? - should this be dynamic or fixed in template?
  *  . generator for one workgroup size? - I don't understand this one fully.
  *  . support for a debug error context
- *  . custom load op?  skip this unless we find a use case
  *  . sharing bind groups? - no proposal here
  */
 
@@ -26,9 +25,15 @@ export interface ScannerConfig {
   src: ValueOrFn<GPUBuffer>;
 
   /** initial value for scan (defaults to template identity) */
-  // initialValue?: ValueOrFn<V>;
+  initialValue?: ValueOrFn<number>; // LATER support non numeric sources
 
-  /** start index in src buffer of range to scan  (0 if undefined) */
+  /** Inclusive scan accumulates a binary operation across all source elements. 
+   * Exclusive scan accumulates a binary operation across source elements, using initialValue 
+   * as the first element and stopping before the final source element. 
+   */
+  exclusive?: boolean;
+
+  /** start index in src buffer of range to scan (0 if undefined) */
   start?: ValueOrFn<number>;
 
   /** end index (exclusive) in src buffer (src.length if undefined) */
@@ -38,7 +43,7 @@ export interface ScannerConfig {
   readonly label?: string;
 
   /** cache for GPUComputePipeline or GPURenderPipeline */
-  pipelineCache?: <T extends object>() => Cache<T>; // cache
+  pipelineCache?: <T extends object>() => Cache<T>; 
 
   /* defaults to max workgroup size (setting manually is useful for testing) */
   workgroupLength?: number;
