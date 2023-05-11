@@ -12,7 +12,7 @@ import { PrefixScanShader } from "./PrefixScanShader.js";
 import { Cache, ComposableShader, ScannerApi, ValueOrFn } from "./Scan.js";
 import { ScanTemplate, sumU32 } from "./ScanTemplate.js";
 
-export interface ScanSequenceArgs {
+export interface PrefixScanArgs {
   device: GPUDevice;
   src: ValueOrFn<GPUBuffer>;
   label?: string;
@@ -21,7 +21,7 @@ export interface ScanSequenceArgs {
   pipelineCache?: <T extends object>() => Cache<T>;
 }
 
-const defaults: Partial<ScanSequenceArgs> = {
+const defaults: Partial<PrefixScanArgs> = {
   workgroupLength: undefined,
   template: sumU32,
   pipelineCache: undefined,
@@ -48,7 +48,7 @@ const defaults: Partial<ScanSequenceArgs> = {
  * Each level of summing reduces the data set by a factor of the workgroup size.
  * So three levels handles e.g. 16M elements (256 ** 3).
  */
-export class Scanner<T = number>
+export class PrefixScan<T = number>
   extends HasReactive
   implements ComposableShader, ScannerApi
 {
@@ -61,9 +61,9 @@ export class Scanner<T = number>
   private usageContext = trackContext();
   pipelineCache?: <C extends object>() => Cache<C>;
 
-  constructor(args: ScanSequenceArgs) {
+  constructor(args: PrefixScanArgs) {
     super();
-    assignParams<Scanner<T>>(this, args, defaults);
+    assignParams<PrefixScan<T>>(this, args, defaults);
   }
 
   commands(commandEncoder: GPUCommandEncoder): void {

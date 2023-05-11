@@ -8,12 +8,7 @@
  *  . sharing bind groups? - no proposal here
  */
 
-import { ScanTemplate, sumU32 } from "./ScanTemplate.js";
-
-/** create a new prefix scan shader! */
-export function prefixScan<T>(device: GPUDevice, config: ScannerConfig): ScannerApi {
-  return null as any;
-}
+import { ScanTemplate } from "./ScanTemplate.js";
 
 export type ValueOrFn<T> = T | (() => T);
 
@@ -73,42 +68,4 @@ export interface ComposableShader {
 export interface Cache<V extends object> {
   get(key: string): V | undefined;
   set(key: string, value: V): void;
-}
-
-/* --- examples --- */
-/** an example showing use of the scan api to run, rerun, modify params, etc. */
-async function example(): Promise<void> {
-  const config: ScannerConfig = { src: null as any, template: sumU32 };
-  const device: GPUDevice = null as any;
-  const scanner = prefixScan(device, config);
-
-  // run the scanner and fetch the result
-  const result = await scanner.scan();
-
-  // run again on the same buffer (i.e. after changing src buffer)
-  const result2 = await scanner.scan();
-
-  // scan a different a buffer
-  const newBuf: GPUBuffer = null as any;
-  scanner.src = newBuf;
-  const result3 = await scanner.scan();
-
-  // scan a different range in the same burger
-  scanner.start = 200;
-  const result4 = await scanner.scan();
-}
-
-/** an example showing use of the scan api to run, rerun, modify params, etc. */
-function composedExample(): void {
-  const config: ScannerConfig = { src: null as any, template: sumU32 };
-  const device: GPUDevice = null as any;
-  const scan = prefixScan(device, config);
-  const postScan = null as any; // a pretend shader
-  const preScan = null as any; // .
-  const shaders = [preScan, scan, postScan];
-
-  // run all the shaders
-  const encoder = device.createCommandEncoder();
-  shaders.forEach(s => s.commands(encoder));
-  device.queue.submit([encoder.finish()]);
 }

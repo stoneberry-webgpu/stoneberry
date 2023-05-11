@@ -8,7 +8,7 @@ import {
   withLeakTrack,
 } from "thimbleberry";
 import { sumU32 } from "../../src/scan/ScanTemplate.js";
-import { Scanner } from "../../src/scan/Scanner.js";
+import { PrefixScan } from "../../src/scan/Scanner.js";
 import { makeBuffer } from "./util/MakeBuffer.js";
 import { prefixSum } from "./util/PrefixSum.js";
 
@@ -19,7 +19,7 @@ it("scan api", async () => {
     const expected = prefixSum(srcData);
     const src = makeBuffer(device, srcData, "source", Uint32Array);
 
-    const scan = new Scanner({ device, src });
+    const scan = new PrefixScan({ device, src });
     const result = await scan.scan();
 
     expect(result).deep.equals(expected);
@@ -34,7 +34,7 @@ it("scan sequence: unevenly sized buffer, two workgroups, one level block scanni
 
     const srcData = [0, 1, 2, 3, 4, 5, 6];
 
-    const scan = new Scanner({
+    const scan = new PrefixScan({
       device,
       src: makeBuffer(device, srcData, "source", Uint32Array),
       template: sumU32,
@@ -65,7 +65,7 @@ it("scan sequence: large buffer, two levels of block scanning", async () => {
       .fill(0)
       .map((_, i) => i);
 
-    const scan = new Scanner({
+    const scan = new PrefixScan({
       device,
       src: makeBuffer(device, srcData, "source", Uint32Array),
       template: sumU32,
@@ -91,7 +91,7 @@ it("scan sequence: large buffer, three levels of block scanning", async () => {
       .map((_, i) => i);
 
     await withLeakTrack(async () => {
-      const scan = new Scanner({
+      const scan = new PrefixScan({
         device,
         src: makeBuffer(device, srcData, "source", Uint32Array),
         template: sumU32,
