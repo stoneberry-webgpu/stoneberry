@@ -7,7 +7,7 @@ import {
   withBufferCopy,
   withLeakTrack,
 } from "thimbleberry";
-import { PrefixScanShader } from "../../src/scan/PrefixScanShader.js";
+import { WorkgroupScan } from "../../src/scan/WorkgroupScan.js";
 import { makeBuffer } from "./util/MakeBuffer.js";
 
 it("workgroup scan one evenly sized buffer", async () => {
@@ -16,7 +16,7 @@ it("workgroup scan one evenly sized buffer", async () => {
 
     const srcData = [0, 1, 2, 3, 4, 5, 6, 7];
     await withLeakTrack(async () => {
-      const scan = new PrefixScanShader({
+      const scan = new WorkgroupScan({
         device,
         source: makeBuffer(device, srcData, "source", Uint32Array),
         emitBlockSums: true,
@@ -42,7 +42,7 @@ it("workgroup scan one evenly sized buffer, two workgroups", async () => {
     const device = await labeledGpuDevice();
 
     const srcData = [0, 1, 2, 3, 4, 5, 6, 7];
-    const scan = new PrefixScanShader({
+    const scan = new WorkgroupScan({
       device,
       source: makeBuffer(device, srcData, "source", Uint32Array),
       emitBlockSums: true,
@@ -62,7 +62,7 @@ it("workgroup scan one unevenly sized buffer", async () => {
     const device = await labeledGpuDevice();
 
     const srcData = [0, 1, 2, 3, 4, 5, 6];
-    const scan = new PrefixScanShader({
+    const scan = new WorkgroupScan({
       device,
       source: makeBuffer(device, srcData, "source", Uint32Array),
       emitBlockSums: true,
@@ -85,7 +85,7 @@ it("workgroup scan one unevenly sized buffer, two workgroups", async () => {
     const device = await labeledGpuDevice();
 
     const srcData = [0, 1, 2, 3, 4, 5, 6];
-    const scan = new PrefixScanShader({
+    const scan = new WorkgroupScan({
       device,
       source: makeBuffer(device, srcData, "source", Uint32Array),
       emitBlockSums: true,

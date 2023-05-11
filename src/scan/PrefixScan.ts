@@ -8,7 +8,7 @@ import {
   withBufferCopy,
 } from "thimbleberry";
 import { ApplyScanBlocksShader } from "./ApplyScanBlocksShader.js";
-import { PrefixScanShader } from "./PrefixScanShader.js";
+import { WorkgroupScan } from "./WorkgroupScan.js";
 import { Cache, ComposableShader, ScannerApi, ValueOrFn } from "./Scan.js";
 import { ScanTemplate, sumU32 } from "./ScanTemplate.js";
 
@@ -95,8 +95,8 @@ export class PrefixScan<T = number>
     return [this.sourceScan, ...this.blockScans, ...this.applyScans];
   }
 
-  @reactively get sourceScan(): PrefixScanShader {
-    const shader = new PrefixScanShader({
+  @reactively get sourceScan(): WorkgroupScan {
+    const shader = new WorkgroupScan({
       device: this.device,
       source: this.src,
       emitBlockSums: true,
@@ -109,17 +109,17 @@ export class PrefixScan<T = number>
     return shader;
   }
 
-  @reactively get blockScans(): PrefixScanShader[] {
+  @reactively get blockScans(): WorkgroupScan[] {
     const sourceElements = this.sourceSize / Uint32Array.BYTES_PER_ELEMENT;
     const wl = this.actualWorkgroupLength;
-    const shaders: PrefixScanShader[] = [];
+    const shaders: WorkgroupScan[] = [];
 
     // stitch a chain: blockSums as sources for scans
     let source = this.sourceScan.blockSums;
     let labelNum = 0;
     for (let elements = wl; elements < sourceElements; elements *= wl) {
       const last = elements * wl >= sourceElements;
-      const blockScan = new PrefixScanShader({
+      const blockScan = new WorkgroupScan({
         device: this.device,
         source,
         emitBlockSums: !last,

@@ -4,11 +4,11 @@ import { gpuTiming } from "thimbleberry";
 import { limitWorkgroupLength } from "thimbleberry";
 import { assignParams, reactiveTrackUse } from "thimbleberry";
 import { trackContext } from "thimbleberry";
-import { getWorkgroupScanPipeline } from "./PrefixScanPipeline";
+import { getWorkgroupScanPipeline } from "./WorkgroupScanPipeline";
 import { ScanTemplate, sumU32 } from "./ScanTemplate.js";
 import { Cache, ComposableShader, ValueOrFn } from "./Scan.js";
 
-export interface PrefixScanParams {
+export interface WorkgroupScanArgs {
   device: GPUDevice;
   source: ValueOrFn<GPUBuffer>;
   emitBlockSums?: ValueOrFn<boolean>;
@@ -18,7 +18,7 @@ export interface PrefixScanParams {
   pipelineCache?: <T extends object>() => Cache<T>;
 }
 
-const defaults: Partial<PrefixScanParams> = {
+const defaults: Partial<WorkgroupScanArgs> = {
   emitBlockSums: true,
   pipelineCache: undefined,
   label: "prefix scan",
@@ -34,7 +34,7 @@ const defaults: Partial<PrefixScanParams> = {
  * Optionally allocates a block level summary buffer, containing
  * one summariy entry per input block.
  */
-export class PrefixScanShader extends HasReactive implements ComposableShader {
+export class WorkgroupScan extends HasReactive implements ComposableShader {
   @reactively source!: GPUBuffer;
   @reactively workgroupLength?: number;
   @reactively template!: ScanTemplate;
@@ -45,9 +45,9 @@ export class PrefixScanShader extends HasReactive implements ComposableShader {
   private pipelineCache?: <T extends object>() => Cache<T>;
   private usageContext = trackContext();
 
-  constructor(params: PrefixScanParams) {
+  constructor(params: WorkgroupScanArgs) {
     super();
-    assignParams<PrefixScanShader>(this, params, defaults);
+    assignParams<WorkgroupScan>(this, params, defaults);
   }
 
   commands(commandEncoder: GPUCommandEncoder): void {
