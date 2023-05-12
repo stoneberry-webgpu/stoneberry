@@ -8,7 +8,6 @@
     "build": "esbuild src/*/*.ts --format=esm --loader:.wgsl=text --sourcemap --outdir=dist",
     "build:types": "tsc --project tsconfig.build.json",
     "mac-canary": "$npm_execPath open -a 'Google Chrome Canary' --args --disable-dawn-features=disallow_unsafe_apis ",
-    "test": "vitest",
     "cypress-component": "cypress open --component --browser chrome:canary",
     "organize": "organize-imports-cli tsconfig.json",
     "format": "prettier-eslint \"src/**/*.ts\" --write",
