@@ -12,3 +12,7 @@ dist
 
 # IDE
 .vscode/
+
+# yalc
+.yalc
+yalc.lock
