@@ -51,7 +51,7 @@ export class WorkgroupScan extends HasReactive implements ComposableShader {
   }
 
   commands(commandEncoder: GPUCommandEncoder): void {
-    const timestampWrites = gpuTiming?.timestampWrites(this.label) ?? [];
+    const timestampWrites = gpuTiming?.timestampWrites(this.label);
     const passEncoder = commandEncoder.beginComputePass({ timestampWrites });
     passEncoder.label = this.label;
     passEncoder.setPipeline(this.pipeline);
