@@ -42,7 +42,7 @@ export class ApplyScanBlocksShader extends HasReactive implements ComposableShad
   }
 
   commands(commandEncoder: GPUCommandEncoder): void {
-    const timestampWrites = gpuTiming?.timestampWrites(this.label) ?? [];
+    const timestampWrites = gpuTiming?.timestampWrites(this.label);
     const passEncoder = commandEncoder.beginComputePass({ timestampWrites });
     passEncoder.label = this.label;
     passEncoder.setPipeline(this.pipeline);
