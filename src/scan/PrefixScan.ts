@@ -7,7 +7,7 @@ import {
   trackUse,
   withBufferCopy,
 } from "thimbleberry";
-import { ApplyScanBlocksShader } from "./ApplyScanBlocksShader.js";
+import { ApplyScanBlocks } from "./ApplyScanBlocks.js";
 import { WorkgroupScan } from "./WorkgroupScan.js";
 import { Cache, ComposableShader, ScannerApi, ValueOrFn } from "./Scan.js";
 import { ScanTemplate, sumU32 } from "./ScanTemplate.js";
@@ -150,7 +150,7 @@ export class PrefixScan<T = number>
     return limitWorkgroupLength(this.device, this.workgroupLength);
   }
 
-  @reactively get applyScans(): ApplyScanBlocksShader[] {
+  @reactively get applyScans(): ApplyScanBlocks[] {
     if (this.fitsInWorkGroup) {
       return [];
     }
@@ -166,7 +166,7 @@ export class PrefixScan<T = number>
     // stitch chain, with completed block prefixes as sources to the next applyBlock shader
     let blockSums = this.blockScans.slice(-1)[0].prefixScan;
     const allApplyBlocks = blockShadersReverse.map((s, i) => {
-      const applyBlocks = new ApplyScanBlocksShader({
+      const applyBlocks = new ApplyScanBlocks({
         device: this.device,
         partialScan: targetPrefixes[i],
         blockSums,

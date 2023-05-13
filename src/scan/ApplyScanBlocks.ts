@@ -9,7 +9,7 @@ import { getApplyBlocksPipeline } from "./ApplyScanBlocksPipeline";
 import { ScanTemplate, sumU32 } from "./ScanTemplate.js";
 import { Cache, ComposableShader } from "./Scan.js";
 
-export interface ApplyScanBlocksParams {
+export interface ApplyScanBlocksArgs {
   device: GPUDevice;
   partialScan: GPUBuffer;
   blockSums: GPUBuffer;
@@ -20,7 +20,7 @@ export interface ApplyScanBlocksParams {
 }
 
 /** Shader stage used in a prefix scan, applies block summaries to block elements */
-export class ApplyScanBlocksShader extends HasReactive implements ComposableShader{
+export class ApplyScanBlocks extends HasReactive implements ComposableShader{
   @reactively partialScan: GPUBuffer;
   @reactively blockSums: GPUBuffer;
   @reactively proposedWorkgroupLength?: number;
@@ -31,7 +31,7 @@ export class ApplyScanBlocksShader extends HasReactive implements ComposableShad
   private usageContext = trackContext();
   private pipelineCache?: <T extends object>() => Cache<T>;
 
-  constructor(params: ApplyScanBlocksParams) {
+  constructor(params: ApplyScanBlocksArgs) {
     super();
     this.device = params.device;
     this.partialScan = params.partialScan;

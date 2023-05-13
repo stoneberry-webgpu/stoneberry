@@ -7,7 +7,7 @@ import {
   withBufferCopy,
   withLeakTrack,
 } from "thimbleberry";
-import { ApplyScanBlocksShader } from "./../../src/scan/ApplyScanBlocksShader.js";
+import { ApplyScanBlocks } from "../../src/scan/ApplyScanBlocks.js";
 import { makeBuffer } from "./util/MakeBuffer.js";
 import { prefixSum } from "./util/PrefixSum.js";
 
@@ -24,7 +24,7 @@ it("apply scan blocks to partial prefix scan", async () => {
     const blockSums = makeBuffer(device, blockSumsSrc, "blockSums", Uint32Array);
 
     await withLeakTrack(async () => {
-      const applyBlocks = new ApplyScanBlocksShader({
+      const applyBlocks = new ApplyScanBlocks({
         device,
         partialScan,
         blockSums,
