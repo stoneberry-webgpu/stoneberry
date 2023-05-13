@@ -25,7 +25,7 @@ const defaults: Partial<PrefixScanArgs> = {
   workgroupLength: undefined,
   template: sumU32,
   pipelineCache: undefined,
-  label: undefined,
+  label: "",
 };
 
 /**
@@ -103,7 +103,7 @@ export class PrefixScan<T = number>
       emitBlockSums: true,
       template: this.template,
       workgroupLength: this.workgroupLength,
-      label: "sourceScan",
+      label: `${this.label} sourceScan`,
       pipelineCache: this.pipelineCache,
     });
     reactiveTrackUse(shader, this.usageContext);
@@ -126,7 +126,7 @@ export class PrefixScan<T = number>
         emitBlockSums: !last,
         template: this.template,
         workgroupLength: this.workgroupLength,
-        label: `blockToBlock ${labelNum++}`,
+        label: `${this.label} blockToBlock ${labelNum++}`,
         pipelineCache: this.pipelineCache,
       });
       source = blockScan.blockSums;
@@ -172,7 +172,7 @@ export class PrefixScan<T = number>
         blockSums,
         template: this.template,
         workgroupLength: this.actualWorkgroupLength,
-        label: `applyBlock ${i}`,
+        label: `${this.label} applyBlock ${i}`,
         pipelineCache: this.pipelineCache,
       });
       blockSums = applyBlocks.prefixScan;
