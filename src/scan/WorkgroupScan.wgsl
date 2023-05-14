@@ -14,7 +14,8 @@
 // 0  1  2  3 04 15 26 37  // offset 4   // [7] = 6+7+4+5+2+3+0+1
 //
 // summation of the middle layers is handled in a loop to workgroup workgroup, 
-//   double buffering is used to reduce the need for barriers
+//   double buffering is used to reduce the need for barriers 
+//   (otherwise a barrier is needed before as well as after each middle layer scan)
 // summation of the first and last layers is handled separately because they read/write 
 //   between storage and workgroup memory.
 
@@ -37,7 +38,7 @@ const srcElems = workgroupSizeX * 2u;
 
 // doubled buffered intermediate sums
 var <workgroup> bankA: array<Output, workgroupSizeX>;  
-var <workgroup> bankB: array<Output, workgroupSizeX>; // TODO: should only need size / 2 
+var <workgroup> bankB: array<Output, workgroupSizeX>; 
 
 @compute
 @workgroup_size(workgroupSizeX, 1, 1) 
