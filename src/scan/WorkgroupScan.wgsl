@@ -44,8 +44,8 @@ var <workgroup> bankB: array<Output, workgroupSizeX>;
 @workgroup_size(workgroupSizeX, 1, 1) 
 fn workgroupPrefixScan(
     @builtin(global_invocation_id) grid: vec3<u32>,
-    @builtin(local_invocation_id) localGrid: vec3<u32>, 
-    @builtin(workgroup_id) workGrid: vec3<u32>, 
+    @builtin(local_invocation_id) localGrid: vec3<u32>,
+    @builtin(workgroup_id) workGrid: vec3<u32>,
 ) {
     sumSrcLayer(localGrid.x, grid.x);
     let aIn = sumMiddleLayers(localGrid.x);
@@ -56,9 +56,9 @@ fn workgroupPrefixScan(
 // sum the first layer from src to workgroup memory  
 fn sumSrcLayer(localX: u32, gridX: u32) {
     var value: Output;
-    if (gridX >= arrayLength(&src)) { // unevenly sized array
+    if gridX >= arrayLength(&src) { // unevenly sized array
         value = identityOp(); 
-    } else if (localX == 0u) {
+    } else if localX == 0u {
         value = loadOp(src[gridX]);
     } else {
         let a = loadOp(src[gridX - 1u]);
@@ -86,9 +86,10 @@ fn sumMiddleLayers(localX: u32) -> bool {
     return aIn;
 }
 
+
 // sum one of the middle layers
 fn sumAtoB(localX: u32, offset: u32) {
-    if (localX < offset) {
+    if localX < offset {
         bankB[localX] = bankA[localX];
     } else {
         let a = bankA[localX - offset];
@@ -99,7 +100,7 @@ fn sumAtoB(localX: u32, offset: u32) {
 
 // sum one of the middle layers
 fn sumBtoA(localX: u32, offset: u32) {
-    if (localX < offset) {
+    if localX < offset {
         bankA[localX] = bankB[localX];
     } else {
         let a = bankB[localX - offset];
@@ -110,7 +111,7 @@ fn sumBtoA(localX: u32, offset: u32) {
     
 // sum the final layer from workgroup memory to storage memory prefixScan and blockSum results
 fn sumFinalLayer(localX: u32, gridX: u32, workGridX: u32, aIn: bool) {
-    if (aIn) {
+    if aIn {
         sumFinalLayerA(localX, gridX, workGridX);
     } else {
         sumFinalLayerB(localX, gridX, workGridX);
@@ -120,9 +121,9 @@ fn sumFinalLayer(localX: u32, gridX: u32, workGridX: u32, aIn: bool) {
 // sum the final layer from workgroup memory to storage memory prefixScan and blockSum results
 fn sumFinalLayerA(localX: u32, gridX: u32, workGridX: u32) {
     let offset = workgroupSizeX >> 1u;
-    var result:Output;
-    if (gridX < arrayLength(&src)) {
-        if (localX < offset) {
+    var result: Output;
+    if gridX < arrayLength(&src) {
+        if localX < offset {
             result = bankA[localX];
         } else {
             let a = bankA[localX - offset];
@@ -131,7 +132,7 @@ fn sumFinalLayerA(localX: u32, gridX: u32, workGridX: u32) {
         }
         prefixScan[gridX] = result;
 
-        if (localX == workgroupSizeX - 1u || gridX == arrayLength(&src) - 1u) { //! IF blockSums
+        if localX == workgroupSizeX - 1u || gridX == arrayLength(&src) - 1u {   //! IF blockSums
             blockSum[workGridX] = result;                                       //! IF blockSums
         }                                                                       //! IF blockSums
     }
@@ -140,9 +141,9 @@ fn sumFinalLayerA(localX: u32, gridX: u32, workGridX: u32) {
 // sum the final layer from workgroup memory to storage memory prefixScan and blockSum results
 fn sumFinalLayerB(localX: u32, gridX: u32, workGridX: u32) {
     let offset = workgroupSizeX >> 1u;
-    var result:Output;
-    if (gridX < arrayLength(&src)) {
-        if (localX < offset) {
+    var result: Output;
+    if gridX < arrayLength(&src) {
+        if localX < offset {
             result = bankB[localX];
         } else {
             let a = bankB[localX - offset];
@@ -151,7 +152,7 @@ fn sumFinalLayerB(localX: u32, gridX: u32, workGridX: u32) {
         }
         prefixScan[gridX] = result;
 
-        if (localX == workgroupSizeX - 1u || gridX == arrayLength(&src) - 1u) { //! IF blockSums
+        if localX == workgroupSizeX - 1u || gridX == arrayLength(&src) - 1u {   //! IF blockSums
             blockSum[workGridX] = result;                                       //! IF blockSums
         }                                                                       //! IF blockSums
     }
