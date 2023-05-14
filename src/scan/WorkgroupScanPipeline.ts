@@ -30,11 +30,11 @@ function createWorkgroupScanPipeline(
   const firstBindGroupLayout = device.createBindGroupLayout({
     label: "workgroup scan layout",
     entries: [
-      // {
-      //   binding: 0, // uniforms
-      //   visibility: GPUShaderStage.COMPUTE,
-      //   buffer: { type: "uniform" },
-      // },
+      {
+        binding: 0, // uniforms
+        visibility: GPUShaderStage.COMPUTE,
+        buffer: { type: "uniform" },
+      },
       {
         binding: 1, // src buffer
         visibility: GPUShaderStage.COMPUTE,

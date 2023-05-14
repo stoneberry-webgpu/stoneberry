@@ -27,6 +27,12 @@ struct Output {
     sum: u32,  //! "sum: u32,"=outputStruct 
 }
 
+struct Uniforms {
+    exclusive: u32,                 // nonzero if exclusive scan
+    @align(16) initialValue: Output // initial value for exclusive scan
+}
+
+@group(0) @binding(0) var<uniform> u: Uniforms;                     // uniforms
 @group(0) @binding(1) var<storage, read> src: array<Input>;               // input source values
 @group(0) @binding(2) var<storage, read_write> prefixScan: array<Output>; // output prefix scan
 @group(0) @binding(3) var<storage, read_write> blockSum: array<Output>;   // output block sums //! IF blockSums
@@ -50,16 +56,28 @@ fn workgroupPrefixScan(
     sumSrcLayer(localGrid.x, grid.x);
     let aIn = sumMiddleLayers(localGrid.x);
     sumFinalLayer(localGrid.x, grid.x, workGrid.x, aIn);
+    if (grid.x == 0u) {
+        debug[0] = f32(u.exclusive); 
+        debug[1] = f32(u.initialValue.sum); 
+    }
 }
 
 
 // sum the first layer from src to workgroup memory  
 fn sumSrcLayer(localX: u32, gridX: u32) {
     var value: Output;
-    if gridX >= arrayLength(&src) { // unevenly sized array
+    var end = arrayLength(&src);
+
+    if gridX >= end { // unevenly sized array
         value = identityOp(); 
     } else if localX == 0u {
-        value = loadOp(src[gridX]);
+        if u.exclusive != 0u {
+            let b = loadOp(src[gridX]);
+            value = binaryOp(u.initialValue, b);
+            debug[2] = f32(value.sum);
+        } else {
+            value = loadOp(src[gridX]);
+        }
     } else {
         let a = loadOp(src[gridX - 1u]);
         let b = loadOp(src[gridX]);
