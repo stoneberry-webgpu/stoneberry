@@ -9,7 +9,7 @@ import {
 } from "thimbleberry";
 import { ApplyScanBlocks } from "../../src/scan/ApplyScanBlocks.js";
 import { makeBuffer } from "./util/MakeBuffer.js";
-import { prefixSum } from "./util/PrefixSum.js";
+import { inclusiveSum } from "./util/PrefixSum.js";
 
 it("apply scan blocks to partial prefix scan", async () => {
   await withAsyncUsage(async () => {
@@ -35,7 +35,7 @@ it("apply scan blocks to partial prefix scan", async () => {
       shaderGroup.dispatch();
 
       await withBufferCopy(device, applyBlocks.prefixScan, "u32", data => {
-        const expected = prefixSum(origSrc);
+        const expected = inclusiveSum(origSrc);
         expect([...data]).to.deep.equal(expected);
       });
       trackRelease(applyBlocks);

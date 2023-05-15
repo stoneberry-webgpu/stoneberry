@@ -10,13 +10,13 @@ import {
 import { sumU32 } from "../../src/scan/ScanTemplate.js";
 import { PrefixScan } from "../../src/scan/PrefixScan.js";
 import { makeBuffer } from "./util/MakeBuffer.js";
-import { prefixSum } from "./util/PrefixSum.js";
+import { inclusiveSum } from "./util/PrefixSum.js";
 
 it("scan api", async () => {
   await withAsyncUsage(async () => {
     const device = trackUse(await labeledGpuDevice());
     const srcData = [0, 1, 2, 3, 4, 5, 6];
-    const expected = prefixSum(srcData);
+    const expected = inclusiveSum(srcData);
     const src = makeBuffer(device, srcData, "source", Uint32Array);
 
     const scan = new PrefixScan({ device, src });
@@ -49,7 +49,7 @@ it("scan sequence: unevenly sized buffer, two workgroups, one level block scanni
     await withBufferCopy(device, scan.blockScans[0].prefixScan, "u32", data => {
       expect([...data]).deep.equals([6, 21]);
     });
-    const expected = prefixSum(srcData);
+    const expected = inclusiveSum(srcData);
     await withBufferCopy(device, scan.result, "u32", data => {
       expect([...data]).deep.equals(expected);
     });
@@ -74,7 +74,7 @@ it("scan sequence: large buffer, two levels of block scanning", async () => {
     const shaderGroup = new ShaderGroup(device, scan);
     shaderGroup.dispatch();
 
-    const expected = prefixSum(srcData);
+    const expected = inclusiveSum(srcData);
     await withBufferCopy(device, scan.result, "u32", data => {
       expect([...data]).deep.equals(expected);
     });
@@ -101,7 +101,7 @@ it("scan sequence: large buffer, three levels of block scanning", async () => {
       const shaderGroup = new ShaderGroup(device, scan);
       shaderGroup.dispatch();
 
-      const expected = prefixSum(srcData);
+      const expected = inclusiveSum(srcData);
       await withBufferCopy(device, scan.result, "u32", data => {
         expect([...data]).deep.equals(expected);
       });
