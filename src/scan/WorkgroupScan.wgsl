@@ -53,34 +53,48 @@ fn workgroupPrefixScan(
     @builtin(local_invocation_id) localGrid: vec3<u32>,
     @builtin(workgroup_id) workGrid: vec3<u32>,
 ) {
-    sumSrcLayer(localGrid.x, grid.x);
+    if u.exclusive == 0u {
+        sumSrcLayerInclusive(localGrid.x, grid.x);
+    } else  {
+        sumSrcLayerExclusive(localGrid.x, grid.x);
+    }
+
     let aIn = sumMiddleLayers(localGrid.x);
     sumFinalLayer(localGrid.x, grid.x, workGrid.x, aIn);
-    if (grid.x == 0u) {
-        debug[0] = f32(u.exclusive); 
-        debug[1] = f32(u.initialValue.sum); 
-    }
 }
 
-
 // sum the first layer from src to workgroup memory  
-fn sumSrcLayer(localX: u32, gridX: u32) {
+fn sumSrcLayerInclusive(localX: u32, gridX: u32) {
     var value: Output;
     var end = arrayLength(&src);
 
     if gridX >= end { // unevenly sized array
         value = identityOp(); 
-    } else if localX == 0u {
-        if u.exclusive != 0u {
-            let b = loadOp(src[gridX]);
-            value = binaryOp(u.initialValue, b);
-            debug[2] = f32(value.sum);
-        } else {
-            value = loadOp(src[gridX]);
-        }
+    } else if localX == 0u { 
+        value = loadOp(src[gridX]);
     } else {
         let a = loadOp(src[gridX - 1u]);
         let b = loadOp(src[gridX]);
+        value = binaryOp(a, b);
+    }
+    bankA[localX] = value;
+    workgroupBarrier();
+}
+
+// sum the first layer from src to workgroup memory  
+fn sumSrcLayerExclusive(localX: u32, gridX: u32) {
+    var value: Output;
+    var end = arrayLength(&src);
+
+    if gridX >= end { // unevenly sized array
+        value = identityOp(); 
+    } else if gridX == 0u {
+        value = u.initialValue;
+    } else if gridX == 1u {
+        value = loadOp(src[gridX - 1u]);
+    } else {
+        let a = loadOp(src[gridX - 2u]);
+        let b = loadOp(src[gridX - 1u]);
         value = binaryOp(a, b);
     }
     bankA[localX] = value;
@@ -91,7 +105,8 @@ fn sumSrcLayer(localX: u32, gridX: u32) {
 fn sumMiddleLayers(localX: u32) -> bool {
     let lastMiddle = workgroupSizeX >> 2u;
     var aIn = true;
-    for (var offset = 2u; offset <= lastMiddle; offset <<= 1u) {
+    // offset controls the 'stride' to match the kogge stone pairs at each level
+    for (var offset = 2u; offset <= lastMiddle; offset <<= 1u) { 
         if (aIn) {
             sumAtoB(localX, offset); // CONSIDER is there wgsl way to DRY these, perhaps refs to bankA vs bankB?
         } else {
@@ -103,7 +118,6 @@ fn sumMiddleLayers(localX: u32) -> bool {
 
     return aIn;
 }
-
 
 // sum one of the middle layers
 fn sumAtoB(localX: u32, offset: u32) {
@@ -129,11 +143,20 @@ fn sumBtoA(localX: u32, offset: u32) {
     
 // sum the final layer from workgroup memory to storage memory prefixScan and blockSum results
 fn sumFinalLayer(localX: u32, gridX: u32, workGridX: u32, aIn: bool) {
-    if aIn {
-        sumFinalLayerA(localX, gridX, workGridX);
+    if u.exclusive == 0u {
+        if aIn {
+            sumFinalLayerA(localX, gridX, workGridX);
+        } else {
+            sumFinalLayerB(localX, gridX, workGridX);
+        }
     } else {
-        sumFinalLayerB(localX, gridX, workGridX);
-    }
+        if aIn {
+            exclusiveSumFinalLayerA(localX, gridX, workGridX);
+        } else {
+            // TBD
+            // exclusiveSumFinalLayerB(localX, gridX, workGridX);
+        }
+    }     
 }
 
 // sum the final layer from workgroup memory to storage memory prefixScan and blockSum results
@@ -142,6 +165,31 @@ fn sumFinalLayerA(localX: u32, gridX: u32, workGridX: u32) {
     var result: Output;
     if gridX < arrayLength(&src) {
         if localX < offset {
+            result = bankA[localX];
+        } else {
+            let a = bankA[localX - offset];
+            let b = bankA[localX];
+            result = binaryOp(a, b);
+        }
+        prefixScan[gridX] = result;
+
+        if localX == workgroupSizeX - 1u || gridX == arrayLength(&src) - 1u {   //! IF blockSums
+            blockSum[workGridX] = result;                                       //! IF blockSums
+        }                                                                       //! IF blockSums
+    }
+}
+
+// sum the final layer from workgroup memory to storage memory prefixScan and blockSum results
+fn exclusiveSumFinalLayerA(localX: u32, gridX: u32, workGridX: u32) {
+    let offset = workgroupSizeX >> 1u;  
+    var result: Output;
+    debug[0] = f32(bankA[0].sum);
+    debug[1] = f32(bankA[1].sum);
+    debug[2] = f32(bankA[2].sum);
+    debug[3] = f32(bankA[3].sum);
+    debug[4] = f32(offset);
+    if gridX < arrayLength(&src) {
+        if localX <= offset {
             result = bankA[localX];
         } else {
             let a = bankA[localX - offset];

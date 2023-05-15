@@ -10,6 +10,8 @@ import {
 } from "thimbleberry";
 import { WorkgroupScan } from "../../src/scan/WorkgroupScan.js";
 import { makeBuffer } from "./util/MakeBuffer.js";
+import { exclusiveSum } from "./util/PrefixSum.js";
+import { dlog } from "berry-pretty";
 
 it("workgroup scan one evenly sized buffer", async () => {
   await withAsyncUsage(async () => {
@@ -104,28 +106,54 @@ it("workgroup scan one unevenly sized buffer, two workgroups", async () => {
   });
 });
 
-it.only("workgroup exlusive scan", async () => {
-  console.clear();
+it("workgroup exlusive scan, src smaller than workgroup", async () => {
   await withAsyncUsage(async () => {
     const device = await labeledGpuDevice();
     const srcData = [1, 2, 3];
+    const initialValue = 9;
     const scan = new WorkgroupScan({
       device,
       source: makeBuffer(device, srcData, "source", Uint32Array),
-      emitBlockSums: false,
+      emitBlockSums: false, // TODO test this too
       workgroupLength: 4,
       exclusive: true,
-      initialValue: 9,
+      initialValue,
     });
     const shaderGroup = new ShaderGroup(device, scan);
     shaderGroup.dispatch();
+    const expected = exclusiveSum(srcData, initialValue);
 
-    await printBuffer(device, scan.prefixScan, "u32");
-    await printBuffer(device, scan.debugBuffer, "f32");
-
-    // await withBufferCopy(device, scan.prefixScan, "u32", data => {
-    // });
-    // await withBufferCopy(device, scan.blockSums, "u32", data => {
-    // });
+    await withBufferCopy(device, scan.prefixScan, "u32", data => {
+      expect([...data]).to.deep.equal(expected);
+    });
   });
 });
+
+// it.only("workgroup exlusive scan", async () => {
+//   console.clear();
+//   await withAsyncUsage(async () => {
+//     const device = await labeledGpuDevice();
+//     const srcData = [1, 2, 3, 4, 5];
+//     const initialValue = 9;
+//     const scan = new WorkgroupScan({
+//       device,
+//       source: makeBuffer(device, srcData, "source", Uint32Array),
+//       emitBlockSums: false, // TODO test this too
+//       workgroupLength: 4,
+//       exclusive: true,
+//       initialValue,
+//     });
+//     const shaderGroup = new ShaderGroup(device, scan);
+//     shaderGroup.dispatch();
+//     const expected = exclusiveSum(srcData, initialValue);
+//     dlog({ srcData });
+//     dlog({ expected });
+
+//     await printBuffer(device, scan.prefixScan, "u32");
+//     await printBuffer(device, scan.debugBuffer, "f32");
+
+//     await withBufferCopy(device, scan.prefixScan, "u32", data => {
+//       expect([...data]).to.deep.equal(expected);
+//     });
+//   });
+// });
