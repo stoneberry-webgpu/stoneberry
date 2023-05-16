@@ -15,7 +15,7 @@ export interface WorkgroupScanArgs {
   workgroupLength?: ValueOrFn<number>;
   label?: ValueOrFn<string>;
   template?: ValueOrFn<ScanTemplate>;
-  exclusive?: boolean;
+  exclusiveSmall?: boolean;
   initialValue?: ValueOrFn<number>;
   pipelineCache?: <T extends object>() => Cache<T>;
 }
@@ -25,7 +25,7 @@ const defaults: Partial<WorkgroupScanArgs> = {
   pipelineCache: undefined,
   label: "",
   template: sumU32,
-  exclusive: false,
+  exclusiveSmall: false,
   initialValue: 0,
 };
 
@@ -44,7 +44,7 @@ export class WorkgroupScan extends HasReactive implements ComposableShader {
   @reactively template!: ScanTemplate;
   @reactively emitBlockSums!: boolean;
   @reactively label!: string;
-  @reactively exclusive!: boolean;
+  @reactively exclusiveSmall!: boolean;
   @reactively initialValue!: number;
 
   private device!: GPUDevice;
@@ -144,10 +144,10 @@ export class WorkgroupScan extends HasReactive implements ComposableShader {
   }
 
   @reactively private updateUniforms(): void {
-    const exclusive = this.exclusive ? 1 : 0;
+    const exclusiveSmall = this.exclusiveSmall ? 1 : 0;
     const initialValue = this.initialValue;
     const pad = 7;
-    const array = new Uint32Array([exclusive, pad, pad, pad, initialValue]);
+    const array = new Uint32Array([exclusiveSmall, pad, pad, pad, initialValue]);
     this.device.queue.writeBuffer(this.uniforms, 0, array);
   }
 
