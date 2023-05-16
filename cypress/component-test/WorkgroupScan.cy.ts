@@ -114,7 +114,7 @@ it("workgroup exlusive scan, src smaller than workgroup", async () => {
     const scan = new WorkgroupScan({
       device,
       source: makeBuffer(device, srcData, "source", Uint32Array),
-      emitBlockSums: false, // TODO test this too
+      emitBlockSums: true,
       workgroupLength: 4,
       exclusive: true,
       initialValue,
@@ -126,11 +126,13 @@ it("workgroup exlusive scan, src smaller than workgroup", async () => {
     await withBufferCopy(device, scan.prefixScan, "u32", data => {
       expect([...data]).to.deep.equal(expected);
     });
+    await withBufferCopy(device, scan.blockSums, "u32", data => {
+      expect([...data]).to.deep.equal([3]);
+    });
   });
 });
 
-it.only("workgroup exlusive scan, two workgroups", async () => {
-  console.clear();
+it("workgroup exlusive scan, two workgroups", async () => {
   await withAsyncUsage(async () => {
     const device = await labeledGpuDevice();
     const srcData = [1, 2, 3, 4, 5];
@@ -138,7 +140,7 @@ it.only("workgroup exlusive scan, two workgroups", async () => {
     const scan = new WorkgroupScan({
       device,
       source: makeBuffer(device, srcData, "source", Uint32Array),
-      emitBlockSums: false, // TODO test this too
+      emitBlockSums: true,
       workgroupLength: 4,
       exclusive: true,
       initialValue,
@@ -148,14 +150,12 @@ it.only("workgroup exlusive scan, two workgroups", async () => {
     const expected1 = exclusiveSum(srcData.slice(0, 4), initialValue);
     const expected2 = inclusiveSum(srcData.slice(3, -1));
     const expected = [...expected1, ...expected2];
-    dlog({ srcData });
-    dlog({ expected1, expected2});
-
-    await printBuffer(device, scan.prefixScan, "u32");
-    await printBuffer(device, scan.debugBuffer, "f32");
 
     await withBufferCopy(device, scan.prefixScan, "u32", data => {
       expect([...data]).to.deep.equal(expected);
+    });
+    await withBufferCopy(device, scan.blockSums, "u32", data => {
+      expect([...data]).to.deep.equal([6, 4]);
     });
   });
 });
