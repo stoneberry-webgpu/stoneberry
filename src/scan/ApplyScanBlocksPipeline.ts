@@ -19,6 +19,11 @@ function createApplyBlocksPipeline(
     label: "apply scan blocks",
     entries: [
       {
+        binding: 0, 
+        visibility: GPUShaderStage.COMPUTE,
+        buffer: { type: "uniform"}
+      },
+      {
         binding: 2, // input partial prefix scan
         visibility: GPUShaderStage.COMPUTE,
         buffer: { type: "read-only-storage" }

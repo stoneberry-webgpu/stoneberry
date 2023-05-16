@@ -18,12 +18,15 @@ export interface ApplyScanBlocksArgs {
   label?: string;
   template?: ScanTemplate;
   exclusiveLarge?: boolean;
+  initialValue?: number;
   pipelineCache?: <T extends object>() => Cache<T>;
 }
 
 const defaults: Partial<ApplyScanBlocksArgs> = {
   template: sumU32,
   label: "",
+  exclusiveLarge: false,
+  initialValue: undefined,
 };
 
 /** Shader stage used in a prefix scan, applies block summaries to block elements */
@@ -33,6 +36,8 @@ export class ApplyScanBlocks extends HasReactive implements ComposableShader {
   @reactively workgroupLength?: number;
   @reactively template!: ScanTemplate;
   @reactively label!: string;
+  @reactively exclusiveLarge!: boolean;
+  @reactively initialValue!: number;
 
   private device!: GPUDevice;
   private usageContext = trackContext();
@@ -44,6 +49,7 @@ export class ApplyScanBlocks extends HasReactive implements ComposableShader {
   }
 
   commands(commandEncoder: GPUCommandEncoder): void {
+    this.updateUniforms();
     const timestampWrites = gpuTiming?.timestampWrites(this.label);
     const passEncoder = commandEncoder.beginComputePass({ timestampWrites });
     passEncoder.label = `apply scan blocks ${this.label}`;
@@ -83,6 +89,7 @@ export class ApplyScanBlocks extends HasReactive implements ComposableShader {
       label: `apply scan blocks ${this.label}`,
       layout: this.pipeline.getBindGroupLayout(0),
       entries: [
+        { binding: 0, resource: { buffer: this.uniforms } },
         { binding: 2, resource: { buffer: this.partialScan } },
         { binding: 3, resource: { buffer: this.blockSums } },
         { binding: 4, resource: { buffer: this.result } },
@@ -117,5 +124,23 @@ export class ApplyScanBlocks extends HasReactive implements ComposableShader {
     const buffer = createDebugBuffer(this.device, "ApplyScanBlocks debug");
     reactiveTrackUse(buffer, this.usageContext);
     return buffer;
+  }
+
+  @reactively private get uniforms(): GPUBuffer {
+    const buffer = this.device.createBuffer({
+      label: `apply scan blocks scan uniforms ${this.label}`,
+      size: Uint32Array.BYTES_PER_ELEMENT * 8,
+      usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
+    });
+    reactiveTrackUse(buffer, this.usageContext);
+    return buffer;
+  }
+
+  @reactively private updateUniforms(): void {
+    const exclusive = this.exclusiveLarge ? 1 : 0;
+    const initialValue = this.initialValue;
+    const pad = 7;
+    const array = new Uint32Array([exclusive, pad, pad, pad, initialValue]);
+    this.device.queue.writeBuffer(this.uniforms, 0, array);
   }
 }
