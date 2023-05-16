@@ -27,6 +27,14 @@ const defaults: Partial<PrefixScanArgs> = {
   pipelineCache: undefined,
   label: "",
 };
+/*
+TODO
+  . driver for small/large exclusive scans 
+  . test for small exclusive scan
+  . largeExclusive scan flag for applyScanBlocks
+  . test applyScanBlocks w/largeExclusive
+  . tests for large exclusive scan
+*/
 
 /**
  * A cascade of shaders to do a prefix scan operation, based on a shader that

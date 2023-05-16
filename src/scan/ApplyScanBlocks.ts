@@ -1,5 +1,6 @@
 import { HasReactive, reactively } from "@reactively/decorate";
 import {
+  assignParams,
   createDebugBuffer,
   gpuTiming,
   reactiveTrackUse,
@@ -16,29 +17,30 @@ export interface ApplyScanBlocksArgs {
   workgroupLength?: number;
   label?: string;
   template?: ScanTemplate;
+  exclusiveLarge?: boolean;
   pipelineCache?: <T extends object>() => Cache<T>;
 }
 
-/** Shader stage used in a prefix scan, applies block summaries to block elements */
-export class ApplyScanBlocks extends HasReactive implements ComposableShader{
-  @reactively partialScan: GPUBuffer;
-  @reactively blockSums: GPUBuffer;
-  @reactively proposedWorkgroupLength?: number;
-  @reactively template: ScanTemplate;
-  @reactively label: string;
+const defaults: Partial<ApplyScanBlocksArgs> = {
+  template: sumU32,
+  label: "",
+};
 
-  private device: GPUDevice;
+/** Shader stage used in a prefix scan, applies block summaries to block elements */
+export class ApplyScanBlocks extends HasReactive implements ComposableShader {
+  @reactively partialScan!: GPUBuffer;
+  @reactively blockSums!: GPUBuffer;
+  @reactively workgroupLength?: number;
+  @reactively template!: ScanTemplate;
+  @reactively label!: string;
+
+  private device!: GPUDevice;
   private usageContext = trackContext();
   private pipelineCache?: <T extends object>() => Cache<T>;
 
   constructor(params: ApplyScanBlocksArgs) {
     super();
-    this.device = params.device;
-    this.partialScan = params.partialScan;
-    this.proposedWorkgroupLength = params.workgroupLength;
-    this.blockSums = params.blockSums;
-    this.label = params.label || "apply scan blocks";
-    this.template = params.template || sumU32;
+    assignParams<ApplyScanBlocks>(this, params, defaults);
   }
 
   commands(commandEncoder: GPUCommandEncoder): void {
@@ -61,7 +63,7 @@ export class ApplyScanBlocks extends HasReactive implements ComposableShader{
 
   @reactively private get dispatchSize(): number {
     const sourceElems = this.partialScanSize / Uint32Array.BYTES_PER_ELEMENT;
-    const dispatchSize = Math.ceil(sourceElems / this.workgroupLength);
+    const dispatchSize = Math.ceil(sourceElems / this.actualWorkgroupLength);
     return dispatchSize;
   }
 
@@ -69,7 +71,7 @@ export class ApplyScanBlocks extends HasReactive implements ComposableShader{
     return getApplyBlocksPipeline(
       {
         device: this.device,
-        workgroupLength: this.workgroupLength,
+        workgroupLength: this.actualWorkgroupLength,
         template: this.template,
       },
       this.pipelineCache
@@ -99,8 +101,8 @@ export class ApplyScanBlocks extends HasReactive implements ComposableShader{
     return buffer;
   }
 
-  @reactively get workgroupLength(): number {
-    const { device, proposedWorkgroupLength: proposedLength } = this;
+  @reactively private get actualWorkgroupLength(): number {
+    const { device, workgroupLength: proposedLength } = this;
     const maxThreads = device.limits.maxComputeInvocationsPerWorkgroup;
     let length: number;
     if (!proposedLength || proposedLength > maxThreads) {
