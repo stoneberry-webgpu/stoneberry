@@ -1,4 +1,3 @@
-import { dlog } from "berry-pretty";
 import { HasReactive, reactively } from "@reactively/decorate";
 import {
   assignParams,
@@ -9,9 +8,9 @@ import {
   withBufferCopy,
 } from "thimbleberry";
 import { ApplyScanBlocks } from "./ApplyScanBlocks.js";
-import { WorkgroupScan } from "./WorkgroupScan.js";
 import { Cache, ComposableShader, ScannerApi, ValueOrFn } from "./Scan.js";
 import { ScanTemplate, sumU32 } from "./ScanTemplate.js";
+import { WorkgroupScan } from "./WorkgroupScan.js";
 
 export interface PrefixScanArgs {
   device: GPUDevice;

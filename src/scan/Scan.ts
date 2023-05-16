@@ -1,8 +1,6 @@
 /**
  * A discussion sketch of the api for prefix scan.
  * TBD:
- *  . inclusive vs exclusive
- *  . initial value? - should this be dynamic or fixed in template?
  *  . generator for one workgroup size? - I don't understand this one fully.
  *  . support for a debug error context
  *  . sharing bind groups? - no proposal here
