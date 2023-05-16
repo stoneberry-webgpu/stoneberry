@@ -34,7 +34,7 @@ it("apply scan blocks to partial prefix scan", async () => {
       const shaderGroup = new ShaderGroup(device, applyBlocks);
       shaderGroup.dispatch();
 
-      await withBufferCopy(device, applyBlocks.prefixScan, "u32", data => {
+      await withBufferCopy(device, applyBlocks.result, "u32", data => {
         const expected = inclusiveSum(origSrc);
         expect([...data]).to.deep.equal(expected);
       });
