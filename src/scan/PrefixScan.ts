@@ -1,3 +1,4 @@
+import { dlog } from "berry-pretty";
 import { HasReactive, reactively } from "@reactively/decorate";
 import {
   assignParams,
@@ -19,6 +20,8 @@ export interface PrefixScanArgs {
   template?: ValueOrFn<ScanTemplate>;
   workgroupLength?: ValueOrFn<number>;
   pipelineCache?: <T extends object>() => Cache<T>;
+  exclusive?: boolean;
+  initialValue?: number;
 }
 
 const defaults: Partial<PrefixScanArgs> = {
@@ -26,13 +29,9 @@ const defaults: Partial<PrefixScanArgs> = {
   template: sumU32,
   pipelineCache: undefined,
   label: "",
+  initialValue: undefined,
+  exclusive: false,
 };
-/*
-TODO
-  . driver for small/large exclusive scans 
-  . test for small exclusive scan
-  . tests for large exclusive scan
-*/
 
 /**
  * A cascade of shaders to do a prefix scan operation, based on a shader that
@@ -62,7 +61,9 @@ export class PrefixScan<T = number>
   @reactively template!: ScanTemplate;
   @reactively src!: GPUBuffer;
   @reactively workgroupLength?: number;
-  @reactively label?: string; // TODO pass label down
+  @reactively label?: string;
+  @reactively initialValue?: number;
+  @reactively exclusive!: boolean;
 
   private device!: GPUDevice;
   private usageContext = trackContext();
@@ -81,12 +82,15 @@ export class PrefixScan<T = number>
     this.usageContext.finish();
   }
 
+  /** Execute the prefix scan and copy the results back to the CPU */
   async scan(): Promise<number[]> {
-    const commands = this.device.createCommandEncoder({ label: this.label });
+    const commands = this.device.createCommandEncoder({
+      label: `prefixScan ${this.label}`,
+    });
     this.commands(commands);
     this.device.queue.submit([commands.finish()]);
     await this.device.queue.onSubmittedWorkDone();
-    const data = await withBufferCopy(this.device, this.result, "u32", data => data.slice());
+    const data = await withBufferCopy(this.device, this.result, "u32", d => d.slice()); // TODO support float and struct data types
     return [...data];
   }
 
@@ -103,10 +107,14 @@ export class PrefixScan<T = number>
   }
 
   @reactively get sourceScan(): WorkgroupScan {
+    const exclusiveSmall = this.exclusive && this.fitsInWorkGroup;
+    dlog({ exclusiveSmall });
     const shader = new WorkgroupScan({
       device: this.device,
       source: this.src,
       emitBlockSums: true,
+      exclusiveSmall,
+      initialValue: this.initialValue,
       template: this.template,
       workgroupLength: this.workgroupLength,
       label: `${this.label} sourceScan`,
@@ -143,16 +151,16 @@ export class PrefixScan<T = number>
     return shaders;
   }
 
-  @reactively get sourceSize(): number {
+  @reactively private get sourceSize(): number {
     return this.src.size;
   }
 
-  @reactively get fitsInWorkGroup(): boolean {
+  @reactively private get fitsInWorkGroup(): boolean {
     const sourceElems = this.sourceSize / Uint32Array.BYTES_PER_ELEMENT;
-    return sourceElems <= this.sourceScan.actualWorkgroupLength;
+    return sourceElems <= this.actualWorkgroupLength;
   }
 
-  @reactively get actualWorkgroupLength(): number {
+  @reactively private get actualWorkgroupLength(): number {
     return limitWorkgroupLength(this.device, this.workgroupLength);
   }
 

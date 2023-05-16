@@ -10,7 +10,7 @@ import {
 import { sumU32 } from "../../src/scan/ScanTemplate.js";
 import { PrefixScan } from "../../src/scan/PrefixScan.js";
 import { makeBuffer } from "./util/MakeBuffer.js";
-import { inclusiveSum } from "./util/PrefixSum.js";
+import { exclusiveSum, inclusiveSum } from "./util/PrefixSum.js";
 
 it("scan api", async () => {
   await withAsyncUsage(async () => {
@@ -25,7 +25,6 @@ it("scan api", async () => {
     expect(result).deep.equals(expected);
   });
 });
-
 
 it("scan sequence: unevenly sized buffer, two workgroups, one level block scanning", async () => {
   await withAsyncUsage(async () => {
@@ -107,5 +106,27 @@ it("scan sequence: large buffer, three levels of block scanning", async () => {
       });
       trackRelease(scan);
     });
+  });
+});
+
+it.only("exclusive scan small", async () => {
+  console.clear();
+  await withAsyncUsage(async () => {
+    const device = trackUse(await labeledGpuDevice());
+    const srcData = [0, 1, 2, 3];
+    const initialValue = 37;
+    const expected = exclusiveSum(srcData, 37);
+    const src = makeBuffer(device, srcData, "source", Uint32Array);
+
+    const scan = new PrefixScan({
+      device,
+      src,
+      workgroupLength: 4,
+      exclusive: true,
+      initialValue,
+    });
+    const result = await scan.scan();
+
+    expect(result).deep.equals(expected);
   });
 });
