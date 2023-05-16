@@ -108,7 +108,6 @@ export class PrefixScan<T = number>
 
   @reactively get sourceScan(): WorkgroupScan {
     const exclusiveSmall = this.exclusive && this.fitsInWorkGroup;
-    dlog({ exclusiveSmall });
     const shader = new WorkgroupScan({
       device: this.device,
       source: this.src,
@@ -168,6 +167,7 @@ export class PrefixScan<T = number>
     if (this.fitsInWorkGroup) {
       return [];
     }
+    const exclusiveLarge = this.exclusive;
     // block shaders output a prefixScan
 
     // list of all block producing shaders in reverse order
@@ -185,6 +185,8 @@ export class PrefixScan<T = number>
         partialScan: targetPrefixes[i],
         blockSums,
         template: this.template,
+        exclusiveLarge,
+        initialValue: this.initialValue,
         workgroupLength: this.actualWorkgroupLength,
         label: `${this.label} applyBlock ${i}`,
         pipelineCache: this.pipelineCache,

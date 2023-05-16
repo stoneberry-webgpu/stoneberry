@@ -109,11 +109,31 @@ it("scan sequence: large buffer, three levels of block scanning", async () => {
   });
 });
 
-it.only("exclusive scan small", async () => {
-  console.clear();
+it("exclusive scan small", async () => {
   await withAsyncUsage(async () => {
     const device = trackUse(await labeledGpuDevice());
     const srcData = [0, 1, 2, 3];
+    const initialValue = 37;
+    const expected = exclusiveSum(srcData, 37);
+    const src = makeBuffer(device, srcData, "source", Uint32Array);
+
+    const scan = new PrefixScan({
+      device,
+      src,
+      workgroupLength: 4,
+      exclusive: true,
+      initialValue,
+    });
+    const result = await scan.scan();
+
+    expect(result).deep.equals(expected);
+  });
+});
+
+it("exclusive scan large", async () => {
+  await withAsyncUsage(async () => {
+    const device = trackUse(await labeledGpuDevice());
+    const srcData = [0, 1, 2, 3, 4, 5, 6];
     const initialValue = 37;
     const expected = exclusiveSum(srcData, 37);
     const src = makeBuffer(device, srcData, "source", Uint32Array);
