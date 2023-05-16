@@ -7,11 +7,17 @@
 // note that the prefix scan results are partial if the input array is larger than the workgroup size
 // . in that case a subsequent pass is required (to sum the blockSums and add them to the prefixScan results)
 //
-// summation pattern:
+// summation pattern for inclusive scan:
 // 0  1  2  3  4  5  6  7  // src array of 8 elements. scan is calculated in 3 steps:
-// 0 01 12 23 34 45 56 67  // offset 1   // [7]= 6+7           // [3] = 2+3         // [1] = 0+1
+// 0 01 12 23 34 45 56 67  // offset 1   // [7] = 6+7          // [3] = 2+3         // [1] = 0+1
 // 0  1 02 13 24 35 46 57  // offset 2   // [7] = 6+7+4+5      // [3] = 2+3+0+1
 // 0  1  2  3 04 15 26 37  // offset 4   // [7] = 6+7+4+5+2+3+0+1
+//
+// summation pattern for small exlusive scan: 
+// 0  1  2  3  4  5  6  7  // src array of 8 elements. scan is calculated in 3 steps:
+// 0 01 12 23 34 45 56  _  // offset 1   // [7] = 5+6       
+// 0  1 02 13 24 35 46  _  // offset 2   // [7] = 5+6+2+3
+// i  0  1  2  3 04 15 26  // offset 4   // [7] = 5+6+2+3+1 
 //
 // summation of the middle layers is handled in a loop to workgroup workgroup, 
 //   double buffering is used to reduce the need for barriers 
@@ -28,7 +34,7 @@ struct Output {
 }
 
 struct Uniforms {
-    exclusive: u32,                 // nonzero if exclusive scan
+    exclusiveSmall: u32,            // nonzero for exclusive scan where the source fits in one workgroup
     @align(16) initialValue: Output // initial value for exclusive scan
 }
 
@@ -53,16 +59,7 @@ fn workgroupPrefixScan(
     @builtin(local_invocation_id) localGrid: vec3<u32>,
     @builtin(workgroup_id) workGrid: vec3<u32>,
 ) {
-    if u.exclusive != 0u {
-        if grid.x >= workgroupSizeX {
-            sumSrcLayerInclusive(localGrid.x, grid.x - 1u);
-        } else {
-            sumSrcLayerExclusive(localGrid.x, grid.x);
-        }
-    } else {
-        sumSrcLayerInclusive(localGrid.x, grid.x);
-    }
-
+    sumSrcLayerInclusive(localGrid.x, grid.x);
     workgroupBarrier();
 
     let aIn = sumMiddleLayers(localGrid.x);
@@ -81,25 +78,6 @@ fn sumSrcLayerInclusive(localX: u32, gridX: u32) {
     } else {
         let a = loadOp(src[gridX - 1u]);
         let b = loadOp(src[gridX]);
-        value = binaryOp(a, b);
-    }
-    bankA[localX] = value;
-}
-
-// sum the first layer from src to workgroup memory  
-fn sumSrcLayerExclusive(localX: u32, gridX: u32) {
-    var value: Output;
-    var end = arrayLength(&src);
-
-    if gridX >= end { // unevenly sized array
-        value = identityOp(); 
-    } else if gridX == 0u {
-        value = u.initialValue;
-    } else if gridX == 1u {
-        value = loadOp(src[gridX - 1u]);
-    } else {
-        let a = loadOp(src[gridX - 2u]);
-        let b = loadOp(src[gridX - 1u]);
         value = binaryOp(a, b);
     }
     bankA[localX] = value;
@@ -144,21 +122,31 @@ fn sumBtoA(localX: u32, offset: u32) {
         bankA[localX] = binaryOp(a, b);
     }
 }
+
+// For an exclusive scan there are two cases:
+//   . if the results of the first pass fits inside the workgroup, then we need special 
+//     code in this shader for the final pass to insert the initialValue and shift the 
+//     results as we write
+//   . if we'll need multiple workgroups, the insert and shift occurs in applyScans. This shader
+//     sees things as an inclusive scan
+// . The 'exclusiveSmall' flag marks the case for a exclusive scan small enough to fit in one pass
     
 // sum the final layer from workgroup memory to storage memory prefixScan and blockSum results
 fn sumFinalLayer(localX: u32, gridX: u32, workGridX: u32, aIn: bool) {
-    if u.exclusive == 0u {
+    if u.exclusiveSmall == 0u {
         if aIn {
             sumFinalLayerA(localX, gridX, workGridX);
         } else {
             sumFinalLayerB(localX, gridX, workGridX);
         }
     } else {
+        if (gridX == 0u) {
+            prefixScan[0] = u.initialValue;
+        }
         if aIn {
-            exclusiveSumFinalLayerA(localX, gridX, workGridX);
+            sumFinalLayerA(localX, gridX+1u, workGridX);
         } else {
-            // TBD
-            // exclusiveSumFinalLayerB(localX, gridX, workGridX);
+            sumFinalLayerB(localX, gridX+1u, workGridX);
         }
     }
 }
@@ -183,38 +171,6 @@ fn sumFinalLayerA(localX: u32, gridX: u32, workGridX: u32) {
     }
 }
 
-// sum the final layer from workgroup memory to storage memory prefixScan and blockSum results
-fn exclusiveSumFinalLayerA(localX: u32, gridX: u32, workGridX: u32) {
-    let offset = workgroupSizeX >> 1u;
-    var result: Output;
-    if gridX == 0u {
-        debug[0] = f32(bankA[0].sum);
-        debug[1] = f32(bankA[1].sum);
-        debug[2] = f32(bankA[2].sum);
-        debug[3] = f32(bankA[3].sum);
-        debug[8] = f32(offset);
-    }
-    if gridX == 4u {
-        debug[4] = f32(bankA[0].sum);
-        debug[5] = f32(bankA[1].sum);
-        debug[6] = f32(bankA[2].sum);
-        debug[7] = f32(bankA[3].sum);
-    }
-    if gridX < arrayLength(&src) {
-        if localX <= offset {
-            result = bankA[localX];
-        } else {
-            let a = bankA[localX - offset];
-            let b = bankA[localX];
-            result = binaryOp(a, b);
-        }
-        prefixScan[gridX] = result;
-
-        if localX == workgroupSizeX - 1u || gridX == arrayLength(&src) - 1u {   //! IF blockSums
-            blockSum[workGridX] = result;                                       //! IF blockSums
-        }                                                                       //! IF blockSums
-    }
-}
 
 // sum the final layer from workgroup memory to storage memory prefixScan and blockSum results
 fn sumFinalLayerB(localX: u32, gridX: u32, workGridX: u32) {

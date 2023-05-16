@@ -13,7 +13,7 @@ import { makeBuffer } from "./util/MakeBuffer.js";
 import { exclusiveSum, inclusiveSum } from "./util/PrefixSum.js";
 import { dlog } from "berry-pretty";
 
-it("workgroup scan one evenly sized buffer", async () => {
+it("workgroup scan one evenly sized buffer, with middle layers", async () => {
   await withAsyncUsage(async () => {
     const device = await labeledGpuDevice();
 
@@ -114,7 +114,7 @@ it("workgroup exlusive scan, src smaller than workgroup", async () => {
     const scan = new WorkgroupScan({
       device,
       source: makeBuffer(device, srcData, "source", Uint32Array),
-      emitBlockSums: true,
+      emitBlockSums: false,
       workgroupLength: 4,
       exclusive: true,
       initialValue,
@@ -126,38 +126,27 @@ it("workgroup exlusive scan, src smaller than workgroup", async () => {
     await withBufferCopy(device, scan.prefixScan, "u32", data => {
       expect([...data]).to.deep.equal(expected);
     });
-    await withBufferCopy(device, scan.blockSums, "u32", data => {
-      expect([...data]).to.deep.equal([3]);
-    });
   });
 });
 
-it("workgroup exlusive scan, two workgroups", async () => {
+it("workgroup exclusive scan, with middle layers", async () => {
   await withAsyncUsage(async () => {
     const device = await labeledGpuDevice();
-    const srcData = [1, 2, 3, 4, 5];
+    const srcData = [1, 2, 3, 4, 5, 6, 7];
     const initialValue = 9;
     const scan = new WorkgroupScan({
       device,
       source: makeBuffer(device, srcData, "source", Uint32Array),
-      emitBlockSums: true,
-      workgroupLength: 4,
+      emitBlockSums: false,
+      workgroupLength: 8,
       exclusive: true,
       initialValue,
     });
     const shaderGroup = new ShaderGroup(device, scan);
     shaderGroup.dispatch();
-    const expected1 = exclusiveSum(srcData.slice(0, 4), initialValue);
-    const expected2 = inclusiveSum(srcData.slice(3, -1));
-    const expected = [...expected1, ...expected2];
-
+    const expected = exclusiveSum(srcData, initialValue);
     await withBufferCopy(device, scan.prefixScan, "u32", data => {
       expect([...data]).to.deep.equal(expected);
     });
-    await withBufferCopy(device, scan.blockSums, "u32", data => {
-      expect([...data]).to.deep.equal([6, 4]);
-    });
   });
 });
-
-// TODO test with middle layers in workgroup used.
