@@ -46,7 +46,7 @@ export class ApplyScanBlocks extends HasReactive implements ComposableShader {
   commands(commandEncoder: GPUCommandEncoder): void {
     const timestampWrites = gpuTiming?.timestampWrites(this.label);
     const passEncoder = commandEncoder.beginComputePass({ timestampWrites });
-    passEncoder.label = this.label;
+    passEncoder.label = `apply scan blocks ${this.label}`;
     passEncoder.setPipeline(this.pipeline);
     passEncoder.setBindGroup(0, this.bindGroup);
     passEncoder.dispatchWorkgroups(this.dispatchSize, 1, 1);
@@ -80,20 +80,20 @@ export class ApplyScanBlocks extends HasReactive implements ComposableShader {
 
   @reactively private get bindGroup(): GPUBindGroup {
     return this.device.createBindGroup({
-      label: this.label,
+      label: `apply scan blocks ${this.label}`,
       layout: this.pipeline.getBindGroupLayout(0),
       entries: [
         { binding: 2, resource: { buffer: this.partialScan } },
         { binding: 3, resource: { buffer: this.blockSums } },
-        { binding: 4, resource: { buffer: this.prefixScan } },
+        { binding: 4, resource: { buffer: this.result } },
         { binding: 11, resource: { buffer: this.debugBuffer } },
       ],
     });
   }
 
-  @reactively get prefixScan(): GPUBuffer {
+  @reactively get result(): GPUBuffer {
     const buffer = this.device.createBuffer({
-      label: `prefix scan ${this.label}`,
+      label: `apply scan blocks result ${this.label}`,
       size: this.partialScanSize,
       usage: GPUBufferUsage.STORAGE | GPUBufferUsage.COPY_SRC,
     });
