@@ -31,8 +31,6 @@ const defaults: Partial<PrefixScanArgs> = {
 TODO
   . driver for small/large exclusive scans 
   . test for small exclusive scan
-  . largeExclusive scan flag for applyScanBlocks
-  . test applyScanBlocks w/largeExclusive
   . tests for large exclusive scan
 */
 
@@ -96,7 +94,7 @@ export class PrefixScan<T = number>
     if (this.fitsInWorkGroup) {
       return this.sourceScan.prefixScan;
     } else {
-      return this.applyScans.slice(-1)[0].prefixScan;
+      return this.applyScans.slice(-1)[0].result;
     }
   }
 
@@ -183,7 +181,7 @@ export class PrefixScan<T = number>
         label: `${this.label} applyBlock ${i}`,
         pipelineCache: this.pipelineCache,
       });
-      blockSums = applyBlocks.prefixScan;
+      blockSums = applyBlocks.result;
       return applyBlocks;
     });
     allApplyBlocks.forEach(s => trackUse(s, this.usageContext));
