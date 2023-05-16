@@ -43,8 +43,7 @@ it("apply scan blocks to partial prefix scan", async () => {
   });
 });
 
-it.only("largeExclusive", async () => {
-  console.clear();
+it("largeExclusive", async () => {
   await withAsyncUsage(async () => {
     const device = await labeledGpuDevice();
     trackUse(device);

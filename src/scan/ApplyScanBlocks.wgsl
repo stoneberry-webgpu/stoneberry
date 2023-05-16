@@ -20,14 +20,24 @@ const workgroupSizeX = 4u;      //! 4=workgroupSizeX
 @workgroup_size(workgroupSizeX, 1, 1) 
 fn applyScanBlocks(
     @builtin(global_invocation_id) grid: vec3<u32>,
-    @builtin(workgroup_id) workGrid: vec3<u32>, 
+    @builtin(workgroup_id) workGrid: vec3<u32>,
 ) {
-    if (workGrid.x == 0u) {
-        prefixScan[grid.x] = partialScan[grid.x];
+    var destX: u32;
+    if u.exclusiveSmall == 0u {
+        destX = grid.x;
+    } else {
+        destX = grid.x + 1u;
+        if grid.x == 0u {
+            prefixScan[0] = u.initialValue;
+        }
+    }
+
+    if workGrid.x == 0u {
+        prefixScan[destX] = partialScan[grid.x];
     } else {
         let a = partialScan[grid.x];
         let b = blockSum[workGrid.x - 1u];
-        prefixScan[grid.x] = binaryOp(a, b);
+        prefixScan[destX] = binaryOp(a, b);
     }
 }
 
