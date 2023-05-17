@@ -116,7 +116,7 @@ it("workgroup exlusive scan, src smaller than workgroup", async () => {
       source: makeBuffer(device, srcData, "source", Uint32Array),
       emitBlockSums: false,
       workgroupLength: 4,
-      exclusive: true,
+      exclusiveSmall: true,
       initialValue,
     });
     const shaderGroup = new ShaderGroup(device, scan);
@@ -139,7 +139,7 @@ it("workgroup exclusive scan, with middle layers", async () => {
       source: makeBuffer(device, srcData, "source", Uint32Array),
       emitBlockSums: false,
       workgroupLength: 8,
-      exclusive: true,
+      exclusiveSmall: true,
       initialValue,
     });
     const shaderGroup = new ShaderGroup(device, scan);
