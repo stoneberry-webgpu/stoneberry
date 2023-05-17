@@ -1,20 +1,15 @@
 lockfileVersion: '6.0'
 
-overrides:
-  '@reactively/core': file:/Users/lee/.yalc/packages/@reactively/core/0.0.8
-  '@reactively/decorate': file:/Users/lee/.yalc/packages/@reactively/decorate/0.0.3
-  thimbleberry: file:/Users/lee/.yalc/packages/thimbleberry/0.1.3/
-
 dependencies:
   '@reactively/core':
-    specifier: file:/Users/lee/.yalc/packages/@reactively/core/0.0.8
-    version: file:../.yalc/packages/@reactively/core/0.0.8
+    specifier: ^0.0.8
+    version: 0.0.8
   '@reactively/decorate':
-    specifier: file:/Users/lee/.yalc/packages/@reactively/decorate/0.0.3
-    version: file:../.yalc/packages/@reactively/decorate/0.0.3
+    specifier: ^0.0.3
+    version: 0.0.3
   thimbleberry:
-    specifier: file:/Users/lee/.yalc/packages/thimbleberry/0.1.3/
-    version: file:../.yalc/packages/thimbleberry/0.1.3
+    specifier: ^0.1.3
+    version: 0.1.3
 
 devDependencies:
   '@typescript-eslint/eslint-plugin':
@@ -431,6 +426,16 @@ packages:
     requiresBuild: true
     dev: true
     optional: true
+
+  /@reactively/core@0.0.8:
+    resolution: {integrity: sha512-5uAnNf2gQSm3gM7z6Lx079H1/MuDQQI+5aYfwyDFGR9nHZj8yblLY/6aOJVWp+NcBwXVBKuWQ28qWHD9F1qN1w==}
+    dev: false
+
+  /@reactively/decorate@0.0.3:
+    resolution: {integrity: sha512-UWggN98HUMqiPiT2q4SHPe+lISpZKR8vssAm+bRoZbSO0yLA2/K2iHmUIzkbH5LTz96M+2Afs/u6Apz0CDQkLQ==}
+    dependencies:
+      '@reactively/core': 0.0.8
+    dev: false
 
   /@ts-morph/common@0.16.0:
     resolution: {integrity: sha512-SgJpzkTgZKLKqQniCjLaE3c2L2sdL7UShvmTmPBejAKd2OKV/yfMpQ2IWpAuA+VY5wy7PkSUaEObIqEK6afFuw==}
@@ -2657,6 +2662,17 @@ packages:
     resolution: {integrity: sha512-N+8UisAXDGk8PFXP4HAzVR9nbfmVJ3zYLAWiTIoqC5v5isinhr+r5uaO8+7r3BMfuNIufIsA7RdpVgacC2cSpw==}
     dev: true
 
+  /thimbleberry@0.1.3:
+    resolution: {integrity: sha512-Z9OZDmfargjaFtSKrpn7TRIPUc6PcqnKtmzeBYXDYdHYsAAFVHw+lLYs76DakgV+aTLOKASUXvSa03wCbsCe4A==}
+    dependencies:
+      '@petamoriken/float16': 3.8.0
+      '@reactively/core': 0.0.8
+      '@reactively/decorate': 0.0.3
+      berry-pretty: 0.0.1
+      fast-deep-equal: 3.1.3
+      sortablejs: 1.15.0
+    dev: false
+
   /throttleit@1.0.0:
     resolution: {integrity: sha512-rkTVqu6IjfQ/6+uNuuc3sZek4CEYxTJom3IktzgdSxcZqdARuebbA/f4QmAxMQIxqq9ZLEUkSYqvuk1I6VKq4g==}
     dev: true
@@ -2987,30 +3003,3 @@ packages:
     resolution: {integrity: sha512-rVksvsnNCdJ/ohGc6xgPwyN8eheCxsiLM8mxuE/t/mOVqJewPuO1miLpTHQiRgTKCLexL4MeAFVagts7HmNZ2Q==}
     engines: {node: '>=10'}
     dev: true
-
-  file:../.yalc/packages/@reactively/core/0.0.8:
-    resolution: {directory: ../.yalc/packages/@reactively/core/0.0.8, type: directory}
-    name: '@reactively/core'
-    version: 0.0.8
-    dev: false
-
-  file:../.yalc/packages/@reactively/decorate/0.0.3:
-    resolution: {directory: ../.yalc/packages/@reactively/decorate/0.0.3, type: directory}
-    name: '@reactively/decorate'
-    version: 0.0.3
-    dependencies:
-      '@reactively/core': file:../.yalc/packages/@reactively/core/0.0.8
-    dev: false
-
-  file:../.yalc/packages/thimbleberry/0.1.3:
-    resolution: {directory: ../.yalc/packages/thimbleberry/0.1.3, type: directory}
-    name: thimbleberry
-    version: 0.1.3
-    dependencies:
-      '@petamoriken/float16': 3.8.0
-      '@reactively/core': file:../.yalc/packages/@reactively/core/0.0.8
-      '@reactively/decorate': file:../.yalc/packages/@reactively/decorate/0.0.3
-      berry-pretty: 0.0.1
-      fast-deep-equal: 3.1.3
-      sortablejs: 1.15.0
-    dev: false
