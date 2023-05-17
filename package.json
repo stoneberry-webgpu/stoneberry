@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "prepublish": "rimraf dist && pnpm run build && pnpm run build:types",
-    "build": "esbuild src/*/*.ts --format=esm --loader:.wgsl=text --sourcemap --outdir=dist",
+    "build": "esbuild src/index.ts --bundle --packages=external --format=esm --loader:.wgsl=text --sourcemap --outdir=dist",
     "build:types": "tsc --project tsconfig.build.json",
     "mac-canary": "$npm_execPath open -a 'Google Chrome Canary' --args --disable-dawn-features=disallow_unsafe_apis ",
     "cypress-component": "cypress open --component --browser chrome:canary",
