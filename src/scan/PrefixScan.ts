@@ -37,7 +37,7 @@ const defaults: Partial<PrefixScanArgs> = {
  * does a prefix scan of a workgroup sized chunk of data (e.g. perhaps 64 or 256 elements).
  *
  * The scan operation is parameterized by a template mechanism. The user can
- * instantiate a ScanSequence with sum to get prefix-sum, or use another template for
+ * instantiate a PrefixScan with sum to get prefix-sum, or use another template for
  * other parallel scan applications.
  *
  * For small data sets that fit in workgroup, only a single shader pass is needed.
@@ -51,7 +51,7 @@ const defaults: Partial<PrefixScanArgs> = {
  *
  * For for very large data sets, steps 2 and 3 repeat heirarchically.
  * Each level of summing reduces the data set by a factor of the workgroup size.
- * So three levels handles e.g. 16M elements (256 ** 3).
+ * So three levels handles e.g. 16M elements (256 ** 3) if workgroup size is 256.
  */
 export class PrefixScan<T = number>
   extends HasReactive
@@ -162,18 +162,16 @@ export class PrefixScan<T = number>
     return limitWorkgroupLength(this.device, this.workgroupLength);
   }
 
-  @reactively get applyScans(): ApplyScanBlocks[] {
+  /** shader passes to apply block level sums to prefixes within the block */
+  @reactively private get applyScans(): ApplyScanBlocks[] {
     if (this.fitsInWorkGroup) {
       return [];
     }
-    const exclusiveLarge = this.exclusive;
-    // block shaders output a prefixScan
-
-    // list of all block producing shaders in reverse order
-    const blockShadersReverse = [...this.blockScans].reverse();
-
+    const exclusiveLarge = this.exclusive; // if it was small, we'd have returned
+    const blockShadersReverse = [...this.blockScans].reverse(); // block producing shaders in reverse order
     const blockPrefixesReverse = blockShadersReverse.map(s => s.prefixScan);
-    // list of partial prefix scans to which we'll sum with the block prefixes
+
+    // partial prefix scans (to which we'll sum with the block prefixes)
     const targetPrefixes = [...blockPrefixesReverse.slice(1), this.sourceScan.prefixScan];
 
     // stitch chain, with completed block prefixes as sources to the next applyBlock shader
@@ -184,7 +182,7 @@ export class PrefixScan<T = number>
         partialScan: targetPrefixes[i],
         blockSums,
         template: this.template,
-        exclusiveLarge,
+        exclusiveLarge, 
         initialValue: this.initialValue,
         workgroupLength: this.actualWorkgroupLength,
         label: `${this.label} applyBlock ${i}`,
