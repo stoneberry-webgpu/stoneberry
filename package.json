@@ -1,6 +1,6 @@
 {
   "name": "stoneberry",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "core WebGPU shaders",
   "type": "module",
   "scripts": {
@@ -19,7 +19,7 @@
   ],
   "module": "./dist/index.js",
   "main": "./dist/index.js",
-  "keywords": [],
+  "keywords": ["WebGPU"],
   "author": "",
   "license": "ISC",
   "dependencies": {
