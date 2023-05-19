@@ -1,6 +1,6 @@
 {
   "name": "stoneberry",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "core WebGPU shaders",
   "type": "module",
   "scripts": {
@@ -18,19 +18,21 @@
     "src"
   ],
   "exports": {
-    "./scan" : {
+    "./scan": {
       "import": "./dist/PrefixScan.js",
       "module": "./dist/PrefixScan.js",
       "types": "./dist/scan/PrefixScan.d.ts"
     }
   },
-  "keywords": ["WebGPU"],
+  "keywords": [
+    "WebGPU"
+  ],
   "author": "",
   "license": "ISC",
   "dependencies": {
     "@reactively/core": "^0.0.8",
     "@reactively/decorate": "^0.0.3",
-    "thimbleberry": "^0.1.8"
+    "thimbleberry": "^0.1.9"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^5.59.6",
