@@ -1,0 +1,6 @@
+{
+  "entryPoints" : ["src/scan/PrefixScan.ts"], 
+  "out": "docs",
+  "plugin": ["typedoc-github-wiki-theme"],
+  "theme": "default"
+}
