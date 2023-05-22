@@ -69,7 +69,7 @@ const config = {
       // Replace with your project's social card
       image: "img/docusaurus-social-card.jpg",
       navbar: {
-        title: "My Site",
+        title: "Stoneberry",
         logo: {
           alt: "My Site Logo",
           src: "img/logo.svg",
@@ -77,12 +77,12 @@ const config = {
         items: [
           {
             type: "docSidebar",
-            sidebarId: "tutorialSidebar",
+            // sidebarId: "tutorialSidebar",
             position: "left",
             label: "Docs",
           },
           {
-            href: "https://github.com/facebook/docusaurus",
+            href: "https://github.com/mighdoll/stoneberry",
             label: "GitHub",
             position: "right",
           },
@@ -95,8 +95,8 @@ const config = {
             title: "Docs",
             items: [
               {
-                label: "Docs",
-                to: "/docs/intro",
+                label: "API",
+                to: "/docs/api",
               },
             ],
           },
@@ -105,15 +105,7 @@ const config = {
             items: [
               {
                 label: "Stack Overflow",
-                href: "https://stackoverflow.com/questions/tagged/docusaurus",
-              },
-              {
-                label: "Discord",
-                href: "https://discordapp.com/invite/docusaurus",
-              },
-              {
-                label: "Twitter",
-                href: "https://twitter.com/docusaurus",
+                href: "https://stackoverflow.com/questions/tagged/stoneberry",
               },
             ],
           },
@@ -122,12 +114,12 @@ const config = {
             items: [
               {
                 label: "GitHub",
-                href: "https://github.com/facebook/docusaurus",
+                href: "https://github.com/mighdoll/stoneberry",
               },
             ],
           },
         ],
-        copyright: `Copyright © ${new Date().getFullYear()} My Project, Inc. Built with Docusaurus.`,
+        copyright: `Copyright © ${new Date().getFullYear()}`,
       },
       prism: {
         theme: lightCodeTheme,
