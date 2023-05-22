@@ -67,7 +67,7 @@ HasReactive.constructor
 
 #### Defined in
 
-[src/scan/PrefixScan.ts:71](https://github.com/mighdoll/stoneberry/blob/0059fde/src/scan/PrefixScan.ts#L71)
+[src/scan/PrefixScan.ts:71](https://github.com/mighdoll/stoneberry/blob/e05b3c2/src/scan/PrefixScan.ts#L71)
 
 ## Properties
 
@@ -91,7 +91,7 @@ ___
 
 #### Defined in
 
-[src/scan/PrefixScan.ts:67](https://github.com/mighdoll/stoneberry/blob/0059fde/src/scan/PrefixScan.ts#L67)
+[src/scan/PrefixScan.ts:67](https://github.com/mighdoll/stoneberry/blob/e05b3c2/src/scan/PrefixScan.ts#L67)
 
 ___
 
@@ -105,7 +105,7 @@ ScannerApi.exclusive
 
 #### Defined in
 
-[src/scan/PrefixScan.ts:65](https://github.com/mighdoll/stoneberry/blob/0059fde/src/scan/PrefixScan.ts#L65)
+[src/scan/PrefixScan.ts:65](https://github.com/mighdoll/stoneberry/blob/e05b3c2/src/scan/PrefixScan.ts#L65)
 
 ___
 
@@ -119,7 +119,7 @@ ScannerApi.initialValue
 
 #### Defined in
 
-[src/scan/PrefixScan.ts:64](https://github.com/mighdoll/stoneberry/blob/0059fde/src/scan/PrefixScan.ts#L64)
+[src/scan/PrefixScan.ts:64](https://github.com/mighdoll/stoneberry/blob/e05b3c2/src/scan/PrefixScan.ts#L64)
 
 ___
 
@@ -133,7 +133,7 @@ ScannerApi.label
 
 #### Defined in
 
-[src/scan/PrefixScan.ts:63](https://github.com/mighdoll/stoneberry/blob/0059fde/src/scan/PrefixScan.ts#L63)
+[src/scan/PrefixScan.ts:63](https://github.com/mighdoll/stoneberry/blob/e05b3c2/src/scan/PrefixScan.ts#L63)
 
 ___
 
@@ -161,7 +161,7 @@ ScannerApi.pipelineCache
 
 #### Defined in
 
-[src/scan/PrefixScan.ts:69](https://github.com/mighdoll/stoneberry/blob/0059fde/src/scan/PrefixScan.ts#L69)
+[src/scan/PrefixScan.ts:69](https://github.com/mighdoll/stoneberry/blob/e05b3c2/src/scan/PrefixScan.ts#L69)
 
 ___
 
@@ -175,7 +175,7 @@ ScannerApi.src
 
 #### Defined in
 
-[src/scan/PrefixScan.ts:61](https://github.com/mighdoll/stoneberry/blob/0059fde/src/scan/PrefixScan.ts#L61)
+[src/scan/PrefixScan.ts:61](https://github.com/mighdoll/stoneberry/blob/e05b3c2/src/scan/PrefixScan.ts#L61)
 
 ___
 
@@ -189,7 +189,7 @@ ScannerApi.template
 
 #### Defined in
 
-[src/scan/PrefixScan.ts:60](https://github.com/mighdoll/stoneberry/blob/0059fde/src/scan/PrefixScan.ts#L60)
+[src/scan/PrefixScan.ts:60](https://github.com/mighdoll/stoneberry/blob/e05b3c2/src/scan/PrefixScan.ts#L60)
 
 ___
 
@@ -199,7 +199,7 @@ ___
 
 #### Defined in
 
-[src/scan/PrefixScan.ts:68](https://github.com/mighdoll/stoneberry/blob/0059fde/src/scan/PrefixScan.ts#L68)
+[src/scan/PrefixScan.ts:68](https://github.com/mighdoll/stoneberry/blob/e05b3c2/src/scan/PrefixScan.ts#L68)
 
 ___
 
@@ -213,7 +213,7 @@ ScannerApi.workgroupLength
 
 #### Defined in
 
-[src/scan/PrefixScan.ts:62](https://github.com/mighdoll/stoneberry/blob/0059fde/src/scan/PrefixScan.ts#L62)
+[src/scan/PrefixScan.ts:62](https://github.com/mighdoll/stoneberry/blob/e05b3c2/src/scan/PrefixScan.ts#L62)
 
 ## Accessors
 
@@ -227,7 +227,7 @@ ScannerApi.workgroupLength
 
 #### Defined in
 
-[src/scan/PrefixScan.ts:161](https://github.com/mighdoll/stoneberry/blob/0059fde/src/scan/PrefixScan.ts#L161)
+[src/scan/PrefixScan.ts:161](https://github.com/mighdoll/stoneberry/blob/e05b3c2/src/scan/PrefixScan.ts#L161)
 
 ___
 
@@ -243,7 +243,7 @@ shader passes to apply block level sums to prefixes within the block
 
 #### Defined in
 
-[src/scan/PrefixScan.ts:166](https://github.com/mighdoll/stoneberry/blob/0059fde/src/scan/PrefixScan.ts#L166)
+[src/scan/PrefixScan.ts:166](https://github.com/mighdoll/stoneberry/blob/e05b3c2/src/scan/PrefixScan.ts#L166)
 
 ___
 
@@ -257,7 +257,7 @@ ___
 
 #### Defined in
 
-[src/scan/PrefixScan.ts:125](https://github.com/mighdoll/stoneberry/blob/0059fde/src/scan/PrefixScan.ts#L125)
+[src/scan/PrefixScan.ts:125](https://github.com/mighdoll/stoneberry/blob/e05b3c2/src/scan/PrefixScan.ts#L125)
 
 ___
 
@@ -271,7 +271,7 @@ ___
 
 #### Defined in
 
-[src/scan/PrefixScan.ts:156](https://github.com/mighdoll/stoneberry/blob/0059fde/src/scan/PrefixScan.ts#L156)
+[src/scan/PrefixScan.ts:156](https://github.com/mighdoll/stoneberry/blob/e05b3c2/src/scan/PrefixScan.ts#L156)
 
 ___
 
@@ -289,7 +289,7 @@ ScannerApi.result
 
 #### Defined in
 
-[src/scan/PrefixScan.ts:96](https://github.com/mighdoll/stoneberry/blob/0059fde/src/scan/PrefixScan.ts#L96)
+[src/scan/PrefixScan.ts:96](https://github.com/mighdoll/stoneberry/blob/e05b3c2/src/scan/PrefixScan.ts#L96)
 
 ___
 
@@ -303,7 +303,7 @@ ___
 
 #### Defined in
 
-[src/scan/PrefixScan.ts:104](https://github.com/mighdoll/stoneberry/blob/0059fde/src/scan/PrefixScan.ts#L104)
+[src/scan/PrefixScan.ts:104](https://github.com/mighdoll/stoneberry/blob/e05b3c2/src/scan/PrefixScan.ts#L104)
 
 ___
 
@@ -317,7 +317,7 @@ ___
 
 #### Defined in
 
-[src/scan/PrefixScan.ts:108](https://github.com/mighdoll/stoneberry/blob/0059fde/src/scan/PrefixScan.ts#L108)
+[src/scan/PrefixScan.ts:108](https://github.com/mighdoll/stoneberry/blob/e05b3c2/src/scan/PrefixScan.ts#L108)
 
 ___
 
@@ -331,7 +331,7 @@ ___
 
 #### Defined in
 
-[src/scan/PrefixScan.ts:152](https://github.com/mighdoll/stoneberry/blob/0059fde/src/scan/PrefixScan.ts#L152)
+[src/scan/PrefixScan.ts:152](https://github.com/mighdoll/stoneberry/blob/e05b3c2/src/scan/PrefixScan.ts#L152)
 
 ## Methods
 
@@ -355,7 +355,7 @@ ComposableShader.commands
 
 #### Defined in
 
-[src/scan/PrefixScan.ts:76](https://github.com/mighdoll/stoneberry/blob/0059fde/src/scan/PrefixScan.ts#L76)
+[src/scan/PrefixScan.ts:76](https://github.com/mighdoll/stoneberry/blob/e05b3c2/src/scan/PrefixScan.ts#L76)
 
 ___
 
@@ -373,7 +373,7 @@ ScannerApi.destroy
 
 #### Defined in
 
-[src/scan/PrefixScan.ts:80](https://github.com/mighdoll/stoneberry/blob/0059fde/src/scan/PrefixScan.ts#L80)
+[src/scan/PrefixScan.ts:80](https://github.com/mighdoll/stoneberry/blob/e05b3c2/src/scan/PrefixScan.ts#L80)
 
 ___
 
@@ -393,4 +393,4 @@ ScannerApi.scan
 
 #### Defined in
 
-[src/scan/PrefixScan.ts:85](https://github.com/mighdoll/stoneberry/blob/0059fde/src/scan/PrefixScan.ts#L85)
+[src/scan/PrefixScan.ts:85](https://github.com/mighdoll/stoneberry/blob/e05b3c2/src/scan/PrefixScan.ts#L85)
