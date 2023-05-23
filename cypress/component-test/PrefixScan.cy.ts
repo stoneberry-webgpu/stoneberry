@@ -1,14 +1,14 @@
 import {
   ShaderGroup,
+  copyBuffer,
   labeledGpuDevice,
   trackRelease,
   trackUse,
   withAsyncUsage,
-  withBufferCopy,
   withLeakTrack,
 } from "thimbleberry";
-import { sumU32 } from "../../src/scan/ScanTemplate.js";
 import { PrefixScan } from "../../src/scan/PrefixScan.js";
+import { sumU32 } from "../../src/scan/ScanTemplate.js";
 import { makeBuffer } from "./util/MakeBuffer.js";
 import { exclusiveSum, inclusiveSum } from "./util/PrefixSum.js";
 
@@ -44,17 +44,14 @@ it("scan sequence: unevenly sized buffer, two workgroups, one level block scanni
 
     // validate result
     const expected = inclusiveSum(srcData);
-    await withBufferCopy(device, scan.result, "u32", data => {
-      expect([...data]).deep.equals(expected);
-    });
+    const result = await copyBuffer(device, scan.result);
+    expect([...result]).deep.equals(expected);
 
     // check internal state too
-    await withBufferCopy(device, scan._sourceScan.blockSums, "u32", data => {
-      expect([...data]).deep.equals([6, 15]);
-    });
-    await withBufferCopy(device, scan._blockScans[0].prefixScan, "u32", data => {
-      expect([...data]).deep.equals([6, 21]);
-    });
+    const data = await copyBuffer(device, scan._sourceScan.blockSums);
+    const blockScans = await copyBuffer(device, scan._blockScans[0].prefixScan);
+    expect([...data]).deep.equals([6, 15]);
+    expect([...blockScans]).deep.equals([6, 21]);
   });
 });
 
@@ -77,9 +74,8 @@ it("scan sequence: large buffer, two levels of block scanning", async () => {
     shaderGroup.dispatch();
 
     const expected = inclusiveSum(srcData);
-    await withBufferCopy(device, scan.result, "u32", data => {
-      expect([...data]).deep.equals(expected);
-    });
+    const result = await copyBuffer(device, scan.result);
+    expect([...result]).deep.equals(expected);
   });
 });
 
@@ -104,9 +100,8 @@ it("scan sequence: large buffer, three levels of block scanning", async () => {
       shaderGroup.dispatch();
 
       const expected = inclusiveSum(srcData);
-      await withBufferCopy(device, scan.result, "u32", data => {
-        expect([...data]).deep.equals(expected);
-      });
+      const result = await copyBuffer(device, scan.result);
+      expect([...result]).deep.equals(expected);
       trackRelease(scan);
     });
   });

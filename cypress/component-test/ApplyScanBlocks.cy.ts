@@ -1,10 +1,10 @@
 import {
   ShaderGroup,
+  copyBuffer,
   labeledGpuDevice,
   trackRelease,
   trackUse,
   withAsyncUsage,
-  withBufferCopy,
   withLeakTrack,
 } from "thimbleberry";
 import { ApplyScanBlocks } from "../../src/scan/ApplyScanBlocks.js";
@@ -34,10 +34,9 @@ it("apply scan blocks to partial prefix scan", async () => {
       const shaderGroup = new ShaderGroup(device, applyBlocks);
       shaderGroup.dispatch();
 
-      await withBufferCopy(device, applyBlocks.result, "u32", data => {
-        const expected = inclusiveSum(origSrc);
-        expect([...data]).to.deep.equal(expected);
-      });
+      const expected = inclusiveSum(origSrc);
+      const result = await copyBuffer(device, applyBlocks.result);
+      expect(result).to.deep.equal(expected);
       trackRelease(applyBlocks);
     });
   });
@@ -70,9 +69,8 @@ it("largeExclusive", async () => {
       const shaderGroup = new ShaderGroup(device, applyBlocks);
       shaderGroup.dispatch();
 
-      await withBufferCopy(device, applyBlocks.result, "u32", data => {
-        expect([...data]).to.deep.equal(expected);
-      });
+      const result = await copyBuffer(device, applyBlocks.result);
+      expect(result).to.deep.equal(expected);
       trackRelease(applyBlocks);
     });
   });
