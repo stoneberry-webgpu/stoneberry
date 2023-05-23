@@ -3,12 +3,14 @@ import { applyTemplate } from "thimbleberry";
 import shaderWGSL from "./ApplyScanBlocks.wgsl?raw";
 import { ScanTemplate, sumU32 } from "./ScanTemplate.js";
 
+/** @internal */
 export interface ApplyScanBlocksPipelineArgs {
   device: GPUDevice;
   workgroupLength: number;
   template?: ScanTemplate;
 }
 
+/** @internal */
 export const getApplyBlocksPipeline = memoizeWithDevice(createApplyBlocksPipeline);
 
 function createApplyBlocksPipeline(

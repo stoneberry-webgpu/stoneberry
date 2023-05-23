@@ -29,6 +29,13 @@
   ],
   "author": "",
   "license": "ISC",
+  "pnpm": {
+    "overrides": {
+      "@reactively/decorate": "file:../reactively/packages/decorate",
+      "@reactively/core": "file:../reactively/packages/core",
+      "thimbleberry": "file:../thimbleberry"
+    }
+  },
   "dependencies": {
     "@reactively/core": "^0.0.8",
     "@reactively/decorate": "^0.0.3",
@@ -49,6 +56,9 @@
     "organize-imports-cli": "^0.10.0",
     "prettier-eslint-cli": "^7.1.0",
     "rimraf": "^5.0.1",
+    "typedoc": "^0.24.7",
+    "typedoc-github-wiki-theme": "^1.1.0",
+    "typedoc-plugin-markdown": "^3.15.3",
     "typescript": "^5.0.4",
     "vite": "^4.3.8",
     "vite-tsconfig-paths": "^4.2.0"

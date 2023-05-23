@@ -8,6 +8,7 @@ import { getWorkgroupScanPipeline } from "./WorkgroupScanPipeline";
 import { ScanTemplate, sumU32 } from "./ScanTemplate.js";
 import { Cache, ComposableShader, ValueOrFn } from "./Scan.js";
 
+/** @internal */
 export interface WorkgroupScanArgs {
   device: GPUDevice;
   source: ValueOrFn<GPUBuffer>;
@@ -37,6 +38,8 @@ const defaults: Partial<WorkgroupScanArgs> = {
  *
  * Optionally allocates a block level summary buffer, containing
  * one summariy entry per input block.
+ * 
+ * @internal
  */
 export class WorkgroupScan extends HasReactive implements ComposableShader {
   @reactively source!: GPUBuffer;

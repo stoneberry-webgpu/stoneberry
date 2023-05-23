@@ -70,6 +70,9 @@ export class PrefixScan<T = number>
   private usageContext = trackContext();
   private pipelineCache?: <C extends object>() => Cache<C>;
 
+  /** Create a new scanner 
+   * @param args 
+  */
   constructor(args: PrefixScanArgs) {
     super();
     assignParams<PrefixScan<T>>(this, args, defaults);

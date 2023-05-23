@@ -10,6 +10,7 @@ import { getApplyBlocksPipeline } from "./ApplyScanBlocksPipeline";
 import { ScanTemplate, sumU32 } from "./ScanTemplate.js";
 import { Cache, ComposableShader } from "./Scan.js";
 
+/** @internal */
 export interface ApplyScanBlocksArgs {
   device: GPUDevice;
   partialScan: GPUBuffer;
@@ -29,7 +30,9 @@ const defaults: Partial<ApplyScanBlocksArgs> = {
   initialValue: undefined,
 };
 
-/** Shader stage used in a prefix scan, applies block summaries to block elements */
+/** Shader stage used in a prefix scan, applies block summaries to block elements 
+ * @internal
+*/
 export class ApplyScanBlocks extends HasReactive implements ComposableShader {
   @reactively partialScan!: GPUBuffer;
   @reactively blockSums!: GPUBuffer;

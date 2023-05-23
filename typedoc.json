@@ -1,0 +1,10 @@
+{
+  "entryPoints" : ["src/scan"], 
+  "entryPointStrategy" : "expand", 
+  "out": "docs",
+  "plugin": ["typedoc-plugin-markdown"],
+  "excludeInternal": true,
+  "excludePrivate": true,
+  "excludeNotDocumented": true,
+  "excludeNotDocumentedKinds": ["Module"]
+}

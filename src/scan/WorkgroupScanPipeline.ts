@@ -9,6 +9,7 @@ interface WorkGroupScanPipelineArgs {
   template: ScanTemplate;
 }
 
+/** @internal */
 export const getWorkgroupScanPipeline = memoizeWithDevice(createWorkgroupScanPipeline);
 
 function createWorkgroupScanPipeline(
