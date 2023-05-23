@@ -55,10 +55,11 @@ export interface ScannerApi extends ComposableShader, ScannerConfig {
 }
 
 /**
- * All core shaders implement this, so users can configure their shaders and have a 'machine'
- * that runs a whole bunch fo shaders.
+ * Core api to allow users to this, so users can configure their shaders and have a 'machine'
+ * that runs a 
  */
 export interface ComposableShader {
+  /** Add compute or render passes for this shader to the provided GPUCommandEncoder */
   commands(encoder: GPUCommandEncoder): void;
 }
 

@@ -12,15 +12,34 @@ import { Cache, ComposableShader, ValueOrFn } from "./Scan.js";
 import { ScanTemplate, sumU32 } from "./ScanTemplate.js";
 import { WorkgroupScan } from "./WorkgroupScan.js";
 
+
+/** Parameters to construct a {@link PrefixScan} instance */
 export interface PrefixScanArgs {
   device: GPUDevice;
+
+  /** Source data to be scanned. 
+   * If a function returning a buffer is provided, the function 
+   * will be executed whenever src is read.
+   */
   src: ValueOrFn<GPUBuffer>;
-  label?: string;
-  template?: ValueOrFn<ScanTemplate>;
-  workgroupLength?: ValueOrFn<number>;
-  pipelineCache?: <T extends object>() => Cache<T>;
+
+  /** {@inheritDoc PrefixScan#template} */
+  template?: ScanTemplate;
+
+  /** {@inheritDoc PrefixScan#exclusive} */
   exclusive?: boolean;
+
+  /** {@inheritDoc PrefixScan#initialValue} */
   initialValue?: number;
+
+  /** {@inheritDoc PrefixScan#label} */
+  label?: string;
+
+  /** {@inheritDoc PrefixScan#workgroupLength} */
+  workgroupLength?: number;
+
+  /** {@inheritDoc PrefixScan#pipelineCache} */
+  pipelineCache?: <T extends object>() => Cache<T>;
 }
 
 const defaults: Partial<PrefixScanArgs> = {
@@ -34,45 +53,70 @@ const defaults: Partial<PrefixScanArgs> = {
 
 /**
  * A cascade of shaders to do a prefix scan operation, based on a shader that
- * does a prefix scan of a workgroup sized chunk of data (e.g. perhaps 64 or 256 elements).
+ * does a prefix scan of a workgroup sized chunk of data (e.g. 64 or 256 elements).
  *
  * The scan operation is parameterized by a template mechanism. The user can
  * instantiate a PrefixScan with sum to get prefix-sum, or use another template for
  * other parallel scan applications.
  *
- * For small data sets that fit in workgroup, only a single shader pass is needed.
- *
+ * For small data sets that fit in workgroup, only a single shader pass is needed. 
  * For larger data sets, a sequence of shaders is orchestrated as follows:
- * 1 one shader does a prefix scan on each workgroup sized chunk of data
- *   . it emits a partial prefix sum for each workgroup and single block level sum from each workgroup
- * 2 another instance of the same shader does a prefix scan on the block sums from the previous shader
- *   . the end result is a set of block level prefix sums
- * 3 a final shader sums the block prefix sums back with the partial prefix sums
+ * 
+ *   1. One shader does a prefix scan on each workgroup sized chunk of data.
+ *     It emits a partial prefix sum for each workgroup and single block level sum from each workgroup
+ *   2. Another instance of the same shader does a prefix scan on the block sums from the previous shader.
+ *     The end result is a set of block level prefix sums
+ *   3. A final shader sums the block prefix sums back with the partial prefix sums
  *
  * For for very large data sets, steps 2 and 3 repeat heirarchically.
  * Each level of summing reduces the data set by a factor of the workgroup size.
- * So three levels handles e.g. 16M elements (256 ** 3) if workgroup size is 256.
- * 
+ * So three levels handles e.g. 16M elements (256 ** 3) if the workgroup size is 256.
+ *
  * @typeParam T - Type of elements returned from the scan
  */
-export class PrefixScan<T = number>
-  extends HasReactive
-  implements ComposableShader
-{
+export class PrefixScan<T = number> extends HasReactive implements ComposableShader {
+  /** customize the type of scan (e.g. prefix sum on 32 bit floats) */
   @reactively template!: ScanTemplate;
+
+  /** Source data to be scanned */
   @reactively src!: GPUBuffer;
-  @reactively workgroupLength?: number;
+
+  /** Debug label attached to gpu objects for error reporting */
   @reactively label?: string;
-  @reactively initialValue?: number;
+
+  /** Override to set compute workgroup size e.g. for testing. 
+    @defaultValue max workgroup size of the `GPUDevice`
+    */
+  @reactively workgroupLength?: number;
+
+  /** Inclusive scan accumulates a binary operation across all source elements.
+   * Exclusive scan accumulates a binary operation across source elements, using initialValue
+   * as the first element and stopping before the final source element.
+   *
+   * @defaultValue false (inclusive scan).
+   */
   @reactively exclusive!: boolean;
+
+  /** Initial value for exclusive scan 
+   * @defaultValue template identity 
+   */
+  @reactively initialValue?: number;
+
+
+  /** start index in src buffer of range to scan (0 if undefined) */
+  //  start?: ValueOrFn<number>; // NYI
+  /** end index (exclusive) in src buffer (src.length if undefined) */
+  // end?: ValueOrFn<number>; // NYI
 
   private device!: GPUDevice;
   private usageContext = trackContext();
+
+  /** cache for GPUComputePipeline or GPURenderPipeline */
   private pipelineCache?: <C extends object>() => Cache<C>;
 
-  /** Create a new scanner 
-   * @param args 
-  */
+  /** Create a new scanner
+   * @param args
+   */
   constructor(args: PrefixScanArgs) {
     super();
     assignParams<PrefixScan<T>>(this, args, defaults);
@@ -82,11 +126,15 @@ export class PrefixScan<T = number>
     this.shaders.forEach(s => s.commands(commandEncoder));
   }
 
+  /** Release the scanResult buffer for destruction. */
   destroy(): void {
     this.usageContext.finish();
   }
 
-  /** Execute the prefix scan and copy the results back to the CPU */
+  /** Execute the prefix scan immediately and copy the results back to the CPU.
+   * (results are copied from the {@link PrefixScan.result} GPUBuffer)
+   * @returns the scanned result in an array
+   */
   async scan(): Promise<number[]> {
     const commands = this.device.createCommandEncoder({
       label: `prefixScan ${this.label}`,
@@ -98,6 +146,7 @@ export class PrefixScan<T = number>
     return [...data];
   }
 
+  /** Buffer Containing results of the scan after the shader has run. */
   @reactively get result(): GPUBuffer {
     if (this.fitsInWorkGroup) {
       return this._sourceScan.prefixScan;
@@ -128,7 +177,11 @@ export class PrefixScan<T = number>
     return shader;
   }
 
-  /** @internal */
+  /** 
+   * Shaders to scan intermediate block sums.
+   * Multiple levels of scanning may be required for large sums.
+   * @internal 
+   */
   @reactively get _blockScans(): WorkgroupScan[] {
     const sourceElements = this.sourceSize / Uint32Array.BYTES_PER_ELEMENT;
     const wl = this.actualWorkgroupLength;
@@ -179,7 +232,10 @@ export class PrefixScan<T = number>
     const blockPrefixesReverse = blockShadersReverse.map(s => s.prefixScan);
 
     // partial prefix scans (to which we'll sum with the block prefixes)
-    const targetPrefixes = [...blockPrefixesReverse.slice(1), this._sourceScan.prefixScan];
+    const targetPrefixes = [
+      ...blockPrefixesReverse.slice(1),
+      this._sourceScan.prefixScan,
+    ];
 
     // stitch chain, with completed block prefixes as sources to the next applyBlock shader
     let blockSums = this._blockScans.slice(-1)[0].prefixScan;
@@ -189,7 +245,7 @@ export class PrefixScan<T = number>
         partialScan: targetPrefixes[i],
         blockSums,
         template: this.template,
-        exclusiveLarge, 
+        exclusiveLarge,
         initialValue: this.initialValue,
         workgroupLength: this.actualWorkgroupLength,
         label: `${this.label} applyBlock ${i}`,
@@ -202,3 +258,10 @@ export class PrefixScan<T = number>
     return allApplyBlocks;
   }
 }
+
+/**
+ * TBD:
+ *  . generator for one workgroup size? - I don't understand this one fully.
+ *  . support for a debug error context
+ *  . sharing bind groups? - no proposal here
+ */
