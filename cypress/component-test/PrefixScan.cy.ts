@@ -42,15 +42,18 @@ it("scan sequence: unevenly sized buffer, two workgroups, one level block scanni
     const shaderGroup = new ShaderGroup(device, scan);
     shaderGroup.dispatch();
 
-    await withBufferCopy(device, scan.sourceScan.blockSums, "u32", data => {
-      expect([...data]).deep.equals([6, 15]);
-    });
-    await withBufferCopy(device, scan.blockScans[0].prefixScan, "u32", data => {
-      expect([...data]).deep.equals([6, 21]);
-    });
+    // validate result
     const expected = inclusiveSum(srcData);
     await withBufferCopy(device, scan.result, "u32", data => {
       expect([...data]).deep.equals(expected);
+    });
+
+    // check internal state too
+    await withBufferCopy(device, scan._sourceScan.blockSums, "u32", data => {
+      expect([...data]).deep.equals([6, 15]);
+    });
+    await withBufferCopy(device, scan._blockScans[0].prefixScan, "u32", data => {
+      expect([...data]).deep.equals([6, 21]);
     });
   });
 });

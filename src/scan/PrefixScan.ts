@@ -97,17 +97,18 @@ export class PrefixScan<T = number>
 
   @reactively get result(): GPUBuffer {
     if (this.fitsInWorkGroup) {
-      return this.sourceScan.prefixScan;
+      return this._sourceScan.prefixScan;
     } else {
       return this.applyScans.slice(-1)[0].result;
     }
   }
 
   @reactively private get shaders(): ComposableShader[] {
-    return [this.sourceScan, ...this.blockScans, ...this.applyScans];
+    return [this._sourceScan, ...this._blockScans, ...this.applyScans];
   }
 
-  @reactively private get sourceScan(): WorkgroupScan {
+  /** @internal */
+  @reactively get _sourceScan(): WorkgroupScan {
     const exclusiveSmall = this.exclusive && this.fitsInWorkGroup;
     const shader = new WorkgroupScan({
       device: this.device,
@@ -124,13 +125,14 @@ export class PrefixScan<T = number>
     return shader;
   }
 
-  @reactively private get blockScans(): WorkgroupScan[] {
+  /** @internal */
+  @reactively get _blockScans(): WorkgroupScan[] {
     const sourceElements = this.sourceSize / Uint32Array.BYTES_PER_ELEMENT;
     const wl = this.actualWorkgroupLength;
     const shaders: WorkgroupScan[] = [];
 
     // stitch a chain: blockSums as sources for scans
-    let source = this.sourceScan.blockSums;
+    let source = this._sourceScan.blockSums;
     let labelNum = 0;
     for (let elements = wl; elements < sourceElements; elements *= wl) {
       const last = elements * wl >= sourceElements;
@@ -170,14 +172,14 @@ export class PrefixScan<T = number>
       return [];
     }
     const exclusiveLarge = this.exclusive; // if it was small, we'd have returned
-    const blockShadersReverse = [...this.blockScans].reverse(); // block producing shaders in reverse order
+    const blockShadersReverse = [...this._blockScans].reverse(); // block producing shaders in reverse order
     const blockPrefixesReverse = blockShadersReverse.map(s => s.prefixScan);
 
     // partial prefix scans (to which we'll sum with the block prefixes)
-    const targetPrefixes = [...blockPrefixesReverse.slice(1), this.sourceScan.prefixScan];
+    const targetPrefixes = [...blockPrefixesReverse.slice(1), this._sourceScan.prefixScan];
 
     // stitch chain, with completed block prefixes as sources to the next applyBlock shader
-    let blockSums = this.blockScans.slice(-1)[0].prefixScan;
+    let blockSums = this._blockScans.slice(-1)[0].prefixScan;
     const allApplyBlocks = blockShadersReverse.map((s, i) => {
       const applyBlocks = new ApplyScanBlocks({
         device: this.device,
