@@ -8,7 +8,7 @@ import {
   withBufferCopy,
 } from "thimbleberry";
 import { ApplyScanBlocks } from "./ApplyScanBlocks.js";
-import { Cache, ComposableShader, ScannerApi, ValueOrFn } from "./Scan.js";
+import { Cache, ComposableShader, ValueOrFn } from "./Scan.js";
 import { ScanTemplate, sumU32 } from "./ScanTemplate.js";
 import { WorkgroupScan } from "./WorkgroupScan.js";
 
@@ -55,7 +55,7 @@ const defaults: Partial<PrefixScanArgs> = {
  */
 export class PrefixScan<T = number>
   extends HasReactive
-  implements ComposableShader, ScannerApi
+  implements ComposableShader
 {
   @reactively template!: ScanTemplate;
   @reactively src!: GPUBuffer;
@@ -66,7 +66,7 @@ export class PrefixScan<T = number>
 
   private device!: GPUDevice;
   private usageContext = trackContext();
-  pipelineCache?: <C extends object>() => Cache<C>;
+  private pipelineCache?: <C extends object>() => Cache<C>;
 
   constructor(args: PrefixScanArgs) {
     super();
@@ -105,7 +105,7 @@ export class PrefixScan<T = number>
     return [this.sourceScan, ...this.blockScans, ...this.applyScans];
   }
 
-  @reactively get sourceScan(): WorkgroupScan {
+  @reactively private get sourceScan(): WorkgroupScan {
     const exclusiveSmall = this.exclusive && this.fitsInWorkGroup;
     const shader = new WorkgroupScan({
       device: this.device,
@@ -122,7 +122,7 @@ export class PrefixScan<T = number>
     return shader;
   }
 
-  @reactively get blockScans(): WorkgroupScan[] {
+  @reactively private get blockScans(): WorkgroupScan[] {
     const sourceElements = this.sourceSize / Uint32Array.BYTES_PER_ELEMENT;
     const wl = this.actualWorkgroupLength;
     const shaders: WorkgroupScan[] = [];

@@ -41,7 +41,6 @@ So three levels handles e.g. 16M elements (256 ** 3) if workgroup size is 256.
 ## Implements
 
 - `ComposableShader`
-- `ScannerApi`
 
 ## Constructors
 
@@ -67,7 +66,7 @@ HasReactive.constructor
 
 #### Defined in
 
-[src/scan/PrefixScan.ts:71](https://github.com/mighdoll/stoneberry/blob/650c216/src/scan/PrefixScan.ts#L71)
+[src/scan/PrefixScan.ts:71](https://github.com/mighdoll/stoneberry/blob/6a5b5a4/src/scan/PrefixScan.ts#L71)
 
 ## Properties
 
@@ -85,27 +84,13 @@ node_modules/.pnpm/@reactively+decorate@0.0.3/node_modules/@reactively/decorate/
 
 ___
 
-### device
-
-• `Private` **device**: `GPUDevice`
-
-#### Defined in
-
-[src/scan/PrefixScan.ts:67](https://github.com/mighdoll/stoneberry/blob/650c216/src/scan/PrefixScan.ts#L67)
-
-___
-
 ### exclusive
 
 • **exclusive**: `boolean`
 
-#### Implementation of
-
-ScannerApi.exclusive
-
 #### Defined in
 
-[src/scan/PrefixScan.ts:65](https://github.com/mighdoll/stoneberry/blob/650c216/src/scan/PrefixScan.ts#L65)
+[src/scan/PrefixScan.ts:65](https://github.com/mighdoll/stoneberry/blob/6a5b5a4/src/scan/PrefixScan.ts#L65)
 
 ___
 
@@ -113,13 +98,9 @@ ___
 
 • `Optional` **initialValue**: `number`
 
-#### Implementation of
-
-ScannerApi.initialValue
-
 #### Defined in
 
-[src/scan/PrefixScan.ts:64](https://github.com/mighdoll/stoneberry/blob/650c216/src/scan/PrefixScan.ts#L64)
+[src/scan/PrefixScan.ts:64](https://github.com/mighdoll/stoneberry/blob/6a5b5a4/src/scan/PrefixScan.ts#L64)
 
 ___
 
@@ -127,41 +108,9 @@ ___
 
 • `Optional` **label**: `string`
 
-#### Implementation of
-
-ScannerApi.label
-
 #### Defined in
 
-[src/scan/PrefixScan.ts:63](https://github.com/mighdoll/stoneberry/blob/650c216/src/scan/PrefixScan.ts#L63)
-
-___
-
-### pipelineCache
-
-• `Optional` **pipelineCache**: <C\>() => `Cache`<`C`\>
-
-#### Type declaration
-
-▸ <`C`\>(): `Cache`<`C`\>
-
-##### Type parameters
-
-| Name | Type |
-| :------ | :------ |
-| `C` | extends `object` |
-
-##### Returns
-
-`Cache`<`C`\>
-
-#### Implementation of
-
-ScannerApi.pipelineCache
-
-#### Defined in
-
-[src/scan/PrefixScan.ts:69](https://github.com/mighdoll/stoneberry/blob/650c216/src/scan/PrefixScan.ts#L69)
+[src/scan/PrefixScan.ts:63](https://github.com/mighdoll/stoneberry/blob/6a5b5a4/src/scan/PrefixScan.ts#L63)
 
 ___
 
@@ -169,13 +118,9 @@ ___
 
 • **src**: `GPUBuffer`
 
-#### Implementation of
-
-ScannerApi.src
-
 #### Defined in
 
-[src/scan/PrefixScan.ts:61](https://github.com/mighdoll/stoneberry/blob/650c216/src/scan/PrefixScan.ts#L61)
+[src/scan/PrefixScan.ts:61](https://github.com/mighdoll/stoneberry/blob/6a5b5a4/src/scan/PrefixScan.ts#L61)
 
 ___
 
@@ -183,23 +128,9 @@ ___
 
 • **template**: `ScanTemplate`
 
-#### Implementation of
-
-ScannerApi.template
-
 #### Defined in
 
-[src/scan/PrefixScan.ts:60](https://github.com/mighdoll/stoneberry/blob/650c216/src/scan/PrefixScan.ts#L60)
-
-___
-
-### usageContext
-
-• `Private` **usageContext**: `TrackContext`
-
-#### Defined in
-
-[src/scan/PrefixScan.ts:68](https://github.com/mighdoll/stoneberry/blob/650c216/src/scan/PrefixScan.ts#L68)
+[src/scan/PrefixScan.ts:60](https://github.com/mighdoll/stoneberry/blob/6a5b5a4/src/scan/PrefixScan.ts#L60)
 
 ___
 
@@ -207,73 +138,11 @@ ___
 
 • `Optional` **workgroupLength**: `number`
 
-#### Implementation of
-
-ScannerApi.workgroupLength
-
 #### Defined in
 
-[src/scan/PrefixScan.ts:62](https://github.com/mighdoll/stoneberry/blob/650c216/src/scan/PrefixScan.ts#L62)
+[src/scan/PrefixScan.ts:62](https://github.com/mighdoll/stoneberry/blob/6a5b5a4/src/scan/PrefixScan.ts#L62)
 
 ## Accessors
-
-### actualWorkgroupLength
-
-• `Private` `get` **actualWorkgroupLength**(): `number`
-
-#### Returns
-
-`number`
-
-#### Defined in
-
-[src/scan/PrefixScan.ts:161](https://github.com/mighdoll/stoneberry/blob/650c216/src/scan/PrefixScan.ts#L161)
-
-___
-
-### applyScans
-
-• `Private` `get` **applyScans**(): `ApplyScanBlocks`[]
-
-shader passes to apply block level sums to prefixes within the block
-
-#### Returns
-
-`ApplyScanBlocks`[]
-
-#### Defined in
-
-[src/scan/PrefixScan.ts:166](https://github.com/mighdoll/stoneberry/blob/650c216/src/scan/PrefixScan.ts#L166)
-
-___
-
-### blockScans
-
-• `get` **blockScans**(): `WorkgroupScan`[]
-
-#### Returns
-
-`WorkgroupScan`[]
-
-#### Defined in
-
-[src/scan/PrefixScan.ts:125](https://github.com/mighdoll/stoneberry/blob/650c216/src/scan/PrefixScan.ts#L125)
-
-___
-
-### fitsInWorkGroup
-
-• `Private` `get` **fitsInWorkGroup**(): `boolean`
-
-#### Returns
-
-`boolean`
-
-#### Defined in
-
-[src/scan/PrefixScan.ts:156](https://github.com/mighdoll/stoneberry/blob/650c216/src/scan/PrefixScan.ts#L156)
-
-___
 
 ### result
 
@@ -283,55 +152,9 @@ ___
 
 `GPUBuffer`
 
-#### Implementation of
-
-ScannerApi.result
-
 #### Defined in
 
-[src/scan/PrefixScan.ts:96](https://github.com/mighdoll/stoneberry/blob/650c216/src/scan/PrefixScan.ts#L96)
-
-___
-
-### shaders
-
-• `Private` `get` **shaders**(): `ComposableShader`[]
-
-#### Returns
-
-`ComposableShader`[]
-
-#### Defined in
-
-[src/scan/PrefixScan.ts:104](https://github.com/mighdoll/stoneberry/blob/650c216/src/scan/PrefixScan.ts#L104)
-
-___
-
-### sourceScan
-
-• `get` **sourceScan**(): `WorkgroupScan`
-
-#### Returns
-
-`WorkgroupScan`
-
-#### Defined in
-
-[src/scan/PrefixScan.ts:108](https://github.com/mighdoll/stoneberry/blob/650c216/src/scan/PrefixScan.ts#L108)
-
-___
-
-### sourceSize
-
-• `Private` `get` **sourceSize**(): `number`
-
-#### Returns
-
-`number`
-
-#### Defined in
-
-[src/scan/PrefixScan.ts:152](https://github.com/mighdoll/stoneberry/blob/650c216/src/scan/PrefixScan.ts#L152)
+[src/scan/PrefixScan.ts:96](https://github.com/mighdoll/stoneberry/blob/6a5b5a4/src/scan/PrefixScan.ts#L96)
 
 ## Methods
 
@@ -355,7 +178,7 @@ ComposableShader.commands
 
 #### Defined in
 
-[src/scan/PrefixScan.ts:76](https://github.com/mighdoll/stoneberry/blob/650c216/src/scan/PrefixScan.ts#L76)
+[src/scan/PrefixScan.ts:76](https://github.com/mighdoll/stoneberry/blob/6a5b5a4/src/scan/PrefixScan.ts#L76)
 
 ___
 
@@ -367,13 +190,9 @@ ___
 
 `void`
 
-#### Implementation of
-
-ScannerApi.destroy
-
 #### Defined in
 
-[src/scan/PrefixScan.ts:80](https://github.com/mighdoll/stoneberry/blob/650c216/src/scan/PrefixScan.ts#L80)
+[src/scan/PrefixScan.ts:80](https://github.com/mighdoll/stoneberry/blob/6a5b5a4/src/scan/PrefixScan.ts#L80)
 
 ___
 
@@ -387,10 +206,6 @@ Execute the prefix scan and copy the results back to the CPU
 
 `Promise`<`number`[]\>
 
-#### Implementation of
-
-ScannerApi.scan
-
 #### Defined in
 
-[src/scan/PrefixScan.ts:85](https://github.com/mighdoll/stoneberry/blob/650c216/src/scan/PrefixScan.ts#L85)
+[src/scan/PrefixScan.ts:85](https://github.com/mighdoll/stoneberry/blob/6a5b5a4/src/scan/PrefixScan.ts#L85)

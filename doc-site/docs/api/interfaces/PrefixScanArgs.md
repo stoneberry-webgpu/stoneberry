@@ -14,7 +14,7 @@ custom_edit_url: null
 
 #### Defined in
 
-[src/scan/PrefixScan.ts:16](https://github.com/mighdoll/stoneberry/blob/650c216/src/scan/PrefixScan.ts#L16)
+[src/scan/PrefixScan.ts:16](https://github.com/mighdoll/stoneberry/blob/6a5b5a4/src/scan/PrefixScan.ts#L16)
 
 ___
 
@@ -24,7 +24,7 @@ ___
 
 #### Defined in
 
-[src/scan/PrefixScan.ts:22](https://github.com/mighdoll/stoneberry/blob/650c216/src/scan/PrefixScan.ts#L22)
+[src/scan/PrefixScan.ts:22](https://github.com/mighdoll/stoneberry/blob/6a5b5a4/src/scan/PrefixScan.ts#L22)
 
 ___
 
@@ -34,7 +34,7 @@ ___
 
 #### Defined in
 
-[src/scan/PrefixScan.ts:23](https://github.com/mighdoll/stoneberry/blob/650c216/src/scan/PrefixScan.ts#L23)
+[src/scan/PrefixScan.ts:23](https://github.com/mighdoll/stoneberry/blob/6a5b5a4/src/scan/PrefixScan.ts#L23)
 
 ___
 
@@ -44,7 +44,7 @@ ___
 
 #### Defined in
 
-[src/scan/PrefixScan.ts:18](https://github.com/mighdoll/stoneberry/blob/650c216/src/scan/PrefixScan.ts#L18)
+[src/scan/PrefixScan.ts:18](https://github.com/mighdoll/stoneberry/blob/6a5b5a4/src/scan/PrefixScan.ts#L18)
 
 ___
 
@@ -68,7 +68,7 @@ ___
 
 #### Defined in
 
-[src/scan/PrefixScan.ts:21](https://github.com/mighdoll/stoneberry/blob/650c216/src/scan/PrefixScan.ts#L21)
+[src/scan/PrefixScan.ts:21](https://github.com/mighdoll/stoneberry/blob/6a5b5a4/src/scan/PrefixScan.ts#L21)
 
 ___
 
@@ -78,7 +78,7 @@ ___
 
 #### Defined in
 
-[src/scan/PrefixScan.ts:17](https://github.com/mighdoll/stoneberry/blob/650c216/src/scan/PrefixScan.ts#L17)
+[src/scan/PrefixScan.ts:17](https://github.com/mighdoll/stoneberry/blob/6a5b5a4/src/scan/PrefixScan.ts#L17)
 
 ___
 
@@ -88,7 +88,7 @@ ___
 
 #### Defined in
 
-[src/scan/PrefixScan.ts:19](https://github.com/mighdoll/stoneberry/blob/650c216/src/scan/PrefixScan.ts#L19)
+[src/scan/PrefixScan.ts:19](https://github.com/mighdoll/stoneberry/blob/6a5b5a4/src/scan/PrefixScan.ts#L19)
 
 ___
 
@@ -98,4 +98,4 @@ ___
 
 #### Defined in
 
-[src/scan/PrefixScan.ts:20](https://github.com/mighdoll/stoneberry/blob/650c216/src/scan/PrefixScan.ts#L20)
+[src/scan/PrefixScan.ts:20](https://github.com/mighdoll/stoneberry/blob/6a5b5a4/src/scan/PrefixScan.ts#L20)

@@ -40,6 +40,8 @@ const config = {
       {
         entryPoints: ["../src/scan/PrefixScan.ts"],
         tsconfig: "../tsconfig.json",
+        excludePrivate: true,
+        excludeInternal: true,
       },
     ],
   ],
