@@ -28,9 +28,9 @@ So three levels handles e.g. 16M elements (256 ** 3) if workgroup size is 256.
 
 ## Type parameters
 
-| Name | Type |
-| :------ | :------ |
-| `T` | `number` |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `T` | `number` | Type of returned elements from the scan |
 
 ## Hierarchy
 
@@ -66,23 +66,9 @@ HasReactive.constructor
 
 #### Defined in
 
-[src/scan/PrefixScan.ts:71](https://github.com/mighdoll/stoneberry/blob/6a5b5a4/src/scan/PrefixScan.ts#L71)
+[src/scan/PrefixScan.ts:73](https://github.com/mighdoll/stoneberry/blob/35485a4/src/scan/PrefixScan.ts#L73)
 
 ## Properties
-
-### \_\_reactive
-
-• `Optional` **\_\_reactive**: `Record`<`string`, `Reactive`<`unknown`\>\>
-
-#### Inherited from
-
-HasReactive.\_\_reactive
-
-#### Defined in
-
-node_modules/.pnpm/@reactively+decorate@0.0.3/node_modules/@reactively/decorate/dist/decorate.d.ts:13
-
-___
 
 ### exclusive
 
@@ -90,7 +76,7 @@ ___
 
 #### Defined in
 
-[src/scan/PrefixScan.ts:65](https://github.com/mighdoll/stoneberry/blob/6a5b5a4/src/scan/PrefixScan.ts#L65)
+[src/scan/PrefixScan.ts:67](https://github.com/mighdoll/stoneberry/blob/35485a4/src/scan/PrefixScan.ts#L67)
 
 ___
 
@@ -100,7 +86,7 @@ ___
 
 #### Defined in
 
-[src/scan/PrefixScan.ts:64](https://github.com/mighdoll/stoneberry/blob/6a5b5a4/src/scan/PrefixScan.ts#L64)
+[src/scan/PrefixScan.ts:66](https://github.com/mighdoll/stoneberry/blob/35485a4/src/scan/PrefixScan.ts#L66)
 
 ___
 
@@ -110,7 +96,7 @@ ___
 
 #### Defined in
 
-[src/scan/PrefixScan.ts:63](https://github.com/mighdoll/stoneberry/blob/6a5b5a4/src/scan/PrefixScan.ts#L63)
+[src/scan/PrefixScan.ts:65](https://github.com/mighdoll/stoneberry/blob/35485a4/src/scan/PrefixScan.ts#L65)
 
 ___
 
@@ -120,7 +106,7 @@ ___
 
 #### Defined in
 
-[src/scan/PrefixScan.ts:61](https://github.com/mighdoll/stoneberry/blob/6a5b5a4/src/scan/PrefixScan.ts#L61)
+[src/scan/PrefixScan.ts:63](https://github.com/mighdoll/stoneberry/blob/35485a4/src/scan/PrefixScan.ts#L63)
 
 ___
 
@@ -130,7 +116,7 @@ ___
 
 #### Defined in
 
-[src/scan/PrefixScan.ts:60](https://github.com/mighdoll/stoneberry/blob/6a5b5a4/src/scan/PrefixScan.ts#L60)
+[src/scan/PrefixScan.ts:62](https://github.com/mighdoll/stoneberry/blob/35485a4/src/scan/PrefixScan.ts#L62)
 
 ___
 
@@ -140,7 +126,7 @@ ___
 
 #### Defined in
 
-[src/scan/PrefixScan.ts:62](https://github.com/mighdoll/stoneberry/blob/6a5b5a4/src/scan/PrefixScan.ts#L62)
+[src/scan/PrefixScan.ts:64](https://github.com/mighdoll/stoneberry/blob/35485a4/src/scan/PrefixScan.ts#L64)
 
 ## Accessors
 
@@ -154,7 +140,7 @@ ___
 
 #### Defined in
 
-[src/scan/PrefixScan.ts:96](https://github.com/mighdoll/stoneberry/blob/6a5b5a4/src/scan/PrefixScan.ts#L96)
+[src/scan/PrefixScan.ts:98](https://github.com/mighdoll/stoneberry/blob/35485a4/src/scan/PrefixScan.ts#L98)
 
 ## Methods
 
@@ -178,7 +164,7 @@ ComposableShader.commands
 
 #### Defined in
 
-[src/scan/PrefixScan.ts:76](https://github.com/mighdoll/stoneberry/blob/6a5b5a4/src/scan/PrefixScan.ts#L76)
+[src/scan/PrefixScan.ts:78](https://github.com/mighdoll/stoneberry/blob/35485a4/src/scan/PrefixScan.ts#L78)
 
 ___
 
@@ -192,7 +178,7 @@ ___
 
 #### Defined in
 
-[src/scan/PrefixScan.ts:80](https://github.com/mighdoll/stoneberry/blob/6a5b5a4/src/scan/PrefixScan.ts#L80)
+[src/scan/PrefixScan.ts:82](https://github.com/mighdoll/stoneberry/blob/35485a4/src/scan/PrefixScan.ts#L82)
 
 ___
 
@@ -208,4 +194,4 @@ Execute the prefix scan and copy the results back to the CPU
 
 #### Defined in
 
-[src/scan/PrefixScan.ts:85](https://github.com/mighdoll/stoneberry/blob/6a5b5a4/src/scan/PrefixScan.ts#L85)
+[src/scan/PrefixScan.ts:87](https://github.com/mighdoll/stoneberry/blob/35485a4/src/scan/PrefixScan.ts#L87)

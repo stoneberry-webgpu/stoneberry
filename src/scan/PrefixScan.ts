@@ -52,6 +52,8 @@ const defaults: Partial<PrefixScanArgs> = {
  * For for very large data sets, steps 2 and 3 repeat heirarchically.
  * Each level of summing reduces the data set by a factor of the workgroup size.
  * So three levels handles e.g. 16M elements (256 ** 3) if workgroup size is 256.
+ * 
+ * @typeParam T - Type of elements returned from the scan
  */
 export class PrefixScan<T = number>
   extends HasReactive
