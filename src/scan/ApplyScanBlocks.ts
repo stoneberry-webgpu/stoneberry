@@ -8,7 +8,7 @@ import {
 } from "thimbleberry";
 import { getApplyBlocksPipeline } from "./ApplyScanBlocksPipeline";
 import { ScanTemplate, sumU32 } from "./ScanTemplate.js";
-import { Cache, ComposableShader } from "./Scan.js";
+import { Cache, ComposableShader } from "../util/Util.js";
 
 /** @internal */
 export interface ApplyScanBlocksArgs {

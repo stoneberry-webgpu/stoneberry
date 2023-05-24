@@ -8,18 +8,19 @@ import {
   withBufferCopy,
 } from "thimbleberry";
 import { ApplyScanBlocks } from "./ApplyScanBlocks.js";
-import { Cache, ComposableShader, ValueOrFn } from "./Scan.js";
+import { Cache, ComposableShader, ValueOrFn } from "../util/Util.js";
 import { ScanTemplate, sumU32 } from "./ScanTemplate.js";
 import { WorkgroupScan } from "./WorkgroupScan.js";
 
-
-/** Parameters to construct a {@link PrefixScan} instance */
+/** Parameters to construct a {@link PrefixScan} instance.  */
 export interface PrefixScanArgs {
   device: GPUDevice;
 
-  /** Source data to be scanned. 
-   * If a function returning a buffer is provided, the function 
-   * will be executed whenever src is read.
+  /** 
+   * Source data to be scanned.
+   * 
+   * A function returning the source buffer will be executed lazily, 
+   * and reexecuted if the functions `@reactively` source values change.
    */
   src: ValueOrFn<GPUBuffer>;
 
@@ -59,9 +60,9 @@ const defaults: Partial<PrefixScanArgs> = {
  * instantiate a PrefixScan with sum to get prefix-sum, or use another template for
  * other parallel scan applications.
  *
- * For small data sets that fit in workgroup, only a single shader pass is needed. 
+ * For small data sets that fit in workgroup, only a single shader pass is needed.
  * For larger data sets, a sequence of shaders is orchestrated as follows:
- * 
+ *
  *   1. One shader does a prefix scan on each workgroup sized chunk of data.
  *     It emits a partial prefix sum for each workgroup and single block level sum from each workgroup
  *   2. Another instance of the same shader does a prefix scan on the block sums from the previous shader.
@@ -97,11 +98,10 @@ export class PrefixScan<T = number> extends HasReactive implements ComposableSha
    */
   @reactively exclusive!: boolean;
 
-  /** Initial value for exclusive scan 
-   * @defaultValue template identity 
+  /** Initial value for exclusive scan
+   * @defaultValue template identity
    */
   @reactively initialValue?: number;
-
 
   /** start index in src buffer of range to scan (0 if undefined) */
   //  start?: ValueOrFn<number>; // NYI
@@ -177,10 +177,10 @@ export class PrefixScan<T = number> extends HasReactive implements ComposableSha
     return shader;
   }
 
-  /** 
+  /**
    * Shaders to scan intermediate block sums.
    * Multiple levels of scanning may be required for large sums.
-   * @internal 
+   * @internal
    */
   @reactively get _blockScans(): WorkgroupScan[] {
     const sourceElements = this.sourceSize / Uint32Array.BYTES_PER_ELEMENT;

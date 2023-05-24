@@ -6,7 +6,7 @@ import { assignParams, reactiveTrackUse } from "thimbleberry";
 import { trackContext } from "thimbleberry";
 import { getWorkgroupScanPipeline } from "./WorkgroupScanPipeline";
 import { ScanTemplate, sumU32 } from "./ScanTemplate.js";
-import { Cache, ComposableShader, ValueOrFn } from "./Scan.js";
+import { Cache, ComposableShader, ValueOrFn } from "../util/Util.js";
 
 /** @internal */
 export interface WorkgroupScanArgs {

@@ -1,5 +1,5 @@
 {
-  "entryPoints" : ["src/scan"], 
+  "entryPoints" : ["src/scan", "src/util"], 
   "entryPointStrategy" : "expand", 
   "out": "docs",
   "plugin": ["typedoc-plugin-markdown"],
