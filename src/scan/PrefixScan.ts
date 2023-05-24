@@ -39,7 +39,7 @@ export interface PrefixScanArgs {
   /** {@inheritDoc PrefixScan#workgroupLength} */
   workgroupLength?: number;
 
-  /** {@inheritDoc PrefixScan#pipelineCache} */
+  /** cache for GPUComputePipeline or GPURenderPipeline */
   pipelineCache?: <T extends object>() => Cache<T>;
 }
 
