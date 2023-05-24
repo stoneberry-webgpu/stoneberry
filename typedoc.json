@@ -1,10 +1,14 @@
 {
-  "entryPoints" : ["src/scan", "src/util"], 
-  "entryPointStrategy" : "expand", 
+  "entryPoints": ["src/index.ts"],
+  "tsconfig": "./tsconfig.json",
+  "entryPointStrategy": "resolve",
   "out": "docs",
   "plugin": ["typedoc-plugin-markdown"],
   "excludeInternal": true,
   "excludePrivate": true,
   "excludeNotDocumented": true,
-  "excludeNotDocumentedKinds": ["Module"]
+  "excludeNotDocumentedKinds": [
+    "Module",
+    "Namespace"
+  ]
 }

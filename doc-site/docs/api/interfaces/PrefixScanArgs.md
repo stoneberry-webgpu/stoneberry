@@ -6,7 +6,7 @@ sidebar_position: 0
 custom_edit_url: null
 ---
 
-Parameters to construct a [PrefixScan](../classes/PrefixScan.md) instance
+Parameters to construct a [PrefixScan](../classes/PrefixScan.md) instance.
 
 ## Properties
 
@@ -16,7 +16,7 @@ Parameters to construct a [PrefixScan](../classes/PrefixScan.md) instance
 
 #### Defined in
 
-[src/scan/PrefixScan.ts:18](https://github.com/mighdoll/stoneberry/blob/a0ccd1d/src/scan/PrefixScan.ts#L18)
+[src/scan/PrefixScan.ts:17](https://github.com/mighdoll/stoneberry/blob/6624a50/src/scan/PrefixScan.ts#L17)
 
 ___
 
@@ -30,7 +30,7 @@ as the first element and stopping before the final source element.
 
 #### Defined in
 
-[src/scan/PrefixScan.ts:30](https://github.com/mighdoll/stoneberry/blob/a0ccd1d/src/scan/PrefixScan.ts#L30)
+[src/scan/PrefixScan.ts:31](https://github.com/mighdoll/stoneberry/blob/6624a50/src/scan/PrefixScan.ts#L31)
 
 ___
 
@@ -42,7 +42,7 @@ Initial value for exclusive scan
 
 #### Defined in
 
-[src/scan/PrefixScan.ts:33](https://github.com/mighdoll/stoneberry/blob/a0ccd1d/src/scan/PrefixScan.ts#L33)
+[src/scan/PrefixScan.ts:34](https://github.com/mighdoll/stoneberry/blob/6624a50/src/scan/PrefixScan.ts#L34)
 
 ___
 
@@ -54,19 +54,19 @@ Debug label attached to gpu objects for error reporting
 
 #### Defined in
 
-[src/scan/PrefixScan.ts:36](https://github.com/mighdoll/stoneberry/blob/a0ccd1d/src/scan/PrefixScan.ts#L36)
+[src/scan/PrefixScan.ts:37](https://github.com/mighdoll/stoneberry/blob/6624a50/src/scan/PrefixScan.ts#L37)
 
 ___
 
 ### pipelineCache
 
-• `Optional` **pipelineCache**: <T\>() => `Cache`<`T`\>
+• `Optional` **pipelineCache**: <T\>() => [`Cache`](Cache.md)<`T`\>
 
 #### Type declaration
 
-▸ <`T`\>(): `Cache`<`T`\>
+▸ <`T`\>(): [`Cache`](Cache.md)<`T`\>
 
-{@inheritDoc PrefixScan#pipelineCache}
+cache for GPUComputePipeline or GPURenderPipeline
 
 ##### Type parameters
 
@@ -76,25 +76,26 @@ ___
 
 ##### Returns
 
-`Cache`<`T`\>
+[`Cache`](Cache.md)<`T`\>
 
 #### Defined in
 
-[src/scan/PrefixScan.ts:42](https://github.com/mighdoll/stoneberry/blob/a0ccd1d/src/scan/PrefixScan.ts#L42)
+[src/scan/PrefixScan.ts:43](https://github.com/mighdoll/stoneberry/blob/6624a50/src/scan/PrefixScan.ts#L43)
 
 ___
 
 ### src
 
-• **src**: `ValueOrFn`<`GPUBuffer`\>
+• **src**: [`ValueOrFn`](../modules.md#valueorfn)<`GPUBuffer`\>
 
-Source data to be scanned. 
-If a function returning a buffer is provided, the function 
-will be executed whenever src is read.
+Source data to be scanned.
+
+A function returning the source buffer will be executed lazily, 
+and reexecuted if the functions `@reactively` source values change.
 
 #### Defined in
 
-[src/scan/PrefixScan.ts:24](https://github.com/mighdoll/stoneberry/blob/a0ccd1d/src/scan/PrefixScan.ts#L24)
+[src/scan/PrefixScan.ts:25](https://github.com/mighdoll/stoneberry/blob/6624a50/src/scan/PrefixScan.ts#L25)
 
 ___
 
@@ -106,7 +107,7 @@ customize the type of scan (e.g. prefix sum on 32 bit floats)
 
 #### Defined in
 
-[src/scan/PrefixScan.ts:27](https://github.com/mighdoll/stoneberry/blob/a0ccd1d/src/scan/PrefixScan.ts#L27)
+[src/scan/PrefixScan.ts:28](https://github.com/mighdoll/stoneberry/blob/6624a50/src/scan/PrefixScan.ts#L28)
 
 ___
 
@@ -118,4 +119,4 @@ Override to set compute workgroup size e.g. for testing.
 
 #### Defined in
 
-[src/scan/PrefixScan.ts:39](https://github.com/mighdoll/stoneberry/blob/a0ccd1d/src/scan/PrefixScan.ts#L39)
+[src/scan/PrefixScan.ts:40](https://github.com/mighdoll/stoneberry/blob/6624a50/src/scan/PrefixScan.ts#L40)

@@ -38,10 +38,13 @@ const config = {
 
       // Plugin / TypeDoc options
       {
-        entryPoints: ["../src/scan/PrefixScan.ts"],
+        entryPoints: ["../src/index.ts"],
+        entryPointStrategy: "resolve",
         tsconfig: "../tsconfig.json",
         excludePrivate: true,
         excludeInternal: true,
+        excludeNotDocumented: true,
+        excludeNotDocumentedKinds: ["Module", "Namespace"],
       },
     ],
   ],

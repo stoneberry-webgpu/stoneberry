@@ -13,7 +13,7 @@ The scan operation is parameterized by a template mechanism. The user can
 instantiate a PrefixScan with sum to get prefix-sum, or use another template for
 other parallel scan applications.
 
-For small data sets that fit in workgroup, only a single shader pass is needed. 
+For small data sets that fit in workgroup, only a single shader pass is needed.
 For larger data sets, a sequence of shaders is orchestrated as follows:
 
   1. One shader does a prefix scan on each workgroup sized chunk of data.
@@ -40,7 +40,7 @@ So three levels handles e.g. 16M elements (256 ** 3) if the workgroup size is 25
 
 ## Implements
 
-- `ComposableShader`
+- [`ComposableShader`](../interfaces/ComposableShader.md)
 
 ## Constructors
 
@@ -68,7 +68,7 @@ HasReactive.constructor
 
 #### Defined in
 
-[src/scan/PrefixScan.ts:120](https://github.com/mighdoll/stoneberry/blob/a0ccd1d/src/scan/PrefixScan.ts#L120)
+[src/scan/PrefixScan.ts:120](https://github.com/mighdoll/stoneberry/blob/6624a50/src/scan/PrefixScan.ts#L120)
 
 ## Properties
 
@@ -86,7 +86,7 @@ false (inclusive scan).
 
 #### Defined in
 
-[src/scan/PrefixScan.ts:98](https://github.com/mighdoll/stoneberry/blob/a0ccd1d/src/scan/PrefixScan.ts#L98)
+[src/scan/PrefixScan.ts:99](https://github.com/mighdoll/stoneberry/blob/6624a50/src/scan/PrefixScan.ts#L99)
 
 ___
 
@@ -102,7 +102,7 @@ template identity
 
 #### Defined in
 
-[src/scan/PrefixScan.ts:103](https://github.com/mighdoll/stoneberry/blob/a0ccd1d/src/scan/PrefixScan.ts#L103)
+[src/scan/PrefixScan.ts:104](https://github.com/mighdoll/stoneberry/blob/6624a50/src/scan/PrefixScan.ts#L104)
 
 ___
 
@@ -114,7 +114,7 @@ Debug label attached to gpu objects for error reporting
 
 #### Defined in
 
-[src/scan/PrefixScan.ts:85](https://github.com/mighdoll/stoneberry/blob/a0ccd1d/src/scan/PrefixScan.ts#L85)
+[src/scan/PrefixScan.ts:86](https://github.com/mighdoll/stoneberry/blob/6624a50/src/scan/PrefixScan.ts#L86)
 
 ___
 
@@ -126,7 +126,7 @@ Source data to be scanned
 
 #### Defined in
 
-[src/scan/PrefixScan.ts:82](https://github.com/mighdoll/stoneberry/blob/a0ccd1d/src/scan/PrefixScan.ts#L82)
+[src/scan/PrefixScan.ts:83](https://github.com/mighdoll/stoneberry/blob/6624a50/src/scan/PrefixScan.ts#L83)
 
 ___
 
@@ -138,7 +138,7 @@ customize the type of scan (e.g. prefix sum on 32 bit floats)
 
 #### Defined in
 
-[src/scan/PrefixScan.ts:79](https://github.com/mighdoll/stoneberry/blob/a0ccd1d/src/scan/PrefixScan.ts#L79)
+[src/scan/PrefixScan.ts:80](https://github.com/mighdoll/stoneberry/blob/6624a50/src/scan/PrefixScan.ts#L80)
 
 ___
 
@@ -154,7 +154,7 @@ max workgroup size of the `GPUDevice`
 
 #### Defined in
 
-[src/scan/PrefixScan.ts:90](https://github.com/mighdoll/stoneberry/blob/a0ccd1d/src/scan/PrefixScan.ts#L90)
+[src/scan/PrefixScan.ts:91](https://github.com/mighdoll/stoneberry/blob/6624a50/src/scan/PrefixScan.ts#L91)
 
 ## Accessors
 
@@ -170,13 +170,15 @@ Buffer Containing results of the scan after the shader has run.
 
 #### Defined in
 
-[src/scan/PrefixScan.ts:150](https://github.com/mighdoll/stoneberry/blob/a0ccd1d/src/scan/PrefixScan.ts#L150)
+[src/scan/PrefixScan.ts:150](https://github.com/mighdoll/stoneberry/blob/6624a50/src/scan/PrefixScan.ts#L150)
 
 ## Methods
 
 ### commands
 
 ▸ **commands**(`commandEncoder`): `void`
+
+Add compute or render passes for this shader to the provided GPUCommandEncoder
 
 #### Parameters
 
@@ -190,11 +192,11 @@ Buffer Containing results of the scan after the shader has run.
 
 #### Implementation of
 
-ComposableShader.commands
+[ComposableShader](../interfaces/ComposableShader.md).[commands](../interfaces/ComposableShader.md#commands)
 
 #### Defined in
 
-[src/scan/PrefixScan.ts:125](https://github.com/mighdoll/stoneberry/blob/a0ccd1d/src/scan/PrefixScan.ts#L125)
+[src/scan/PrefixScan.ts:125](https://github.com/mighdoll/stoneberry/blob/6624a50/src/scan/PrefixScan.ts#L125)
 
 ___
 
@@ -210,7 +212,7 @@ Release the scanResult buffer for destruction.
 
 #### Defined in
 
-[src/scan/PrefixScan.ts:130](https://github.com/mighdoll/stoneberry/blob/a0ccd1d/src/scan/PrefixScan.ts#L130)
+[src/scan/PrefixScan.ts:130](https://github.com/mighdoll/stoneberry/blob/6624a50/src/scan/PrefixScan.ts#L130)
 
 ___
 
@@ -229,4 +231,4 @@ the scanned result in an array
 
 #### Defined in
 
-[src/scan/PrefixScan.ts:138](https://github.com/mighdoll/stoneberry/blob/a0ccd1d/src/scan/PrefixScan.ts#L138)
+[src/scan/PrefixScan.ts:138](https://github.com/mighdoll/stoneberry/blob/6624a50/src/scan/PrefixScan.ts#L138)
