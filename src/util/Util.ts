@@ -1,3 +1,5 @@
+// TODO  these are similar to thimbleberry. harmonize and re-export from thimbleberry
+
 export type ValueOrFn<T> = T | (() => T);
 
 /**
