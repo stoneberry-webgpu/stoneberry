@@ -4,7 +4,7 @@ declare module "*?raw" {
   export default content;
 }
 
-declare module "!!raw-loader!*" {
+declare module "*?.example.ts" {
   const content: string;
   export default content;
 }

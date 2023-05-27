@@ -5,6 +5,7 @@ import useDocusaurusContext from "@docusaurus/useDocusaurusContext";
 import Layout from "@theme/Layout";
 
 import styles from "./index.module.css";
+import { MainExample } from "../components/MainExample";
 
 function HomepageHeader(): JSX.Element {
   const { siteConfig } = useDocusaurusContext();
@@ -28,26 +29,7 @@ export default function Home(): JSX.Element {
   return (
     <Layout title={`${siteConfig.title}`} description="WebGPU core shaders/>">
       <HomepageHeader />
-      <main>
-        <pre>
-          <code lang="typescript">
-            {`
-        import { PrefixScan } from "stoneberry/scan";
-        import { bufferI32, labeledGpuDevice} from "thimbleberry";
-
-        async function main(): Promise<void> {
-          const device = await labeledGpuDevice();
-          const srcData = [1, 2, 3, 4, 5, 6];
-          const src = bufferI32(device, srcData);
-
-          // inclusive scan
-          const prefixScan = new PrefixScan({ device, src });
-          const inclusiveResult = await prefixScan.scan();
-        }
-         `}
-          </code>
-        </pre>
-      </main>
+      <MainExample />
     </Layout>
   );
 }
