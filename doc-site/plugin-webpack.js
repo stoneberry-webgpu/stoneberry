@@ -8,10 +8,6 @@ module.exports = function (context, opts) {
           fullySpecified: false,
         },
       });
-      config.module.rules.unshift({
-        test: /\.example$/,
-        type: "asset/source",
-      });
     },
   };
 };
