@@ -11,7 +11,8 @@ export function MainExample(): JSX.Element {
     <Sandpack
       template="vite"
       options={{
-        editorHeight: 600,
+        editorHeight: 400,
+        editorWidthPercentage: 60,
         visibleFiles: ["/src/simpleScan.ts"],
         activeFile: "/src/simpleScan.ts",
       }}
