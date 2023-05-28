@@ -23,20 +23,10 @@ export function MainExample(): JSX.Element {
         entry: "/src/simpleScan.ts",
       }}
       files={{
-        "/src/simpleScan.ts": {
-          code: simpleScan,
-        },
-        "/src/renderTable.ts": {
-          code: renderTable,
-        },
-        "tsconfig.json": {
-          code: tsconfig,
-          hidden: true,
-        },
-        "/index.html": {
-          code: indexHtml,
-          hidden: true,
-        },
+        "/src/simpleScan.ts": simpleScan,
+        "/src/renderTable.ts": renderTable,
+        "tsconfig.json": tsconfig,
+        "/index.html": indexHtml,
       }}
     />
   );
