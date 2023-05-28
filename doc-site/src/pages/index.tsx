@@ -5,7 +5,7 @@ import useDocusaurusContext from "@docusaurus/useDocusaurusContext";
 import Layout from "@theme/Layout";
 
 import styles from "./index.module.css";
-import { MainExampleJs } from "../components/MainExampleJs";
+import { MainExample } from "../components/MainExample";
 
 function HomepageHeader(): JSX.Element {
   const { siteConfig } = useDocusaurusContext();
@@ -29,7 +29,7 @@ export default function Home(): JSX.Element {
   return (
     <Layout title={`${siteConfig.title}`} description="WebGPU core shaders/>">
       <HomepageHeader />
-      <MainExampleJs />
+      <MainExample />
     </Layout>
   );
 }
