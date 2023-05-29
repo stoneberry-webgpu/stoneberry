@@ -6,11 +6,11 @@ import indexHtml from "!!raw-loader!../examples/index.html?raw";
 import React from "react";
 
 export interface ExampleProps {
-  exampleCode: string;
+  code : string;
 }
 
-export function MainExample(props: ExampleProps): JSX.Element {
-  const { exampleCode} = props;
+export function ExampleCode(props: ExampleProps): JSX.Element {
+  const { code } = props;
   return (
     <Sandpack
       template="vite"
@@ -28,7 +28,7 @@ export function MainExample(props: ExampleProps): JSX.Element {
         entry: "/src/example.ts",
       }}
       files={{
-        "/src/example.ts": exampleCode,
+        "/src/example.ts": code,
         "/src/exampleUtils.ts": exampleUtils,
         "tsconfig.json": tsconfig,
         "/index.html": indexHtml,
