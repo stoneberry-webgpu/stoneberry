@@ -5,7 +5,7 @@ import useDocusaurusContext from "@docusaurus/useDocusaurusContext";
 import Layout from "@theme/Layout";
 
 import styles from "./index.module.css";
-import { ExampleCode } from "../components/MainExample";
+import { ExampleCode } from "../components/ExampleCode";
 import simpleScan from "!!raw-loader!../../../examples/src/simpleScan.ts?raw";
 
 function HomepageHeader(): JSX.Element {
