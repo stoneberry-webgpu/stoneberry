@@ -18,4 +18,4 @@ dist
 yalc.lock
 
 # local docs for testing (instead we're using doc-site)
-docs
+./docs
