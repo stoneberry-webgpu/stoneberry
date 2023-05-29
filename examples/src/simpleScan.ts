@@ -1,6 +1,6 @@
 import { PrefixScan } from "stoneberry/scan";
 import { bufferI32 } from "thimbleberry";
-import { renderTable, withGpuDevice } from "./renderTable.js";
+import { renderTable, withGpuDevice } from "./exampleUtils.js";
 
 withGpuDevice(main);
 

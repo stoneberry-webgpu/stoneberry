@@ -1,6 +1,6 @@
 import { Sandpack } from "@codesandbox/sandpack-react";
 import simpleScan from "!!raw-loader!../../../examples/src/simpleScan.ts?raw";
-import renderTable from "!!raw-loader!../../../examples/src/renderTable.ts?raw";
+import renderTable from "!!raw-loader!../../../examples/src/exampleUtils.ts?raw";
 import tsconfig from "!!raw-loader!../../../examples/tsconfig.json?raw";
 import indexHtml from "!!raw-loader!../../../examples/index.html?raw";
 
@@ -25,7 +25,7 @@ export function MainExample(): JSX.Element {
       }}
       files={{
         "/src/simpleScan.ts": simpleScan,
-        "/src/renderTable.ts": renderTable,
+        "/src/exampleUtils.ts": renderTable,
         "tsconfig.json": tsconfig,
         "/index.html": indexHtml,
       }}

@@ -1,5 +1,7 @@
 import { labeledGpuDevice } from "thimbleberry";
 
+/** utilities for documentation examples */
+
 type ResultRow = [string, number[]];
 
 /** get a webgpu device or report an error */
