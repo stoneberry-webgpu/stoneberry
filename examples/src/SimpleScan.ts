@@ -1,11 +1,10 @@
 import { PrefixScan } from "stoneberry/scan";
-import { bufferI32, labeledGpuDevice } from "thimbleberry";
-import { renderTable } from "./renderTable.js";
+import { bufferI32 } from "thimbleberry";
+import { renderTable, withGpuDevice } from "./renderTable.js";
 
-main();
+withGpuDevice(main);
 
-async function main(): Promise<void> {
-  const device = await labeledGpuDevice();
+async function main(device: GPUDevice): Promise<void> {
   const srcData = [1, 2, 3, 4, 5, 6];
   const src = bufferI32(device, srcData);
 
