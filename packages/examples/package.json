@@ -1,9 +1,11 @@
 {
-  "name": "stoneberry-examples",
+  "name": "examples",
   "type": "module",
   "scripts": {
     "dev": "vite dev",
-    "prod": "vite build"
+    "prod": "vite build",
+    "build": "esbuild src/exampleUtils.ts --bundle --packages=external --format=esm --loader:.wgsl=text --sourcemap --outdir=../../dist",
+    "build:types": "tsc --project tsconfig.examples.json"
   },
   "dependencies": {
     "stoneberry": "^0.1.4",
