@@ -18,7 +18,9 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,
-    "rootDir": "src"
+    "paths": {
+      "stoneberry/scan": ["../../src/scan"]
+    }
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules"]
