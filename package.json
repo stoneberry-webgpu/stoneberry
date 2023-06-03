@@ -1,6 +1,6 @@
 {
   "name": "stoneberry",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "description": "core WebGPU shaders",
   "type": "module",
   "scripts": {
@@ -17,7 +17,7 @@
   "files": [
     "dist",
     "src",
-    "examples/src"
+    "packages/examples/src"
   ],
   "exports": {
     "./scan": {
