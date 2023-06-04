@@ -1,6 +1,6 @@
 {
   "name": "stoneberry-examples",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "type": "module",
   "scripts": {
     "dev": "vite dev",
@@ -9,7 +9,7 @@
     "build": "esbuild src/exampleUtils.ts --bundle --packages=external --format=esm --loader:.wgsl=text --sourcemap --outdir=dist",
     "build:types": "tsc --project tsconfig.examples.json"
   },
-  "exports" : {
+  "exports": {
     "import": "./dist/exampleUtils.js"
   },
   "license": "ISC",
@@ -29,6 +29,7 @@
     "esbuild": "^0.17.19",
     "rimraf": "^5.0.1",
     "typescript": "^5.0.4",
-    "vite": "^4.3.8"
+    "vite": "^4.3.8",
+    "vite-tsconfig-paths": "^4.2.0"
   }
 }
