@@ -1,6 +1,6 @@
 {
   "name": "stoneberry-examples",
-  "version": "0.1.5",
+  "version": "0.1.0",
   "type": "module",
   "scripts": {
     "dev": "vite dev",
@@ -8,6 +8,9 @@
     "prepublish": "rimraf dist && pnpm run build && pnpm run build:types",
     "build": "esbuild src/exampleUtils.ts --bundle --packages=external --format=esm --loader:.wgsl=text --sourcemap --outdir=dist",
     "build:types": "tsc --project tsconfig.examples.json"
+  },
+  "exports" : {
+    "import": "./dist/exampleUtils.js"
   },
   "license": "ISC",
   "keywords": [
