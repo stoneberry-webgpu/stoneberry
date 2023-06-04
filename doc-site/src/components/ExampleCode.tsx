@@ -1,7 +1,7 @@
 import { Sandpack } from "@codesandbox/sandpack-react";
-import exampleUtils from "!!raw-loader!../../../examples/src/exampleUtils.ts?raw";
-import tsconfig from "!!raw-loader!../../../examples/tsconfig.json?raw";
-import indexHtml from "!!raw-loader!../examples/index.html?raw";
+import exampleUtils from "!!raw-loader!../../../packages/examples/src/exampleUtils.ts?raw";
+import tsconfig from "!!raw-loader!../../../packages/examples/tsconfig.json?raw";
+import indexHtml from "!!raw-loader!../../../packages/examples/index.html?raw";
 
 import React from "react";
 

@@ -6,7 +6,7 @@ import Layout from "@theme/Layout";
 
 import styles from "./index.module.css";
 import { ExampleCode } from "../components/ExampleCode";
-import simpleScan from "!!raw-loader!../../../examples/src/simpleScan.ts?raw";
+import simpleScan from "!!raw-loader!../../../packages/examples/src/simpleScan.ts?raw";
 
 function HomepageHeader(): JSX.Element {
   const { siteConfig } = useDocusaurusContext();
