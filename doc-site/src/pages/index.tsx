@@ -5,8 +5,8 @@ import useDocusaurusContext from "@docusaurus/useDocusaurusContext";
 import Layout from "@theme/Layout";
 
 import styles from "./index.module.css";
-import { ExampleCode } from "../components/ExampleCode";
 import simpleScan from "!!raw-loader!../../../packages/examples/src/simpleScan.ts?raw";
+const { StoneberryExample } = await import("stoneberry-code-example");
 
 function HomepageHeader(): JSX.Element {
   const { siteConfig } = useDocusaurusContext();
@@ -30,7 +30,7 @@ export default function Home(): JSX.Element {
   return (
     <Layout title={`${siteConfig.title}`} description="WebGPU core shaders/>">
       <HomepageHeader />
-      <ExampleCode code={simpleScan} />
+      <StoneberryExample code={simpleScan} />
     </Layout>
   );
 }

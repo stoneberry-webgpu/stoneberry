@@ -60,11 +60,13 @@ const config = {
           sidebarPath: require.resolve("./sidebars.js"),
           // Please change this to your repo.
           // Remove this to remove the "edit this page" links.
-          editUrl:
-            "https://github.com/mighdoll/stoneberry/doc-site/",
+          editUrl: "https://github.com/mighdoll/stoneberry/doc-site/",
         },
         theme: {
-          customCss: require.resolve("./src/css/custom.css"),
+          customCss: [
+            require.resolve("./src/css/custom.css"),
+            require.resolve("./node_modules/stoneberry-code-example/dist/style.css"),
+          ],
         },
       }),
     ],
