@@ -68,7 +68,7 @@ HasReactive.constructor
 
 #### Defined in
 
-[src/scan/PrefixScan.ts:120](https://github.com/mighdoll/stoneberry/blob/0aebc99/src/scan/PrefixScan.ts#L120)
+[src/scan/PrefixScan.ts:120](https://github.com/mighdoll/stoneberry/blob/7419910/src/scan/PrefixScan.ts#L120)
 
 ## Properties
 
@@ -86,7 +86,7 @@ false (inclusive scan).
 
 #### Defined in
 
-[src/scan/PrefixScan.ts:99](https://github.com/mighdoll/stoneberry/blob/0aebc99/src/scan/PrefixScan.ts#L99)
+[src/scan/PrefixScan.ts:99](https://github.com/mighdoll/stoneberry/blob/7419910/src/scan/PrefixScan.ts#L99)
 
 ___
 
@@ -102,7 +102,7 @@ template identity
 
 #### Defined in
 
-[src/scan/PrefixScan.ts:104](https://github.com/mighdoll/stoneberry/blob/0aebc99/src/scan/PrefixScan.ts#L104)
+[src/scan/PrefixScan.ts:104](https://github.com/mighdoll/stoneberry/blob/7419910/src/scan/PrefixScan.ts#L104)
 
 ___
 
@@ -114,7 +114,7 @@ Debug label attached to gpu objects for error reporting
 
 #### Defined in
 
-[src/scan/PrefixScan.ts:86](https://github.com/mighdoll/stoneberry/blob/0aebc99/src/scan/PrefixScan.ts#L86)
+[src/scan/PrefixScan.ts:86](https://github.com/mighdoll/stoneberry/blob/7419910/src/scan/PrefixScan.ts#L86)
 
 ___
 
@@ -126,7 +126,7 @@ Source data to be scanned
 
 #### Defined in
 
-[src/scan/PrefixScan.ts:83](https://github.com/mighdoll/stoneberry/blob/0aebc99/src/scan/PrefixScan.ts#L83)
+[src/scan/PrefixScan.ts:83](https://github.com/mighdoll/stoneberry/blob/7419910/src/scan/PrefixScan.ts#L83)
 
 ___
 
@@ -138,7 +138,7 @@ customize the type of scan (e.g. prefix sum on 32 bit floats)
 
 #### Defined in
 
-[src/scan/PrefixScan.ts:80](https://github.com/mighdoll/stoneberry/blob/0aebc99/src/scan/PrefixScan.ts#L80)
+[src/scan/PrefixScan.ts:80](https://github.com/mighdoll/stoneberry/blob/7419910/src/scan/PrefixScan.ts#L80)
 
 ___
 
@@ -154,7 +154,7 @@ max workgroup size of the `GPUDevice`
 
 #### Defined in
 
-[src/scan/PrefixScan.ts:91](https://github.com/mighdoll/stoneberry/blob/0aebc99/src/scan/PrefixScan.ts#L91)
+[src/scan/PrefixScan.ts:91](https://github.com/mighdoll/stoneberry/blob/7419910/src/scan/PrefixScan.ts#L91)
 
 ## Accessors
 
@@ -170,7 +170,7 @@ Buffer Containing results of the scan after the shader has run.
 
 #### Defined in
 
-[src/scan/PrefixScan.ts:150](https://github.com/mighdoll/stoneberry/blob/0aebc99/src/scan/PrefixScan.ts#L150)
+[src/scan/PrefixScan.ts:150](https://github.com/mighdoll/stoneberry/blob/7419910/src/scan/PrefixScan.ts#L150)
 
 ## Methods
 
@@ -196,7 +196,7 @@ Add compute or render passes for this shader to the provided GPUCommandEncoder
 
 #### Defined in
 
-[src/scan/PrefixScan.ts:125](https://github.com/mighdoll/stoneberry/blob/0aebc99/src/scan/PrefixScan.ts#L125)
+[src/scan/PrefixScan.ts:125](https://github.com/mighdoll/stoneberry/blob/7419910/src/scan/PrefixScan.ts#L125)
 
 ___
 
@@ -212,7 +212,7 @@ Release the scanResult buffer for destruction.
 
 #### Defined in
 
-[src/scan/PrefixScan.ts:130](https://github.com/mighdoll/stoneberry/blob/0aebc99/src/scan/PrefixScan.ts#L130)
+[src/scan/PrefixScan.ts:130](https://github.com/mighdoll/stoneberry/blob/7419910/src/scan/PrefixScan.ts#L130)
 
 ___
 
@@ -231,4 +231,4 @@ the scanned result in an array
 
 #### Defined in
 
-[src/scan/PrefixScan.ts:138](https://github.com/mighdoll/stoneberry/blob/0aebc99/src/scan/PrefixScan.ts#L138)
+[src/scan/PrefixScan.ts:138](https://github.com/mighdoll/stoneberry/blob/7419910/src/scan/PrefixScan.ts#L138)

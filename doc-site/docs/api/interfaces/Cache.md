@@ -32,7 +32,7 @@ API for pluggable cache
 
 #### Defined in
 
-[src/util/Util.ts:15](https://github.com/mighdoll/stoneberry/blob/0aebc99/src/util/Util.ts#L15)
+[src/util/Util.ts:15](https://github.com/mighdoll/stoneberry/blob/7419910/src/util/Util.ts#L15)
 
 ___
 
@@ -53,4 +53,4 @@ ___
 
 #### Defined in
 
-[src/util/Util.ts:16](https://github.com/mighdoll/stoneberry/blob/0aebc99/src/util/Util.ts#L16)
+[src/util/Util.ts:16](https://github.com/mighdoll/stoneberry/blob/7419910/src/util/Util.ts#L16)

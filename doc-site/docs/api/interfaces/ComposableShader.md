@@ -32,4 +32,4 @@ Add compute or render passes for this shader to the provided GPUCommandEncoder
 
 #### Defined in
 
-[src/util/Util.ts:10](https://github.com/mighdoll/stoneberry/blob/0aebc99/src/util/Util.ts#L10)
+[src/util/Util.ts:10](https://github.com/mighdoll/stoneberry/blob/7419910/src/util/Util.ts#L10)
