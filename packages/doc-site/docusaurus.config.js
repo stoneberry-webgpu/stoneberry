@@ -40,7 +40,7 @@ const config = {
 
       // Plugin / TypeDoc options
       {
-        entryPoints: ["../src/index.ts"],
+        entryPoints: ["../stoneberry/src/index.ts"],
         entryPointStrategy: "resolve",
         tsconfig: "../tsconfig.json",
         excludePrivate: true,
@@ -60,7 +60,7 @@ const config = {
           sidebarPath: require.resolve("./sidebars.js"),
           // Please change this to your repo.
           // Remove this to remove the "edit this page" links.
-          editUrl: "https://github.com/mighdoll/stoneberry/doc-site/",
+          editUrl: "https://github.com/mighdoll/packages/stoneberry/doc-site/",
         },
         theme: {
           customCss: [
