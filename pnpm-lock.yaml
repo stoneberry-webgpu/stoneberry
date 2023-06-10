@@ -102,8 +102,8 @@ importers:
         specifier: ^17.0.2
         version: 17.0.2(react@17.0.2)
       stoneberry-code-example:
-        specifier: file:../../stoneberry-code-example
-        version: file:../stoneberry-code-example(react-dom@17.0.2)(react@17.0.2)
+        specifier: ^0.1.0
+        version: 0.1.0(react-dom@17.0.2)(react@17.0.2)
       stoneberry-examples:
         specifier: workspace:^
         version: link:../packages/examples
@@ -7500,7 +7500,7 @@ packages:
       fs.realpath: 1.0.0
       inflight: 1.0.6
       inherits: 2.0.4
-      minimatch: 3.0.8
+      minimatch: 3.1.2
       once: 1.4.0
       path-is-absolute: 1.0.1
     dev: true
@@ -9115,10 +9115,10 @@ packages:
       wrap-ansi: 7.0.0
     dev: true
 
-  /live-typescript@0.1.0(react-dom@17.0.2)(react@17.0.2):
-    resolution: {integrity: sha512-oq9sVPsQOK0BY6eC5yhJDO2Vqn9eFbkrV49lcOaOP9tFYBlbnDG7JxtO/7SYW3SYG2aAhVWEZm8T0NXxWgrBvA==}
+  /live-typescript@0.1.1(react-dom@17.0.2)(react@17.0.2):
+    resolution: {integrity: sha512-UVEglkguvNdejYdfxdy17NJfL71zmAQoOLn0baDxaMyFliHl4cQqZl5NYIKL07c2uYHV+tOaLPVaUvZcAjMGrQ==}
     peerDependencies:
-      react: ^17.0.2
+      react: '>=17'
     dependencies:
       '@monaco-editor/react': 4.5.1(monaco-editor@0.39.0)(react-dom@17.0.2)(react@17.0.2)
       monaco-editor: 0.39.0
@@ -12862,6 +12862,23 @@ packages:
     resolution: {integrity: sha512-Rz6yejtVyWnVjC1RFvNmYL10kgjC49EOghxWn0RFqlCHGFpQx+Xe7yW3I4ceK1SGrWIGMjD5Kbue8W/udkbMJg==}
     dev: false
 
+  /stoneberry-code-example@0.1.0(react-dom@17.0.2)(react@17.0.2):
+    resolution: {integrity: sha512-KotvmWfFibSxkOJN+LVX5gA808kAsVF9dejObtLVE/eoy1yAYqSHpcY/pxrVEPDM9bG3hodHuEcqNds2tPro2g==}
+    peerDependencies:
+      react: '>=17'
+      react-dom: '>=17'
+    dependencies:
+      '@monaco-editor/react': 4.5.1(monaco-editor@0.39.0)(react-dom@17.0.2)(react@17.0.2)
+      '@webgpu/types': 0.1.32
+      live-typescript: 0.1.1(react-dom@17.0.2)(react@17.0.2)
+      monaco-editor: 0.39.0
+      react: 17.0.2
+      react-dom: 17.0.2(react@17.0.2)
+      stoneberry: 0.1.4
+      stoneberry-examples: 0.1.1
+      thimbleberry: 0.1.10
+    dev: false
+
   /stoneberry-examples@0.1.1:
     resolution: {integrity: sha512-iTU1QqUOGCFtErdy+qqWHJ+LPn16+87IlShkWnuQnvnTgAYoVvvrLi9TACI8nCexgRT43pCSbvf9yZfxlBDN4g==}
     dependencies:
@@ -14533,34 +14550,4 @@ packages:
 
   /zwitch@1.0.5:
     resolution: {integrity: sha512-V50KMwwzqJV0NpZIZFwfOD5/lyny3WlSzRiXgA0G7VUnRlqttta1L6UQIHzd6EuBY/cHGfwTIck7w1yH6Q5zUw==}
-    dev: false
-
-  'file:':
-    resolution: {directory: '', type: directory}
-    name: stoneberry
-    version: 0.1.6
-    dependencies:
-      '@reactively/core': 0.0.8
-      '@reactively/decorate': 0.0.4
-      thimbleberry: 0.1.10
-    dev: false
-
-  file:../stoneberry-code-example(react-dom@17.0.2)(react@17.0.2):
-    resolution: {directory: ../stoneberry-code-example, type: directory}
-    id: file:../stoneberry-code-example
-    name: stoneberry-code-example
-    version: 0.1.0
-    peerDependencies:
-      react: ^17.0.2
-      react-dom: ^17.0.2
-    dependencies:
-      '@monaco-editor/react': 4.5.1(monaco-editor@0.39.0)(react-dom@17.0.2)(react@17.0.2)
-      '@webgpu/types': 0.1.32
-      live-typescript: 0.1.0(react-dom@17.0.2)(react@17.0.2)
-      monaco-editor: 0.39.0
-      react: 17.0.2
-      react-dom: 17.0.2(react@17.0.2)
-      stoneberry: 'file:'
-      stoneberry-examples: 0.1.1
-      thimbleberry: 0.1.10
     dev: false
