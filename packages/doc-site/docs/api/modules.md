@@ -30,4 +30,4 @@ custom_edit_url: null
 
 #### Defined in
 
-[src/util/Util.ts:3](https://github.com/mighdoll/stoneberry/blob/e82cb1e/src/util/Util.ts#L3)
+[packages/stoneberry/src/util/Util.ts:3](https://github.com/mighdoll/stoneberry/blob/a2da335/packages/stoneberry/src/util/Util.ts#L3)
