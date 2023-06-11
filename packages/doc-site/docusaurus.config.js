@@ -19,7 +19,7 @@ const config = {
 
   // GitHub pages deployment config.
   // If you aren't using GitHub pages, you don't need these.
-  organizationName: "mighdoll", // Usually your GitHub org/user name.
+  organizationName: "stoneberry-webgpu", // Usually your GitHub org/user name.
   projectName: "stoneberry", // Usually your repo name.
 
   onBrokenLinks: "throw",
@@ -60,7 +60,7 @@ const config = {
           sidebarPath: require.resolve("./sidebars.js"),
           // Please change this to your repo.
           // Remove this to remove the "edit this page" links.
-          editUrl: "https://github.com/mighdoll/packages/stoneberry/doc-site/",
+          editUrl: "https://github.com/stoneberry-webgpu/stoneberry/packages/doc-site/",
         },
         theme: {
           customCss: [
@@ -86,7 +86,7 @@ const config = {
             label: "Docs",
           },
           {
-            href: "https://github.com/mighdoll/stoneberry",
+            href: "https://github.com/stoneberry-webgpu/stoneberry",
             label: "GitHub",
             position: "right",
           },
@@ -118,7 +118,7 @@ const config = {
             items: [
               {
                 label: "GitHub",
-                href: "https://github.com/mighdoll/stoneberry",
+                href: "https://github.com/stoneberry-webgpu/stoneberry",
               },
             ],
           },
