@@ -1,6 +1,6 @@
 {
   "name": "stoneberry",
-  "version": "0.1.8",
+  "version": "0.1.9",
   "description": "core WebGPU shaders",
   "type": "module",
   "scripts": {
@@ -58,5 +58,6 @@
     "typescript": "^5.1.3",
     "vite": "^4.3.9",
     "vite-tsconfig-paths": "^4.2.0"
-  }
+  },
+  "repository": "github:stoneberry-webgpu/stoneberry"
 }
