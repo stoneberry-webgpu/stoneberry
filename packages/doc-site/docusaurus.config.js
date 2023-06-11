@@ -42,7 +42,7 @@ const config = {
       {
         entryPoints: ["../stoneberry/src/index.ts"],
         entryPointStrategy: "resolve",
-        tsconfig: "../tsconfig.json",
+        tsconfig: "../stoneberry/tsconfig.json",
         excludePrivate: true,
         excludeInternal: true,
         excludeNotDocumented: true,
