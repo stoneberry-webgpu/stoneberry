@@ -5,7 +5,7 @@ import useDocusaurusContext from "@docusaurus/useDocusaurusContext";
 import Layout from "@theme/Layout";
 
 import styles from "./index.module.css";
-import simpleScan from "!!raw-loader!../../../packages/examples/src/simpleScan.ts?raw";
+import simpleScan from "!!raw-loader!../../../examples/src/simpleScan.ts?raw";
 import { StoneberryExample } from "stoneberry-code-example";
 
 function HomepageHeader(): JSX.Element {
