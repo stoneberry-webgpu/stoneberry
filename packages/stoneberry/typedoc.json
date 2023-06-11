@@ -2,7 +2,7 @@
   "entryPoints": ["src/index.ts"],
   "tsconfig": "./tsconfig.json",
   "entryPointStrategy": "resolve",
-  "out": "docs",
+  "out": "docs-tmp",
   "plugin": ["typedoc-plugin-markdown"],
   "excludeInternal": true,
   "excludePrivate": true,
