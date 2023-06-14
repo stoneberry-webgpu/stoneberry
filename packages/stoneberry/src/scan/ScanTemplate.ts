@@ -5,7 +5,6 @@ export interface ScanTemplate {
   binaryOp: string;
 
   /** return identity element, e.g. zero.  */
-  // TODO make dynamic
   identityOp: string;
 
   /** load an element from the source buffer */
