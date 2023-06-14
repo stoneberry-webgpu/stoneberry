@@ -48,7 +48,7 @@ const defaults: Partial<PrefixScanArgs> = {
   template: sumU32,
   pipelineCache: undefined,
   label: "",
-  initialValue: undefined,
+  initialValue: 0,
   exclusive: false,
 };
 
@@ -99,7 +99,7 @@ export class PrefixScan<T = number> extends HasReactive implements ComposableSha
   @reactively exclusive!: boolean;
 
   /** Initial value for exclusive scan
-   * @defaultValue template identity
+   * @defaultValue 0
    */
   @reactively initialValue?: number;
 
