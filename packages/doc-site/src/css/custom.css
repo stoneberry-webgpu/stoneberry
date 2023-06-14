@@ -30,7 +30,20 @@
   --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
 }
 
-article .codeContainer {
+.codeContainer {
   width: 1150px;
-  margin-left: -50px;
+  max-width: calc(100vw - 300px - 2em); /* sidebar width */
+  padding: 1em;
+  border-radius: 0.5em;
+  margin: auto;
+}
+
+@media (max-width: 997px) {
+  .codeContainer {
+    max-width: calc(100vw - 2em);
+  }
+}
+
+.homePage.codeContainer {
+  max-width: calc(100vw - 2em);
 }

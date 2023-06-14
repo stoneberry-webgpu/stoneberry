@@ -30,7 +30,7 @@ export default function Home(): JSX.Element {
   return (
     <Layout title={`${siteConfig.title}`} description="WebGPU core shaders/>">
       <HomepageHeader />
-      <StoneberryExample code={simpleScan} />
+      <StoneberryExample className="homePage" code={simpleScan} />
     </Layout>
   );
 }
