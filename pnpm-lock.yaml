@@ -85,8 +85,8 @@ importers:
         specifier: ^0.0.4
         version: 0.0.4
       thimbleberry:
-        specifier: ^0.1.10
-        version: 0.1.10
+        specifier: ^0.1.11
+        version: 0.1.11
     devDependencies:
       '@typescript-eslint/eslint-plugin':
         specifier: ^5.59.9
@@ -13671,7 +13671,7 @@ packages:
     resolution: {integrity: sha512-lAduH/LlD2bx6lauOwliNA8Q5zd6HCJHv7yb+gSK5tjZcpP8XX5qW/mHEjAAUI9VGWlUct0fFOVKULqX0PdMIA==}
     dependencies:
       stoneberry: 0.1.6
-      thimbleberry: 0.1.10
+      thimbleberry: 0.1.11
     dev: false
 
   /stoneberry@0.1.6:
@@ -13679,7 +13679,7 @@ packages:
     dependencies:
       '@reactively/core': 0.0.8
       '@reactively/decorate': 0.0.4
-      thimbleberry: 0.1.10
+      thimbleberry: 0.1.11
     dev: false
 
   /stoppable@1.1.0:
@@ -14127,6 +14127,17 @@ packages:
 
   /thimbleberry@0.1.10:
     resolution: {integrity: sha512-9V8J6hbwCKH1o3Hp8FCQVTgPGIPufxUEVes1r8Xk86CANV6s665pAfbCMom0pj38IZoiX4HYCluOUv/MY+No1g==}
+    dependencies:
+      '@petamoriken/float16': 3.8.1
+      '@reactively/core': 0.0.8
+      '@reactively/decorate': 0.0.4
+      berry-pretty: 0.0.3
+      fast-deep-equal: 3.1.3
+      sortablejs: 1.15.0
+    dev: false
+
+  /thimbleberry@0.1.11:
+    resolution: {integrity: sha512-lLMA/Q90U/X60UZ8/9o3SycWnLLgSTUMgxmBJXvGRjOlDmv/SL3GuEmBHYD4CcdpINtL7ku/9HyHpUBGeKc8DQ==}
     dependencies:
       '@petamoriken/float16': 3.8.1
       '@reactively/core': 0.0.8
