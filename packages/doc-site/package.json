@@ -24,8 +24,7 @@
     "prism-react-renderer": "^1.3.5",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
-    "stoneberry-code-example": "^0.1.4",
-    "stoneberry-examples": "workspace:^"
+    "stoneberry-code-example": "^0.1.5"
   },
   "devDependencies": {
     "@docusaurus/module-type-aliases": "2.4.1",

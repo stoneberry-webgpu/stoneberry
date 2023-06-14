@@ -26,11 +26,8 @@ importers:
         specifier: ^17.0.2
         version: 17.0.2(react@17.0.2)
       stoneberry-code-example:
-        specifier: ^0.1.4
-        version: 0.1.4(react-dom@17.0.2)(react@17.0.2)
-      stoneberry-examples:
-        specifier: workspace:^
-        version: link:../examples
+        specifier: ^0.1.5
+        version: 0.1.5(react-dom@17.0.2)(react@17.0.2)
     devDependencies:
       '@docusaurus/module-type-aliases':
         specifier: 2.4.1
@@ -13653,8 +13650,8 @@ packages:
     resolution: {integrity: sha512-Rz6yejtVyWnVjC1RFvNmYL10kgjC49EOghxWn0RFqlCHGFpQx+Xe7yW3I4ceK1SGrWIGMjD5Kbue8W/udkbMJg==}
     dev: false
 
-  /stoneberry-code-example@0.1.4(react-dom@17.0.2)(react@17.0.2):
-    resolution: {integrity: sha512-ra+m9XuiD/W+mMJlx1lY65VssZVDBaLVLuk8prS1ge9QD0tX9bzc7CK3hF9+v+HMXuhXcJFX3FyoU1O5lLkygg==}
+  /stoneberry-code-example@0.1.5(react-dom@17.0.2)(react@17.0.2):
+    resolution: {integrity: sha512-bXLh1eONZZcG52ZuLDQOJsjAl71wWEhpPJwfePsWPkJGeqIrXM+hL8dHSow9VvZUk727O7YqUAahxDv+Qiel/A==}
     peerDependencies:
       react: '>=17'
       react-dom: '>=17'
@@ -13666,12 +13663,12 @@ packages:
       react: 17.0.2
       react-dom: 17.0.2(react@17.0.2)
       stoneberry: 0.1.6
-      stoneberry-examples: 0.1.1
+      stoneberry-examples: 0.1.2
       thimbleberry: 0.1.10
     dev: false
 
-  /stoneberry-examples@0.1.1:
-    resolution: {integrity: sha512-iTU1QqUOGCFtErdy+qqWHJ+LPn16+87IlShkWnuQnvnTgAYoVvvrLi9TACI8nCexgRT43pCSbvf9yZfxlBDN4g==}
+  /stoneberry-examples@0.1.2:
+    resolution: {integrity: sha512-lAduH/LlD2bx6lauOwliNA8Q5zd6HCJHv7yb+gSK5tjZcpP8XX5qW/mHEjAAUI9VGWlUct0fFOVKULqX0PdMIA==}
     dependencies:
       stoneberry: 0.1.6
       thimbleberry: 0.1.10
