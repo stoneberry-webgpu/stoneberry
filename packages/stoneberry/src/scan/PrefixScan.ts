@@ -16,10 +16,10 @@ import { WorkgroupScan } from "./WorkgroupScan.js";
 export interface PrefixScanArgs {
   device: GPUDevice;
 
-  /** 
+  /**
    * Source data to be scanned.
-   * 
-   * A function returning the source buffer will be executed lazily, 
+   *
+   * A function returning the source buffer will be executed lazily,
    * and reexecuted if the functions `@reactively` source values change.
    */
   src: ValueOrFn<GPUBuffer>;
@@ -142,7 +142,14 @@ export class PrefixScan<T = number> extends HasReactive implements ComposableSha
     this.commands(commands);
     this.device.queue.submit([commands.finish()]);
     await this.device.queue.onSubmittedWorkDone();
-    const data = await withBufferCopy(this.device, this.result, "u32", d => d.slice()); // TODO support float and struct data types
+
+    const format = this.template.outputElements;
+    if (!format) {
+      throw new Error(
+        `outputElement format not defined: ${JSON.stringify(this.template, null, 2)}`
+      );
+    }
+    const data = await withBufferCopy(this.device, this.result, format, d => d.slice()); 
     return [...data];
   }
 

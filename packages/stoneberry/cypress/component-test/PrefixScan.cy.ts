@@ -8,7 +8,7 @@ import {
   withLeakTrack,
 } from "thimbleberry";
 import { PrefixScan } from "../../src/scan/PrefixScan.js";
-import { sumU32 } from "../../src/scan/ScanTemplate.js";
+import { sumF32, sumU32 } from "../../src/scan/ScanTemplate.js";
 import { makeBuffer } from "./util/MakeBuffer.js";
 import { exclusiveSum, inclusiveSum } from "./util/PrefixSum.js";
 
@@ -143,6 +143,20 @@ it("exclusive scan large", async () => {
       exclusive: true,
       initialValue,
     });
+    const result = await scan.scan();
+
+    expect(result).deep.equals(expected);
+  });
+});
+
+it("scan f32", async () => {
+  await withAsyncUsage(async () => {
+    const device = trackUse(await labeledGpuDevice());
+    const srcData = [0, 1, 2, 3, 4, 5, 6];
+    const expected = inclusiveSum(srcData);
+    const src = makeBuffer(device, srcData, "source", Float32Array);
+
+    const scan = new PrefixScan({ device, src, template: sumF32 });
     const result = await scan.scan();
 
     expect(result).deep.equals(expected);
