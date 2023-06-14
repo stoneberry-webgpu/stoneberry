@@ -8,12 +8,6 @@ export default defineConfig({
       bundler: "vite",
       viteConfig: {
         plugins: [tsconfigPaths()],
-        server: {
-          fs: {
-            // TODO temporary, to allow serving locally built thimbleberry
-            allow: [".."],
-          }
-        }
       },
       // experimentalRunAllSpecs: true, // NYI https://github.com/cypress-io/cypress/issues/25636
     },
