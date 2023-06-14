@@ -30,4 +30,4 @@ custom_edit_url: null
 
 #### Defined in
 
-[packages/stoneberry/src/util/Util.ts:3](https://github.com/stoneberry-webgpu/stoneberry/blob/3335119/packages/stoneberry/src/util/Util.ts#L3)
+[packages/stoneberry/src/util/Util.ts:3](https://github.com/stoneberry-webgpu/stoneberry/blob/5e823b6/packages/stoneberry/src/util/Util.ts#L3)
