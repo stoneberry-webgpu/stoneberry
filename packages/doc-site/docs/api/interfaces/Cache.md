@@ -32,7 +32,7 @@ API for pluggable cache
 
 #### Defined in
 
-[packages/stoneberry/src/util/Util.ts:15](https://github.com/stoneberry-webgpu/stoneberry/blob/5e823b6/packages/stoneberry/src/util/Util.ts#L15)
+[packages/stoneberry/src/util/Util.ts:15](https://github.com/stoneberry-webgpu/stoneberry/blob/91497b5/packages/stoneberry/src/util/Util.ts#L15)
 
 ___
 
@@ -53,4 +53,4 @@ ___
 
 #### Defined in
 
-[packages/stoneberry/src/util/Util.ts:16](https://github.com/stoneberry-webgpu/stoneberry/blob/5e823b6/packages/stoneberry/src/util/Util.ts#L16)
+[packages/stoneberry/src/util/Util.ts:16](https://github.com/stoneberry-webgpu/stoneberry/blob/91497b5/packages/stoneberry/src/util/Util.ts#L16)
