@@ -13,9 +13,11 @@ export function withGpuDevice(main: (device: GPUDevice) => any): void {
 export function renderError(msg: string): void {
   const app = appRoot();
   app.innerHTML = `
-    <div style="display: flex; height: 100vh;">
+    <div style="display: flex; height: calc(100vh - 20px);">
       <div style="font:bold 24px sans-serif; 
                   color: red; 
+                  flex: 1;
+                  text-align: center;
                   margin: auto;"> 
         ${msg} 
       </div>
@@ -52,5 +54,5 @@ function appRoot(): HTMLElement {
 }
 
 function noGPU(): void {
-  renderError("WebGPU not found. Try another browser?");
+  renderError("WebGPU not available. Try another browser?");
 }
