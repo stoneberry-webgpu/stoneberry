@@ -34,5 +34,16 @@ $ pnpm i
 $ pnpm dev
 ```
 
+### Running benchmarks
+The benchmarks project is in packages/bench.
+
+To run the benchmark script: 
+```sh
+$ cd packages/bench
+$ pnpm i
+$ pnpm bench
+```
+results are appended to the file: `benchmarks.csv`.
+
 [stoneberry.dev]: https://stoneberry.dev
 [stoneberry]: https://www.npmjs.com/package/stoneberry

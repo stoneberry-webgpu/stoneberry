@@ -1,0 +1,5 @@
+# holds generated src containing git version
+version/
+
+# local benchmark results
+benchmarks.csv

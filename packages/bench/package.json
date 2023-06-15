@@ -1,0 +1,19 @@
+{
+  "name": "stoneberry-benchmarks",
+  "version": "0.0.1",
+  "type": "module",
+  "scripts": {
+    "bench": "bld/run bench"
+  },
+  "dependencies": {
+    "stoneberry": "workspace:*",
+    "thimbleberry": "^0.1.13"
+  },
+  "devDependencies": {
+    "@webgpu/types": "^0.1.32",
+    "esbuild": "^0.18.2",
+    "vite": "^4.3.9"
+  },
+  "license": "ISC",
+  "repository": "github:stoneberry-webgpu/stoneberry"
+}

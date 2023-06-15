@@ -1,0 +1,7 @@
+#!/bin/bash
+SCRIPT_DIR=`dirname "$0"`
+
+pnpm esbuild $SCRIPT_DIR/build.ts --bundle --platform=node \
+	--external:electron --external:playwright --external:fsevents --external:esbuild --external:vite  \
+	--external:rollup \
+	| pnpm node - $@
