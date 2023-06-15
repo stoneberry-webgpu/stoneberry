@@ -55,7 +55,7 @@ export class ApplyScanBlocks extends HasReactive implements ComposableShader {
     this.updateUniforms();
     const timestampWrites = gpuTiming?.timestampWrites(this.label);
     const passEncoder = commandEncoder.beginComputePass({ timestampWrites });
-    passEncoder.label = `apply scan blocks ${this.label}`;
+    passEncoder.label = ` ${this.label} apply scan blocks`;
     passEncoder.setPipeline(this.pipeline);
     passEncoder.setBindGroup(0, this.bindGroup);
     passEncoder.dispatchWorkgroups(this.dispatchSize, 1, 1);
@@ -89,7 +89,7 @@ export class ApplyScanBlocks extends HasReactive implements ComposableShader {
 
   @reactively private get bindGroup(): GPUBindGroup {
     return this.device.createBindGroup({
-      label: `apply scan blocks ${this.label}`,
+      label: `${this.label} apply scan blocks`,
       layout: this.pipeline.getBindGroupLayout(0),
       entries: [
         { binding: 0, resource: { buffer: this.uniforms } },
@@ -103,7 +103,7 @@ export class ApplyScanBlocks extends HasReactive implements ComposableShader {
 
   @reactively get result(): GPUBuffer {
     const buffer = this.device.createBuffer({
-      label: `apply scan blocks result ${this.label}`,
+      label: `${this.label} apply scan blocks result`,
       size: this.partialScanSize,
       usage: GPUBufferUsage.STORAGE | GPUBufferUsage.COPY_SRC,
     });
@@ -131,7 +131,7 @@ export class ApplyScanBlocks extends HasReactive implements ComposableShader {
 
   @reactively private get uniforms(): GPUBuffer {
     const buffer = this.device.createBuffer({
-      label: `apply scan blocks scan uniforms ${this.label}`,
+      label: `${this.label} apply scan blocks uniforms`,
       size: Uint32Array.BYTES_PER_ELEMENT * 8,
       usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
     });

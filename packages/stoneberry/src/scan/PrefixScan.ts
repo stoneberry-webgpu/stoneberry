@@ -137,7 +137,7 @@ export class PrefixScan<T = number> extends HasReactive implements ComposableSha
    */
   async scan(): Promise<number[]> {
     const commands = this.device.createCommandEncoder({
-      label: `prefixScan ${this.label}`,
+      label: `${this.label} prefixScan`,
     });
     this.commands(commands);
     this.device.queue.submit([commands.finish()]);

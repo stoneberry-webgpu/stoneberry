@@ -63,7 +63,7 @@ export class WorkgroupScan extends HasReactive implements ComposableShader {
     this.updateUniforms();
     const timestampWrites = gpuTiming?.timestampWrites(this.label);
     const passEncoder = commandEncoder.beginComputePass({ timestampWrites });
-    passEncoder.label = `workgroup scan ${this.label}`;
+    passEncoder.label = `${this.label} workgroup scan`;
     passEncoder.setPipeline(this.pipeline);
     passEncoder.setBindGroup(0, this.bindGroup);
     passEncoder.dispatchWorkgroups(this.dispatchSize, 1, 1);
@@ -99,7 +99,7 @@ export class WorkgroupScan extends HasReactive implements ComposableShader {
     }
 
     return this.device.createBindGroup({
-      label: `workgroup scan ${this.label}`,
+      label: `${this.label} workgroup scan`,
       layout: this.pipeline.getBindGroupLayout(0),
       entries: [
         { binding: 0, resource: { buffer: this.uniforms } },
@@ -117,7 +117,7 @@ export class WorkgroupScan extends HasReactive implements ComposableShader {
 
   @reactively get prefixScan(): GPUBuffer {
     const buffer = this.device.createBuffer({
-      label: `prefix scan ${this.label}`,
+      label: `${this.label} prefix scan`,
       size: this.sourceSize,
       usage: GPUBufferUsage.STORAGE | GPUBufferUsage.COPY_SRC,
     });
@@ -128,7 +128,7 @@ export class WorkgroupScan extends HasReactive implements ComposableShader {
   @reactively get blockSums(): GPUBuffer {
     // ensure size is a multiple of 4
     const buffer = this.device.createBuffer({
-      label: `workgroup scan block sums ${this.label}`,
+      label: `${this.label} workgroup scan block sums`,
       size: this.dispatchSize * Uint32Array.BYTES_PER_ELEMENT,
       usage: GPUBufferUsage.STORAGE | GPUBufferUsage.COPY_SRC,
     });
@@ -138,7 +138,7 @@ export class WorkgroupScan extends HasReactive implements ComposableShader {
 
   @reactively get uniforms(): GPUBuffer {
     const buffer = this.device.createBuffer({
-      label: `workgroup scan uniforms ${this.label}`,
+      label: `${this.label} workgroup scan uniforms`,
       size: Uint32Array.BYTES_PER_ELEMENT * 8,
       usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
     });
@@ -159,7 +159,7 @@ export class WorkgroupScan extends HasReactive implements ComposableShader {
   }
 
   @reactively get debugBuffer(): GPUBuffer {
-    const buffer = createDebugBuffer(this.device, `workgroup scan debug ${this.label}`);
+    const buffer = createDebugBuffer(this.device, `${this.label} workgroup scan debug`);
     reactiveTrackUse(buffer, this.usageContext);
     return buffer;
   }
