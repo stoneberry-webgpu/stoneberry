@@ -3,6 +3,7 @@
   "version": "0.0.1",
   "type": "module",
   "scripts": {
+    "dev": "bld/run dev",
     "bench": "bld/run bench"
   },
   "dependencies": {

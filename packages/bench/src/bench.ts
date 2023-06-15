@@ -2,8 +2,6 @@ import { gitVersion } from "../version/gitVersion.js";
 import { csvReport, GpuPerfReport, initGpuTiming, labeledGpuDevice } from "thimbleberry";
 import { prefixScanBench } from "./prefixScanBench.js";
 
-const reportPort = 9292;
-
 main();
 
 async function main(): Promise<void> {
@@ -15,15 +13,14 @@ async function main(): Promise<void> {
   initGpuTiming(device);
   const { fastest, clockTime } = await prefixScanBench(device);
 
-  logCsvWs(fastest, clockTime, testUtc, reportPort);
+  logCsvReport(fastest, clockTime, testUtc);
 }
 
 /** log a csv formatted version of the report to a localhost websocket, and the debug console */
-export function logCsvWs(
+function logCsvReport(
   report: GpuPerfReport,
   clockTime: number,
-  utc = Date.now().toString(),
-  port = reportPort
+  utc = Date.now().toString()
 ): void {
   const clockTimeMs = clockTime.toFixed(2);
   const reportText = csvReport(
@@ -33,9 +30,17 @@ export function logCsvWs(
     "scan total gpu"
   );
   console.log(reportText);
-  const ws = new WebSocket(`ws://localhost:${port}`);
-  ws.onopen = () => {
-    ws.send(reportText);
-    ws.close();
-  };
+  logWebSocket(reportText);
+}
+
+function logWebSocket(message: string): void {
+  const params = new URLSearchParams(document.URL);
+  const port = params.get("reportPort");
+  if (port) {
+    const ws = new WebSocket(`ws://localhost:${port}`);
+    ws.onopen = () => {
+      ws.send(message);
+      ws.close();
+    };
+  }
 }

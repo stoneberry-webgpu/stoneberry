@@ -11,12 +11,19 @@ const benchResultsPort = 9292;
 
 const taskMap = new Map([
   ["version", version],
+  ["dev", dev],
   ["bench", bench],
   ["bench-browser", benchBrowser],
 ]);
 
 export async function version(): Promise<any> {
   return writeGitVersionTs("version/gitVersion.ts");
+}
+
+export async function dev(): Promise<any> {
+  const server = await createViteServer();
+  await server.listen(benchWebPort);
+  await benchBrowser();
 }
 
 export async function bench(): Promise<void> {
@@ -26,14 +33,17 @@ export async function bench(): Promise<void> {
   stdExec(`websocat -s ${benchResultsPort} --no-line >> benchmarks.csv`);
   const server = await createViteServer();
   await server.listen(benchWebPort);
-  await benchBrowser();
+  await benchBrowser({ reportPort: benchResultsPort.toString() });
 }
 
-export async function benchBrowser(): Promise<void> {
+export async function benchBrowser(searchParams?: Record<string, string>): Promise<void> {
+  const query = searchParams ? "?" + new URLSearchParams(searchParams) : "";
+  // TODO implement for windows
   const browserCmd =
-    "$npm_execPath open -a 'Google Chrome Canary' --args " +
-    "--enable-dawn-features=allow_unsafe_apis " +
-    `--profile-directory=bench http://localhost:${benchWebPort}`;
+    `open -a "Google Chrome Canary" http://localhost:${benchWebPort}/${query} --args` +
+    " --enable-dawn-features=allow_unsafe_apis" +
+    " --profile-directory=bench";
+  console.log(browserCmd);
   await stdExec(browserCmd);
 }
 
