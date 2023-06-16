@@ -2,6 +2,7 @@ import {
   ShaderGroup,
   copyBuffer,
   labeledGpuDevice,
+  partitionBySize,
   trackRelease,
   trackUse,
   withAsyncUsage,
@@ -75,3 +76,71 @@ it("largeExclusive", async () => {
     });
   });
 });
+
+it("apply scan blocks with offsets", async () => {
+  await withAsyncUsage(async () => {
+    const device = trackUse(await labeledGpuDevice());
+    const workgroupLength = 2;
+
+    const source = Array.from({ length: 7 }, (_, i) => i);
+    const sourceParts = [...partitionBySize(source, workgroupLength)];
+    const prefixes = sourceParts.map(inclusiveSum);
+
+    const partialPrefixes = prefixes.flat();
+    const partialScan = makeBuffer(device, partialPrefixes, "prefixes", Uint32Array);
+
+    const blockSumsSrc = prefixes.map(p => p.slice(-1)).flat();
+    const blockSums = makeBuffer(device, blockSumsSrc, "blockSums", Uint32Array);
+
+    const applyBlocks = new ApplyScanBlocks({
+      device,
+      partialScan,
+      blockSums,
+      workgroupLength,
+      partialScanOffset: 4,
+      scanOffset: 4,
+      blockSumsOffset: 2,
+    });
+    const shaderGroup = new ShaderGroup(device, applyBlocks);
+    shaderGroup.dispatch();
+
+    const expected = [9, 14, 15];
+    const result = await copyBuffer(device, applyBlocks.result);
+    expect(result.slice(4)).to.deep.equal(expected);
+    trackRelease(applyBlocks);
+  });
+});
+
+
+it("generated offsets for workgroups > max", async () => {
+  await withAsyncUsage(async () => {
+    const device = trackUse(await labeledGpuDevice());
+    const workgroupLength = 2;
+
+    const source = Array.from({ length: 7 }, (_, i) => i);
+    const sourceParts = [...partitionBySize(source, workgroupLength)];
+    const prefixes = sourceParts.map(inclusiveSum);
+
+    const partialPrefixes = prefixes.flat();
+    const partialScan = makeBuffer(device, partialPrefixes, "prefixes", Uint32Array);
+
+    const blockSumsSrc = prefixes.map(p => p.slice(-1)).flat();
+    const blockSums = makeBuffer(device, blockSumsSrc, "blockSums", Uint32Array);
+
+    const applyBlocks = new ApplyScanBlocks({
+      device,
+      partialScan,
+      blockSums,
+      workgroupLength,
+      maxWorkgroups: 1,
+    });
+    const shaderGroup = new ShaderGroup(device, applyBlocks);
+    shaderGroup.dispatch();
+    const expected = [0, 1, 3, 6, 9, 14, 15];
+
+    const result = await copyBuffer(device, applyBlocks.result);
+    expect(result).to.deep.equal(expected);
+    trackRelease(applyBlocks);
+  });
+});
+

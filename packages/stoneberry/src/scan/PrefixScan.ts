@@ -39,12 +39,16 @@ export interface PrefixScanArgs {
   /** {@inheritDoc PrefixScan#workgroupLength} */
   workgroupLength?: number;
 
+  /** {@inheritDoc PrefixScan#maxWorkgroups} */
+  maxWorkgroups?: number;
+
   /** cache for GPUComputePipeline or GPURenderPipeline */
   pipelineCache?: <T extends object>() => Cache<T>;
 }
 
 const defaults: Partial<PrefixScanArgs> = {
   workgroupLength: undefined,
+  maxWorkgroups: undefined,
   template: sumU32,
   pipelineCache: undefined,
   label: "",
@@ -89,6 +93,11 @@ export class PrefixScan<T = number> extends HasReactive implements ComposableSha
     @defaultValue max workgroup size of the `GPUDevice`
     */
   @reactively workgroupLength?: number;
+
+  /** Override to set max number of workgroups for dispatch e.g. for testing. 
+    @defaultValue maxComputeWorkgroupsPerDimension from the `GPUDevice`
+    */
+  @reactively maxWorkgroups?: number;
 
   /** Inclusive scan accumulates a binary operation across all source elements.
    * Exclusive scan accumulates a binary operation across source elements, using initialValue
@@ -177,6 +186,7 @@ export class PrefixScan<T = number> extends HasReactive implements ComposableSha
       initialValue: this.initialValue,
       template: this.template,
       workgroupLength: this.workgroupLength,
+      maxWorkgroups: this.maxWorkgroups,
       label: `${this.label} sourceScan`,
       pipelineCache: this.pipelineCache,
     });
@@ -205,6 +215,7 @@ export class PrefixScan<T = number> extends HasReactive implements ComposableSha
         emitBlockSums: !last,
         template: this.template,
         workgroupLength: this.workgroupLength,
+        maxWorkgroups: this.maxWorkgroups,
         label: `${this.label} blockToBlock ${labelNum++}`,
         pipelineCache: this.pipelineCache,
       });
@@ -255,6 +266,7 @@ export class PrefixScan<T = number> extends HasReactive implements ComposableSha
         exclusiveLarge,
         initialValue: this.initialValue,
         workgroupLength: this.actualWorkgroupLength,
+        maxWorkgroups: this.maxWorkgroups,
         label: `${this.label} applyBlock ${i}`,
         pipelineCache: this.pipelineCache,
       });

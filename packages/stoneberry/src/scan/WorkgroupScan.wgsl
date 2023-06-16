@@ -34,6 +34,9 @@ struct Output {
 }
 
 struct Uniforms {
+    sourceOffset: u32,              // offset in Input elements to start reading in the source
+    scanOffset: u32,                // offset in Output elements to writing in the prefixScan buffer
+    blockSumOffset: u32,            // offset in Output elements to writing in the blockSum buffer
     exclusiveSmall: u32,            // nonzero for exclusive scan where the source fits in one workgroup
     @align(16) initialValue: Output // initial value for exclusive scan
 }
@@ -59,11 +62,11 @@ fn workgroupPrefixScan(
     @builtin(local_invocation_id) localGrid: vec3<u32>,
     @builtin(workgroup_id) workGrid: vec3<u32>,
 ) {
-    sumSrcLayerInclusive(localGrid.x, grid.x);
+    sumSrcLayerInclusive(localGrid.x, grid.x + u.sourceOffset);
     workgroupBarrier();
 
     let aIn = sumMiddleLayers(localGrid.x);
-    sumFinalLayer(localGrid.x, grid.x, workGrid.x, aIn);
+    sumFinalLayer(localGrid.x, grid.x + u.scanOffset, workGrid.x + u.blockSumOffset, aIn);
 }
 
 // sum the first layer from src to workgroup memory  
@@ -155,7 +158,7 @@ fn sumFinalLayer(localX: u32, gridX: u32, workGridX: u32, aIn: bool) {
 fn sumFinalLayerA(localX: u32, gridX: u32, workGridX: u32) {
     let offset = workgroupSizeX >> 1u;
     var result: Output;
-    if gridX < arrayLength(&src) {
+    if gridX < arrayLength(&prefixScan) {
         if localX < offset {
             result = bankA[localX];
         } else {
@@ -176,7 +179,7 @@ fn sumFinalLayerA(localX: u32, gridX: u32, workGridX: u32) {
 fn sumFinalLayerB(localX: u32, gridX: u32, workGridX: u32) {
     let offset = workgroupSizeX >> 1u;
     var result: Output;
-    if gridX < arrayLength(&src) {
+    if gridX < arrayLength(&prefixScan) {
         if localX < offset {
             result = bankB[localX];
         } else {

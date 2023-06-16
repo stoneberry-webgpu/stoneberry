@@ -3,7 +3,7 @@ import { filledGPUBuffer } from "thimbleberry";
 import { benchShader } from "./benchShader.js";
 
 export async function prefixScanBench(device: GPUDevice): Promise<any> {
-  const srcData = Array.from({ length: 2 ** 23 }, (_, i) => i);
+  const srcData = Array.from({ length: 2 ** 22 }, (_, i) => i & 0x1);
   const src = filledGPUBuffer(
     device,
     srcData,
@@ -11,6 +11,6 @@ export async function prefixScanBench(device: GPUDevice): Promise<any> {
     "source",
     Uint32Array
   );
-  const scan = new PrefixScan({ device, src, label: "scan" });
-  return benchShader(device, 300, scan);
+  const scan = new PrefixScan({ device, src });
+  return benchShader(device, 10, scan);
 }

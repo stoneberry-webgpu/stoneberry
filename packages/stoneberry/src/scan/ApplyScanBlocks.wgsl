@@ -3,6 +3,9 @@ struct Output {
 }
 
 struct Uniforms {
+    partialScanOffset: u32,         // offset in Output elements when reading from partialScan buffer
+    scanOffset: u32,                // offset in Output elements to writing in the prefixScan buffer
+    blockSumsOffset: u32,           // offset in Output elements to reading in the blockSum buffer
     exclusiveSmall: u32,            // nonzero for exclusive scan where the source fits in one workgroup
     @align(16) initialValue: Output // initial value for exclusive scan
 }
@@ -24,20 +27,23 @@ fn applyScanBlocks(
 ) {
     var destX: u32;
     if u.exclusiveSmall == 0u {
-        destX = grid.x;
+        destX = grid.x + u.scanOffset;
     } else {
-        destX = grid.x + 1u;
+        destX = grid.x + 1u + u.scanOffset;
         if grid.x == 0u {
-            prefixScan[0] = u.initialValue;
+            prefixScan[u.scanOffset] = u.initialValue;
         }
     }
-
-    if workGrid.x == 0u {
-        prefixScan[destX] = partialScan[grid.x];
-    } else {
-        let a = partialScan[grid.x];
-        let b = blockSum[workGrid.x - 1u];
-        prefixScan[destX] = binaryOp(a, b);
+    if (destX < arrayLength(&prefixScan)) {
+        if workGrid.x == 0u && u.blockSumsOffset == 0u { 
+            // if blocksumsOffset is 0, we are in the first dispatch
+            // so our first partial scan element is the first from the entire partial scan
+            prefixScan[destX] = partialScan[grid.x + u.partialScanOffset];
+        } else {
+            let a = partialScan[grid.x + u.partialScanOffset];
+            let b = blockSum[workGrid.x + u.blockSumsOffset - 1u];
+            prefixScan[destX] = binaryOp(a, b);
+        }
     }
 }
 

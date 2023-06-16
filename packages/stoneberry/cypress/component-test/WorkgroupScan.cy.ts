@@ -9,11 +9,11 @@ import {
 } from "thimbleberry";
 import { WorkgroupScan } from "../../src/scan/WorkgroupScan.js";
 import { makeBuffer } from "./util/MakeBuffer.js";
-import { exclusiveSum } from "./util/PrefixSum.js";
+import { exclusiveSum, inclusiveSum } from "./util/PrefixSum.js";
 
 it("workgroup scan one evenly sized buffer, with middle layers", async () => {
   await withAsyncUsage(async () => {
-    const device = await labeledGpuDevice();
+    const device = trackUse(await labeledGpuDevice());
 
     const srcData = [0, 1, 2, 3, 4, 5, 6, 7];
     await withLeakTrack(async () => {
@@ -39,7 +39,7 @@ it("workgroup scan one evenly sized buffer, with middle layers", async () => {
 
 it("workgroup scan one evenly sized buffer, two workgroups", async () => {
   await withAsyncUsage(async () => {
-    const device = await labeledGpuDevice();
+    const device = trackUse(await labeledGpuDevice());
 
     const srcData = [0, 1, 2, 3, 4, 5, 6, 7];
     const scan = new WorkgroupScan({
@@ -60,7 +60,7 @@ it("workgroup scan one evenly sized buffer, two workgroups", async () => {
 
 it("workgroup scan one unevenly sized buffer", async () => {
   await withAsyncUsage(async () => {
-    const device = await labeledGpuDevice();
+    const device = trackUse(await labeledGpuDevice());
 
     const srcData = [0, 1, 2, 3, 4, 5, 6];
     const scan = new WorkgroupScan({
@@ -81,7 +81,7 @@ it("workgroup scan one unevenly sized buffer", async () => {
 
 it("workgroup scan one unevenly sized buffer, two workgroups", async () => {
   await withAsyncUsage(async () => {
-    const device = await labeledGpuDevice();
+    const device = trackUse(await labeledGpuDevice());
 
     const srcData = [0, 1, 2, 3, 4, 5, 6];
     const scan = new WorkgroupScan({
@@ -102,7 +102,7 @@ it("workgroup scan one unevenly sized buffer, two workgroups", async () => {
 
 it("workgroup exlusive scan, src smaller than workgroup", async () => {
   await withAsyncUsage(async () => {
-    const device = await labeledGpuDevice();
+    const device = trackUse(await labeledGpuDevice());
     const srcData = [1, 2, 3];
     const initialValue = 9;
     const scan = new WorkgroupScan({
@@ -124,7 +124,7 @@ it("workgroup exlusive scan, src smaller than workgroup", async () => {
 
 it("workgroup exclusive scan, with middle layers", async () => {
   await withAsyncUsage(async () => {
-    const device = await labeledGpuDevice();
+    const device = trackUse(await labeledGpuDevice());
     const srcData = [1, 2, 3, 4, 5, 6, 7];
     const initialValue = 9;
     const scan = new WorkgroupScan({
@@ -140,5 +140,54 @@ it("workgroup exclusive scan, with middle layers", async () => {
     const expected = exclusiveSum(srcData, initialValue);
     const prefixScan = await copyBuffer(device, scan.prefixScan);
     expect(prefixScan).to.deep.equal(expected);
+  });
+});
+
+it("workgroup with offsets", async () => {
+  await withAsyncUsage(async () => {
+    const device = trackUse(await labeledGpuDevice());
+    const srcData = [1, 2, 3, 4, 5, 6, 7];
+    const scan = new WorkgroupScan({
+      device,
+      source: makeBuffer(device, srcData, "source", Uint32Array),
+      emitBlockSums: true,
+      workgroupLength: 4,
+      maxWorkgroups: 1,
+      sourceOffset: 4,
+      scanOffset: 4,
+      blockSumsOffset: 1,
+    });
+    const shaderGroup = new ShaderGroup(device, scan);
+    shaderGroup.dispatch();
+
+    const expected = inclusiveSum(srcData.slice(4));
+    const prefixScan = await copyBuffer(device, scan.prefixScan);
+    const blockSums = await copyBuffer(device, scan.blockSums);
+    expect(prefixScan.slice(4)).to.deep.equal(expected);
+    expect(blockSums.slice(1)).to.deep.equal(expected.slice(-1));
+  });
+});
+
+it("workgroup with generated offsets for workgroups > max", async () => {
+  await withAsyncUsage(async () => {
+    const device = trackUse(await labeledGpuDevice());
+    const srcData = [1, 2, 3, 4, 5, 6, 7];
+    const scan = new WorkgroupScan({
+      device,
+      source: makeBuffer(device, srcData, "source", Uint32Array),
+      emitBlockSums: true,
+      workgroupLength: 4,
+      maxWorkgroups: 1,
+    });
+    const shaderGroup = new ShaderGroup(device, scan);
+    shaderGroup.dispatch();
+
+    const expected1 = inclusiveSum(srcData.slice(0, 4));
+    const expected2 = inclusiveSum(srcData.slice(4));
+
+    const prefixScan = await copyBuffer(device, scan.prefixScan);
+    const blockSums = await copyBuffer(device, scan.blockSums);
+    expect(prefixScan).to.deep.equal([...expected1, ...expected2]);
+    expect(blockSums).to.deep.equal([...expected1.slice(-1), ...expected2.slice(-1)]);
   });
 });

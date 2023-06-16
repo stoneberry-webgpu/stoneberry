@@ -162,3 +162,17 @@ it("scan f32", async () => {
     expect(result).deep.equals(expected);
   });
 });
+
+it("multi dispatch for large source", async () => {
+  await withAsyncUsage(async () => {
+    const device = trackUse(await labeledGpuDevice());
+    const srcData = [0, 1, 2, 3, 4, 5, 6];
+    const expected = inclusiveSum(srcData);
+    const src = makeBuffer(device, srcData, "source", Uint32Array);
+
+    const scan = new PrefixScan({ device, src, maxWorkgroups: 1, workgroupLength: 4 });
+    const result = await scan.scan();
+
+    expect(result).deep.equals(expected);
+  });
+});
