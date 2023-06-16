@@ -19,7 +19,7 @@
     "isolatedModules": true,
     "noEmit": true,
     "paths": {
-      "stoneberry/scan": ["../../src/scan"],
+      "stoneberry/scan": ["../stoneberry/src/scan"],
       "stoneberry-examples": ["./src/exampleUtils"]
     }
   },
