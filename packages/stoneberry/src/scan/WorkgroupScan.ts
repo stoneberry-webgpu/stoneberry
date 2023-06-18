@@ -1,14 +1,9 @@
-import { dlog } from "berry-pretty";
 import { HasReactive, reactively } from "@reactively/decorate";
-import { createDebugBuffer } from "thimbleberry";
-import { gpuTiming } from "thimbleberry";
-import { limitWorkgroupLength } from "thimbleberry";
-import { assignParams, reactiveTrackUse } from "thimbleberry";
-import { trackContext } from "thimbleberry";
-import { getWorkgroupScanPipeline } from "./WorkgroupScanPipeline";
-import { ScanTemplate, sumU32 } from "./ScanTemplate.js";
-import { Cache, ComposableShader, ValueOrFn } from "../util/Util.js";
+import { assignParams, createDebugBuffer, gpuTiming, limitWorkgroupLength, reactiveTrackUse, trackContext } from "thimbleberry";
 import { calcDispatchSizes } from "../util/DispatchSizes.js";
+import { Cache, ComposableShader, ValueOrFn } from "../util/Util.js";
+import { ScanTemplate, sumU32 } from "./ScanTemplate.js";
+import { getWorkgroupScanPipeline } from "./WorkgroupScanPipeline";
 
 /** @internal */
 export interface WorkgroupScanArgs {
@@ -53,17 +48,42 @@ const defaults: Partial<WorkgroupScanArgs> = {
  * @internal
  */
 export class WorkgroupScan extends HasReactive implements ComposableShader {
+  /** source data to be scanned. Data element format should match the template. */
   @reactively source!: GPUBuffer;
-  @reactively workgroupLength?: number;
-  @reactively maxWorkgroups?: number;
+
+  /** macros to customize wgsl shader for size of data and type of scan */
   @reactively template!: ScanTemplate;
+
+  /** emit the final value of each block into a separate output buffer. (true) */
   @reactively emitBlockSums!: boolean;
+
+  /** Debug label attached to gpu objects for error reporting */
   @reactively label!: string;
+
+  /** an exclusive scan that fits entirely in one workgroup. (false) */
   @reactively exclusiveSmall!: boolean;
+
+  /** initial value for exclusive scans */
   @reactively initialValue!: number;
+
+  /** start scan at this element offset in the source. (0) */
   @reactively sourceOffset!: number;
+
+  /** emit results at this element offset in the destination buffer. (0) */
   @reactively scanOffset!: number;
+
+  /** emit block results at this element offset in the blocksums destination buffer (0) */
   @reactively blockSumsOffset!: number;
+
+  /** Override to set compute workgroup size e.g. for testing. 
+    @defaultValue max workgroup size of the `GPUDevice`
+    */
+  @reactively workgroupLength?: number;
+
+  /** Override to set max number of workgroups for dispatch e.g. for testing. 
+    @defaultValue maxComputeWorkgroupsPerDimension from the `GPUDevice`
+    */
+  @reactively maxWorkgroups?: number;
 
   private device!: GPUDevice;
   private pipelineCache?: <T extends object>() => Cache<T>;
@@ -92,8 +112,29 @@ export class WorkgroupScan extends HasReactive implements ComposableShader {
     this.usageContext.finish();
   }
 
+  /** Buffer combining the last element from each workgroups partial scan
+   * For use in combining scans that are larger than one workgroup. */
+  @reactively get blockSums(): GPUBuffer {
+    const proposedSize = this.sourceSize / this.actualWorkgroupLength;
+    const size = Math.ceil(proposedSize / 4) * 4; // ensure size is a multiple of 4
+    const buffer = this.device.createBuffer({
+      label: `${this.label} workgroup scan block sums`,
+      size,
+      usage: GPUBufferUsage.STORAGE | GPUBufferUsage.COPY_SRC,
+    });
+    reactiveTrackUse(buffer, this.usageContext);
+    return buffer;
+  }
+
+
+  @reactively get debugBuffer(): GPUBuffer {
+    const buffer = createDebugBuffer(this.device, `${this.label} workgroup scan debug`);
+    reactiveTrackUse(buffer, this.usageContext);
+    return buffer;
+  }
+
   /** Return enough dispatches to cover the source
-   * `(multiple dispatches are needed for large sources) */
+   * (multiple dispatches are needed for large sources) */
   @reactively private get dispatchSizes(): number[] {
     const sourceElems =
       this.sourceSize / Uint32Array.BYTES_PER_ELEMENT - this.sourceOffset; // TODO support other src element sizes, via template
@@ -156,23 +197,11 @@ export class WorkgroupScan extends HasReactive implements ComposableShader {
     return buffer;
   }
 
-  @reactively get blockSums(): GPUBuffer {
-    const proposedSize = this.sourceSize / this.actualWorkgroupLength;
-    const size = Math.ceil(proposedSize / 4) * 4; // ensure size is a multiple of 4
-    const buffer = this.device.createBuffer({
-      label: `${this.label} workgroup scan block sums`,
-      size,
-      usage: GPUBufferUsage.STORAGE | GPUBufferUsage.COPY_SRC,
-    });
-    reactiveTrackUse(buffer, this.usageContext);
-    return buffer;
-  }
-
-  @reactively get uniforms(): GPUBuffer[] {
+  @reactively private get uniforms(): GPUBuffer[] {
     return this.dispatchSizes.map((_, i) => this.uniformsBuffer(i));
   }
 
-  uniformsBuffer(index: number): GPUBuffer {
+  private uniformsBuffer(index: number): GPUBuffer {
     const buffer = this.device.createBuffer({
       label: `${this.label} ${index} workgroup scan uniforms`,
       size: Uint32Array.BYTES_PER_ELEMENT * 8,
@@ -212,13 +241,8 @@ export class WorkgroupScan extends HasReactive implements ComposableShader {
     this.device.queue.writeBuffer(uniforms, 0, array);
   }
 
-  @reactively get actualWorkgroupLength(): number {
+  @reactively private get actualWorkgroupLength(): number {
     return limitWorkgroupLength(this.device, this.workgroupLength);
   }
 
-  @reactively get debugBuffer(): GPUBuffer {
-    const buffer = createDebugBuffer(this.device, `${this.label} workgroup scan debug`);
-    reactiveTrackUse(buffer, this.usageContext);
-    return buffer;
-  }
 }

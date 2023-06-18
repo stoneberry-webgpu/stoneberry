@@ -25,24 +25,23 @@ fn applyScanBlocks(
     @builtin(global_invocation_id) grid: vec3<u32>,
     @builtin(workgroup_id) workGrid: vec3<u32>,
 ) {
-    var destX: u32;
-    if u.exclusiveSmall == 0u {
-        destX = grid.x + u.scanOffset;
-    } else {
-        destX = grid.x + 1u + u.scanOffset;
+    var destDex:u32 = grid.x + u.scanOffset;
+    if u.exclusiveSmall != 0u {
+        destDex += 1u;
         if grid.x == 0u {
             prefixScan[u.scanOffset] = u.initialValue;
         }
     }
-    if (destX < arrayLength(&prefixScan)) {
+    if (destDex < arrayLength(&prefixScan)) {
+        let sourceDex = grid.x + u.partialScanOffset;
         if workGrid.x == 0u && u.blockSumsOffset == 0u { 
             // if blocksumsOffset is 0, we are in the first dispatch
             // so our first partial scan element is the first from the entire partial scan
-            prefixScan[destX] = partialScan[grid.x + u.partialScanOffset];
+            prefixScan[destDex] = partialScan[sourceDex];
         } else {
-            let a = partialScan[grid.x + u.partialScanOffset];
+            let a = partialScan[sourceDex];
             let b = blockSum[workGrid.x + u.blockSumsOffset - 1u];
-            prefixScan[destX] = binaryOp(a, b);
+            prefixScan[destDex] = binaryOp(a, b);
         }
     }
 }
