@@ -1,6 +1,6 @@
 {
   "name": "stoneberry",
-  "version": "0.1.11",
+  "version": "0.1.12",
   "description": "core WebGPU shaders",
   "type": "module",
   "scripts": {
