@@ -68,7 +68,7 @@ HasReactive.constructor
 
 #### Defined in
 
-[packages/stoneberry/src/scan/PrefixScan.ts:120](https://github.com/stoneberry-webgpu/stoneberry/blob/91497b5/packages/stoneberry/src/scan/PrefixScan.ts#L120)
+[packages/stoneberry/src/scan/PrefixScan.ts:129](https://github.com/stoneberry-webgpu/stoneberry/blob/72dad75/packages/stoneberry/src/scan/PrefixScan.ts#L129)
 
 ## Properties
 
@@ -86,7 +86,7 @@ false (inclusive scan).
 
 #### Defined in
 
-[packages/stoneberry/src/scan/PrefixScan.ts:99](https://github.com/stoneberry-webgpu/stoneberry/blob/91497b5/packages/stoneberry/src/scan/PrefixScan.ts#L99)
+[packages/stoneberry/src/scan/PrefixScan.ts:108](https://github.com/stoneberry-webgpu/stoneberry/blob/72dad75/packages/stoneberry/src/scan/PrefixScan.ts#L108)
 
 ___
 
@@ -98,11 +98,11 @@ Initial value for exclusive scan
 
 **`Default Value`**
 
-template identity
+0
 
 #### Defined in
 
-[packages/stoneberry/src/scan/PrefixScan.ts:104](https://github.com/stoneberry-webgpu/stoneberry/blob/91497b5/packages/stoneberry/src/scan/PrefixScan.ts#L104)
+[packages/stoneberry/src/scan/PrefixScan.ts:113](https://github.com/stoneberry-webgpu/stoneberry/blob/72dad75/packages/stoneberry/src/scan/PrefixScan.ts#L113)
 
 ___
 
@@ -114,7 +114,23 @@ Debug label attached to gpu objects for error reporting
 
 #### Defined in
 
-[packages/stoneberry/src/scan/PrefixScan.ts:86](https://github.com/stoneberry-webgpu/stoneberry/blob/91497b5/packages/stoneberry/src/scan/PrefixScan.ts#L86)
+[packages/stoneberry/src/scan/PrefixScan.ts:90](https://github.com/stoneberry-webgpu/stoneberry/blob/72dad75/packages/stoneberry/src/scan/PrefixScan.ts#L90)
+
+___
+
+### maxWorkgroups
+
+• `Optional` **maxWorkgroups**: `number`
+
+Override to set max number of workgroups for dispatch e.g. for testing.
+
+**`Default Value`**
+
+maxComputeWorkgroupsPerDimension from the `GPUDevice`
+
+#### Defined in
+
+[packages/stoneberry/src/scan/PrefixScan.ts:100](https://github.com/stoneberry-webgpu/stoneberry/blob/72dad75/packages/stoneberry/src/scan/PrefixScan.ts#L100)
 
 ___
 
@@ -126,7 +142,7 @@ Source data to be scanned
 
 #### Defined in
 
-[packages/stoneberry/src/scan/PrefixScan.ts:83](https://github.com/stoneberry-webgpu/stoneberry/blob/91497b5/packages/stoneberry/src/scan/PrefixScan.ts#L83)
+[packages/stoneberry/src/scan/PrefixScan.ts:87](https://github.com/stoneberry-webgpu/stoneberry/blob/72dad75/packages/stoneberry/src/scan/PrefixScan.ts#L87)
 
 ___
 
@@ -138,7 +154,7 @@ customize the type of scan (e.g. prefix sum on 32 bit floats)
 
 #### Defined in
 
-[packages/stoneberry/src/scan/PrefixScan.ts:80](https://github.com/stoneberry-webgpu/stoneberry/blob/91497b5/packages/stoneberry/src/scan/PrefixScan.ts#L80)
+[packages/stoneberry/src/scan/PrefixScan.ts:84](https://github.com/stoneberry-webgpu/stoneberry/blob/72dad75/packages/stoneberry/src/scan/PrefixScan.ts#L84)
 
 ___
 
@@ -154,7 +170,7 @@ max workgroup size of the `GPUDevice`
 
 #### Defined in
 
-[packages/stoneberry/src/scan/PrefixScan.ts:91](https://github.com/stoneberry-webgpu/stoneberry/blob/91497b5/packages/stoneberry/src/scan/PrefixScan.ts#L91)
+[packages/stoneberry/src/scan/PrefixScan.ts:95](https://github.com/stoneberry-webgpu/stoneberry/blob/72dad75/packages/stoneberry/src/scan/PrefixScan.ts#L95)
 
 ## Accessors
 
@@ -170,7 +186,7 @@ Buffer Containing results of the scan after the shader has run.
 
 #### Defined in
 
-[packages/stoneberry/src/scan/PrefixScan.ts:150](https://github.com/stoneberry-webgpu/stoneberry/blob/91497b5/packages/stoneberry/src/scan/PrefixScan.ts#L150)
+[packages/stoneberry/src/scan/PrefixScan.ts:166](https://github.com/stoneberry-webgpu/stoneberry/blob/72dad75/packages/stoneberry/src/scan/PrefixScan.ts#L166)
 
 ## Methods
 
@@ -196,7 +212,7 @@ Add compute or render passes for this shader to the provided GPUCommandEncoder
 
 #### Defined in
 
-[packages/stoneberry/src/scan/PrefixScan.ts:125](https://github.com/stoneberry-webgpu/stoneberry/blob/91497b5/packages/stoneberry/src/scan/PrefixScan.ts#L125)
+[packages/stoneberry/src/scan/PrefixScan.ts:134](https://github.com/stoneberry-webgpu/stoneberry/blob/72dad75/packages/stoneberry/src/scan/PrefixScan.ts#L134)
 
 ___
 
@@ -210,9 +226,13 @@ Release the scanResult buffer for destruction.
 
 `void`
 
+#### Implementation of
+
+[ComposableShader](../interfaces/ComposableShader.md).[destroy](../interfaces/ComposableShader.md#destroy)
+
 #### Defined in
 
-[packages/stoneberry/src/scan/PrefixScan.ts:130](https://github.com/stoneberry-webgpu/stoneberry/blob/91497b5/packages/stoneberry/src/scan/PrefixScan.ts#L130)
+[packages/stoneberry/src/scan/PrefixScan.ts:139](https://github.com/stoneberry-webgpu/stoneberry/blob/72dad75/packages/stoneberry/src/scan/PrefixScan.ts#L139)
 
 ___
 
@@ -231,4 +251,4 @@ the scanned result in an array
 
 #### Defined in
 
-[packages/stoneberry/src/scan/PrefixScan.ts:138](https://github.com/stoneberry-webgpu/stoneberry/blob/91497b5/packages/stoneberry/src/scan/PrefixScan.ts#L138)
+[packages/stoneberry/src/scan/PrefixScan.ts:147](https://github.com/stoneberry-webgpu/stoneberry/blob/72dad75/packages/stoneberry/src/scan/PrefixScan.ts#L147)

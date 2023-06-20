@@ -22,6 +22,16 @@ custom_edit_url: null
 
 Ƭ **ValueOrFn**<`T`\>: `T` \| () => `T`
 
+Each value in the params object can be a javascript value, or a function that returns a value.
+In all cases, the reactive class will have a reactive property returning a value of the same type.
+In all cases, other reactive functions can reference the reactive property and will re-execute
+automatically as needed.
+Mutating the value of a reactive property depends on the initial value:
+  . Reactive properties containing a javascript value only change when the
+      programmer explicitly mutates the value.
+  . Reactive properties containing a function will re-execute when they are referenced
+      if any of their sources have changed.
+
 #### Type parameters
 
 | Name |
@@ -30,4 +40,4 @@ custom_edit_url: null
 
 #### Defined in
 
-[packages/stoneberry/src/util/Util.ts:3](https://github.com/stoneberry-webgpu/stoneberry/blob/91497b5/packages/stoneberry/src/util/Util.ts#L3)
+node_modules/.pnpm/thimbleberry@0.1.12/node_modules/thimbleberry/dist/shader-util/ReactiveUtil.d.ts:22

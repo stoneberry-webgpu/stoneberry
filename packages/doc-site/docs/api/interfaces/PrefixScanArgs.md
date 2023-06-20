@@ -16,7 +16,7 @@ Parameters to construct a [PrefixScan](../classes/PrefixScan.md) instance.
 
 #### Defined in
 
-[packages/stoneberry/src/scan/PrefixScan.ts:17](https://github.com/stoneberry-webgpu/stoneberry/blob/91497b5/packages/stoneberry/src/scan/PrefixScan.ts#L17)
+[packages/stoneberry/src/scan/PrefixScan.ts:17](https://github.com/stoneberry-webgpu/stoneberry/blob/72dad75/packages/stoneberry/src/scan/PrefixScan.ts#L17)
 
 ___
 
@@ -30,7 +30,7 @@ as the first element and stopping before the final source element.
 
 #### Defined in
 
-[packages/stoneberry/src/scan/PrefixScan.ts:31](https://github.com/stoneberry-webgpu/stoneberry/blob/91497b5/packages/stoneberry/src/scan/PrefixScan.ts#L31)
+[packages/stoneberry/src/scan/PrefixScan.ts:31](https://github.com/stoneberry-webgpu/stoneberry/blob/72dad75/packages/stoneberry/src/scan/PrefixScan.ts#L31)
 
 ___
 
@@ -42,7 +42,7 @@ Initial value for exclusive scan
 
 #### Defined in
 
-[packages/stoneberry/src/scan/PrefixScan.ts:34](https://github.com/stoneberry-webgpu/stoneberry/blob/91497b5/packages/stoneberry/src/scan/PrefixScan.ts#L34)
+[packages/stoneberry/src/scan/PrefixScan.ts:34](https://github.com/stoneberry-webgpu/stoneberry/blob/72dad75/packages/stoneberry/src/scan/PrefixScan.ts#L34)
 
 ___
 
@@ -54,7 +54,19 @@ Debug label attached to gpu objects for error reporting
 
 #### Defined in
 
-[packages/stoneberry/src/scan/PrefixScan.ts:37](https://github.com/stoneberry-webgpu/stoneberry/blob/91497b5/packages/stoneberry/src/scan/PrefixScan.ts#L37)
+[packages/stoneberry/src/scan/PrefixScan.ts:37](https://github.com/stoneberry-webgpu/stoneberry/blob/72dad75/packages/stoneberry/src/scan/PrefixScan.ts#L37)
+
+___
+
+### maxWorkgroups
+
+• `Optional` **maxWorkgroups**: `number`
+
+Override to set max number of workgroups for dispatch e.g. for testing.
+
+#### Defined in
+
+[packages/stoneberry/src/scan/PrefixScan.ts:43](https://github.com/stoneberry-webgpu/stoneberry/blob/72dad75/packages/stoneberry/src/scan/PrefixScan.ts#L43)
 
 ___
 
@@ -80,7 +92,7 @@ cache for GPUComputePipeline or GPURenderPipeline
 
 #### Defined in
 
-[packages/stoneberry/src/scan/PrefixScan.ts:43](https://github.com/stoneberry-webgpu/stoneberry/blob/91497b5/packages/stoneberry/src/scan/PrefixScan.ts#L43)
+[packages/stoneberry/src/scan/PrefixScan.ts:46](https://github.com/stoneberry-webgpu/stoneberry/blob/72dad75/packages/stoneberry/src/scan/PrefixScan.ts#L46)
 
 ___
 
@@ -90,12 +102,12 @@ ___
 
 Source data to be scanned.
 
-A function returning the source buffer will be executed lazily, 
+A function returning the source buffer will be executed lazily,
 and reexecuted if the functions `@reactively` source values change.
 
 #### Defined in
 
-[packages/stoneberry/src/scan/PrefixScan.ts:25](https://github.com/stoneberry-webgpu/stoneberry/blob/91497b5/packages/stoneberry/src/scan/PrefixScan.ts#L25)
+[packages/stoneberry/src/scan/PrefixScan.ts:25](https://github.com/stoneberry-webgpu/stoneberry/blob/72dad75/packages/stoneberry/src/scan/PrefixScan.ts#L25)
 
 ___
 
@@ -107,7 +119,7 @@ customize the type of scan (e.g. prefix sum on 32 bit floats)
 
 #### Defined in
 
-[packages/stoneberry/src/scan/PrefixScan.ts:28](https://github.com/stoneberry-webgpu/stoneberry/blob/91497b5/packages/stoneberry/src/scan/PrefixScan.ts#L28)
+[packages/stoneberry/src/scan/PrefixScan.ts:28](https://github.com/stoneberry-webgpu/stoneberry/blob/72dad75/packages/stoneberry/src/scan/PrefixScan.ts#L28)
 
 ___
 
@@ -119,4 +131,4 @@ Override to set compute workgroup size e.g. for testing.
 
 #### Defined in
 
-[packages/stoneberry/src/scan/PrefixScan.ts:40](https://github.com/stoneberry-webgpu/stoneberry/blob/91497b5/packages/stoneberry/src/scan/PrefixScan.ts#L40)
+[packages/stoneberry/src/scan/PrefixScan.ts:40](https://github.com/stoneberry-webgpu/stoneberry/blob/72dad75/packages/stoneberry/src/scan/PrefixScan.ts#L40)

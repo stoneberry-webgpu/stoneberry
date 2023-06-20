@@ -6,11 +6,57 @@ sidebar_position: 0
 custom_edit_url: null
 ---
 
-Core api for shaders that can be run in a group.
+An interface for modular shaders
 
 ## Implemented by
 
 - [`PrefixScan`](../classes/PrefixScan.md)
+
+## Properties
+
+### debugLogging
+
+• `Optional` **debugLogging**: (`debugFlags`: `Record`<`string`, `unknown`\>) => `void`
+
+#### Type declaration
+
+▸ (`debugFlags`): `void`
+
+std interface to pass flags to control logging
+
+##### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `debugFlags` | `Record`<`string`, `unknown`\> |
+
+##### Returns
+
+`void`
+
+#### Defined in
+
+node_modules/.pnpm/thimbleberry@0.1.12/node_modules/thimbleberry/dist/shader-util/ComposableShader.d.ts:7
+
+___
+
+### destroy
+
+• `Optional` **destroy**: () => `void`
+
+#### Type declaration
+
+▸ (): `void`
+
+cleanup unused gpu resources
+
+##### Returns
+
+`void`
+
+#### Defined in
+
+node_modules/.pnpm/thimbleberry@0.1.12/node_modules/thimbleberry/dist/shader-util/ComposableShader.d.ts:9
 
 ## Methods
 
@@ -32,4 +78,4 @@ Add compute or render passes for this shader to the provided GPUCommandEncoder
 
 #### Defined in
 
-[packages/stoneberry/src/util/Util.ts:10](https://github.com/stoneberry-webgpu/stoneberry/blob/91497b5/packages/stoneberry/src/util/Util.ts#L10)
+node_modules/.pnpm/thimbleberry@0.1.12/node_modules/thimbleberry/dist/shader-util/ComposableShader.d.ts:5
