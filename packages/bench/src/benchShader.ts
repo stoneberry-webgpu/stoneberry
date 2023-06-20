@@ -10,8 +10,9 @@ import {
 } from "thimbleberry";
 
 export interface BenchResult {
+  reports: GpuPerfReport[];
   fastest: GpuPerfReport;
-  clockTime: number;
+  averageClockTime: number;
 }
 
 /** run the shader multiple times and report the fastest iteration */
@@ -28,6 +29,8 @@ export async function benchShader(
   shaderGroup.dispatch();
   await device.queue.onSubmittedWorkDone();
 
+  const start = performance.now();
+
   /** render nTimes */
   for (let i = 0; i < nTimes; i++) {
     const frameLabel = `frame-${i}`;
@@ -36,7 +39,6 @@ export async function benchShader(
     const { span } = withTimestampGroup(frameLabel, () => {
       shaderGroup.dispatch();
     });
-    await device.queue.onSubmittedWorkDone();
     if (span) {
       frameSpans.push(span);
       clockTimes.push(performance.now() - frameStart);
@@ -44,25 +46,28 @@ export async function benchShader(
       console.error("no span from withTimestampGroup. gpuTiming not initialized?");
     }
   }
+  await device.queue.onSubmittedWorkDone();
 
-  const { fastest, fastestIndex } = await fastestGpuResult(frameSpans);
-  const clockTime = clockTimes[fastestIndex];
-  return { fastest, clockTime };
+  const clockTime = performance.now() - start;
+  const averageClockTime = clockTime / nTimes;
+
+  const { reports, fastest } = await collateGpuResults(frameSpans);
+  return { reports, fastest, averageClockTime};
 }
 
 interface GpuReports {
   fastest: GpuPerfReport;
   fastestIndex: number;
-  frameReports: GpuPerfReport[];
+  reports: GpuPerfReport[];
 }
 
 /** collect gpu timing results and return the fastest frame */
-async function fastestGpuResult(frameSpans: CompletedSpan[]): Promise<GpuReports> {
+async function collateGpuResults(frameSpans: CompletedSpan[]): Promise<GpuReports> {
   const report = await gpuTiming!.results();
-  const frameReports = frameSpans.map(span => filterReport(report, span));
-  const fastest = frameReports.reduce((a, b) =>
+  const reports = frameSpans.map(span => filterReport(report, span));
+  const fastest = reports.reduce((a, b) =>
     reportDuration(a) < reportDuration(b) ? a : b
   );
-  const fastestIndex = frameReports.findIndex(r => r === fastest);
-  return { frameReports, fastest, fastestIndex };
+  const fastestIndex = reports.findIndex(r => r === fastest);
+  return { reports, fastest, fastestIndex };
 }

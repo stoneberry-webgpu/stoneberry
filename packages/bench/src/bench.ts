@@ -11,26 +11,32 @@ async function main(): Promise<void> {
   });
 
   initGpuTiming(device);
-  const { fastest, clockTime } = await prefixScanBench(device);
+  const { averageClockTime, fastest } = await prefixScanBench(device);
 
-  logCsvReport(fastest, clockTime, testUtc);
+  logCsvReport([fastest], averageClockTime, "scan:", testUtc);
 }
 
 /** log a csv formatted version of the report to a localhost websocket, and the debug console */
 function logCsvReport(
-  report: GpuPerfReport,
-  clockTime: number,
+  reports: GpuPerfReport[],
+  averageTime: number,
+  label: string,
   utc = Date.now().toString()
 ): void {
-  const clockTimeMs = clockTime.toFixed(2);
-  const reportText = csvReport(
-    report,
-    { "clock time": clockTimeMs },
-    { utc, git: gitVersion },
-    "scan total gpu"
+  const averageTimeMs = averageTime.toFixed(2);
+  const averageKey = `${label} average clock`
+  const reportTexts = reports.map(report =>
+    csvReport(
+      report,
+      { [averageKey]: averageTimeMs },
+      { utc, git: gitVersion },
+      `${label} gpu time`
+    )
   );
-  console.log(reportText);
-  logWebSocket(reportText);
+
+  const msg = reportTexts.join("");
+  console.log(msg);
+  logWebSocket(msg);
 }
 
 function logWebSocket(message: string): void {
