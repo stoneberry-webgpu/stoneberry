@@ -54,5 +54,14 @@ function appRoot(): HTMLElement {
 }
 
 function noGPU(): void {
-  renderError("WebGPU not available. Try another browser?");
+  let onMessage = "on this browser";
+  if (navigator.userAgent.includes("iPad")) {
+    onMessage = "on iPad";
+  } else if (navigator.userAgent.includes("iPhone")) {
+    onMessage = "on iPhone";
+  }
+  renderError(`
+    WebGPU is new and not available yet ${onMessage}. 
+    </br> Try Chrome on Mac OS or Windows. 
+    `);
 }
