@@ -67,9 +67,9 @@ export class ApplyScanBlocks extends HasReactive implements ComposableShader {
 
   commands(commandEncoder: GPUCommandEncoder): void {
     this.updateUniforms();
-    const timestampWrites = gpuTiming?.timestampWrites(this.label);
     const bindGroups = this.bindGroups;
     this.dispatchSizes.forEach((dispatchSize, i) => {
+      const timestampWrites = gpuTiming?.timestampWrites(`${this.label} #${i}`);
       const passEncoder = commandEncoder.beginComputePass({ timestampWrites });
       passEncoder.label = ` ${this.label} apply scan blocks`;
       passEncoder.setPipeline(this.pipeline);
