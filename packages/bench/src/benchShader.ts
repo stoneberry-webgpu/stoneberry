@@ -24,6 +24,10 @@ export async function benchShader(
   const clockTimes: number[] = [];
   const shaderGroup = new ShaderGroup(device, ...shaders);
 
+  /** 1 warmup run */
+  shaderGroup.dispatch();
+  await device.queue.onSubmittedWorkDone();
+
   /** render nTimes */
   for (let i = 0; i < nTimes; i++) {
     const frameLabel = `frame-${i}`;
