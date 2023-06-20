@@ -15,7 +15,7 @@ export function renderError(msg: string): void {
   app.innerHTML = `
     <div style="display: flex; height: calc(100vh - 20px);">
       <div style="font:bold 24px sans-serif; 
-                  color: red; 
+                  color: #60acae; 
                   flex: 1;
                   text-align: center;
                   margin: auto;"> 
