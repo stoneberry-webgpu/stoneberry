@@ -15,24 +15,31 @@ export interface BenchResult {
   averageClockTime: number;
 }
 
+export interface BenchConfig {
+  device: GPUDevice;
+  runs: number;
+  warmup?: boolean;
+}
+
 /** run the shader multiple times and report the fastest iteration */
 export async function benchShader(
-  device: GPUDevice,
-  nTimes: number,
+  config: BenchConfig,
   ...shaders: ComposableShader[]
 ): Promise<BenchResult> {
+  const { device, runs, warmup = true } = config;
   const frameSpans: CompletedSpan[] = [];
   const clockTimes: number[] = [];
   const shaderGroup = new ShaderGroup(device, ...shaders);
 
-  /** 1 warmup run */
-  shaderGroup.dispatch();
-  await device.queue.onSubmittedWorkDone();
+  /* warmup run */
+  if (warmup) {
+    shaderGroup.dispatch();
+    await device.queue.onSubmittedWorkDone();
+  }
 
+  /* run the shader multiple times */
   const start = performance.now();
-
-  /** render nTimes */
-  for (let i = 0; i < nTimes; i++) {
+  for (let i = 0; i < runs; i++) {
     const frameLabel = `frame-${i}`;
     performance.mark(frameLabel);
     const frameStart = performance.now();
@@ -47,12 +54,13 @@ export async function benchShader(
     }
   }
   await device.queue.onSubmittedWorkDone();
-
   const clockTime = performance.now() - start;
-  const averageClockTime = clockTime / nTimes;
 
+
+  /* report results */
+  const averageClockTime = clockTime / runs;
   const { reports, fastest } = await collateGpuResults(frameSpans);
-  return { reports, fastest, averageClockTime};
+  return { reports, fastest, averageClockTime };
 }
 
 interface GpuReports {

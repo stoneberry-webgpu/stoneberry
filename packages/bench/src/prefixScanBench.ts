@@ -3,7 +3,8 @@ import { BenchResult, benchShader } from "./benchShader.js";
 
 export async function prefixScanBench(
   device: GPUDevice,
-  size: number
+  size: number,
+  runs = 1
 ): Promise<BenchResult> {
   const srcData = new Uint32Array(size);
   for (let i = 0; i < srcData.length; i++) {
@@ -19,5 +20,5 @@ export async function prefixScanBench(
   });
   src.unmap();
   const scan = new PrefixScan({ device, src });
-  return benchShader(device, 50, scan);
+  return benchShader({ device, runs }, scan);
 }

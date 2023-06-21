@@ -11,11 +11,10 @@ async function main(): Promise<void> {
 
   initGpuTiming(device);
   const size = 2 ** 27;
-  const { averageClockTime, fastest } = await prefixScanBench(device, size);
+  const { averageClockTime, fastest } = await prefixScanBench(device, size, 50);
 
   logCsvReport([fastest], averageClockTime, size, "scan:", testUtc);
 }
-
 
 /** log a csv formatted version of the report to a localhost websocket, and the debug console */
 function logCsvReport(
