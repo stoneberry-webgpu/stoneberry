@@ -1,14 +1,13 @@
 import { gitVersion } from "../version/gitVersion.js";
 import { csvReport, GpuPerfReport, initGpuTiming, labeledGpuDevice } from "thimbleberry";
 import { prefixScanBench } from "./prefixScanBench.js";
+import { benchDevice } from "./benchDevice.js";
 
 main();
 
 async function main(): Promise<void> {
   const testUtc = Date.now().toString();
-  const device = await labeledGpuDevice({
-    requiredFeatures: ["timestamp-query"],
-  });
+  const device = await benchDevice("scan:");
 
   initGpuTiming(device);
   const { averageClockTime, fastest } = await prefixScanBench(device);
