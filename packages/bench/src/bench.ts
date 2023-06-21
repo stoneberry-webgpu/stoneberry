@@ -54,10 +54,12 @@ function summaryReport(values: [string, string][], utc: string, git: string): st
 }
 
 function logWebSocket(message: string): void {
-  const params = new URLSearchParams(document.URL);
+  const url = new URL(document.URL);
+  const params = new URLSearchParams(url.search);
   const port = params.get("reportPort");
+
   if (port) {
-    const ws = new WebSocket(`ws://localhost:${port}`);
+    const ws = new WebSocket(`ws://127.0.0.1:${port}`);
     ws.onopen = () => {
       ws.send(message);
       ws.close();
