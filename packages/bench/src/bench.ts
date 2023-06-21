@@ -10,7 +10,8 @@ async function main(): Promise<void> {
   const device = await benchDevice("scan:");
 
   initGpuTiming(device);
-  const { averageClockTime, fastest } = await prefixScanBench(device);
+  const size = 2 ** 27;
+  const { averageClockTime, fastest } = await prefixScanBench(device, size);
 
   logCsvReport([fastest], averageClockTime, "scan:", testUtc);
 }
