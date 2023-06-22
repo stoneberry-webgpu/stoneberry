@@ -1,11 +1,13 @@
-import { ReduceBuffer } from "./../../src/reduce-buffer/ReduceBufferShader";
 import {
-  labeledGpuDevice,
   maxTemplate,
   minMaxTemplate,
+  ReduceBuffer,
+  sumTemplate,
+} from "stoneberry/reduce-buffer";
+import {
+  labeledGpuDevice,
   partitionBySize,
   ShaderGroup,
-  sumTemplate,
   trackRelease,
   trackUse,
   withAsyncUsage,
