@@ -68,7 +68,7 @@ fn fetchSrcBuffer(start: u32) -> array<Output, 4> {  //! 4=blockArea
 fn reduceWorkgroupToOut(grid: vec2<u32>, workIndex: u32) {
     var v = work[0];
     for (var i = 1u; i < 4u; i = i + 1u) { //! 4=workgroupThreads
-        v = flatMapOp(v, work[i]);
+        v = binaryOp(v, work[i]);
     }
     out[workIndex] = v;
 }
@@ -76,13 +76,13 @@ fn reduceWorkgroupToOut(grid: vec2<u32>, workIndex: u32) {
 fn reduceBlock(a: array<Output, 4>) -> Output { //! 4=blockArea
     var v = a[0];
     for (var i = 1u; i < 4u; i = i + 1u) { //! 4=blockArea
-        v = flatMapOp(v, a[i]);
+        v = binaryOp(v, a[i]);
     }
     return v;
 }
 
-fn flatMapOp(a: Output, b: Output) -> Output {
-    return Output(a.sum + b.sum);  //! "return Output(a.sum + b.sum);"=flatMapOp
+fn binaryOp(a: Output, b: Output) -> Output {
+    return Output(a.sum + b.sum);  //! "return Output(a.sum + b.sum);"=binaryOp
 }
 
 fn inputOp(a: Input) -> Output {
