@@ -1,5 +1,5 @@
 import { applyTemplate, memoizeWithDevice } from "thimbleberry";
-import { BinOpTemplate, maxTemplate } from "./BinOpTemplate.js";
+import { BinOpTemplate, maxTemplate } from "./ReduceBufferTemplate.js";
 import shaderWGSL from "./ReduceBuffer.wgsl?raw";
 
 export interface ReduceBufferPipelineArgs {

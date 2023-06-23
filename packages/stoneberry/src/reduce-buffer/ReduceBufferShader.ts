@@ -1,5 +1,5 @@
 import { HasReactive, reactively } from "@reactively/decorate";
-import { BinOpTemplate, maxTemplate } from "./BinOpTemplate.js";
+import { BinOpTemplate, maxTemplate } from "./ReduceBufferTemplate.js";
 import { Cache, gpuTiming, createDebugBuffer } from "thimbleberry";
 import { assignParams, ValueOrFn, reactiveTrackUse } from "thimbleberry";
 import { ComposableShader } from "thimbleberry";

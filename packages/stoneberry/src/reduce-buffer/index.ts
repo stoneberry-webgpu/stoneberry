@@ -2,4 +2,4 @@
 // and then typecheck correctly with a paths entry in tsconfig.json
 
 export * from "./ReduceBufferShader.js";
-export * from "./BinOpTemplate.js";
+export * from "./ReduceBufferTemplate.js";
