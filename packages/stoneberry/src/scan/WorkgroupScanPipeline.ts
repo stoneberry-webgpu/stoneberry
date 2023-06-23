@@ -1,6 +1,7 @@
 import { applyTemplate, memoizeWithDevice } from "thimbleberry";
-import { ScanTemplate, sumU32 } from "./ScanTemplate.js";
+import { ScanTemplate } from "./ScanTemplate.js";
 import shaderWGSL from "./WorkgroupScan.wgsl?raw";
+import { sumU32 } from "../util/BinOpTemplate.js";
 
 interface WorkGroupScanPipelineArgs {
   device: GPUDevice;

@@ -1,7 +1,8 @@
 import { memoizeWithDevice } from "thimbleberry";
 import { applyTemplate } from "thimbleberry";
 import shaderWGSL from "./ApplyScanBlocks.wgsl?raw";
-import { ScanTemplate, sumU32 } from "./ScanTemplate.js";
+import { ScanTemplate } from "./ScanTemplate.js";
+import { sumU32 } from "../util/BinOpTemplate.js";
 
 /** @internal */
 export interface ApplyScanBlocksPipelineArgs {

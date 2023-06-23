@@ -9,8 +9,9 @@ import {
 } from "thimbleberry";
 import { ApplyScanBlocks } from "./ApplyScanBlocks.js";
 import { Cache, ComposableShader, ValueOrFn } from "../util/Util.js";
-import { ScanTemplate, sumU32 } from "./ScanTemplate.js";
+import { ScanTemplate } from "./ScanTemplate.js";
 import { WorkgroupScan } from "./WorkgroupScan.js";
+import { sumU32 } from "../util/BinOpTemplate.js";
 
 /** Parameters to construct a {@link PrefixScan} instance.  */
 export interface PrefixScanArgs {

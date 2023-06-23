@@ -8,9 +8,10 @@ import {
   trackContext,
 } from "thimbleberry";
 import { getApplyBlocksPipeline } from "./ApplyScanBlocksPipeline";
-import { ScanTemplate, sumU32 } from "./ScanTemplate.js";
+import { ScanTemplate } from "./ScanTemplate.js";
 import { Cache, ComposableShader } from "../util/Util.js";
 import { calcDispatchSizes } from "../util/DispatchSizes.js";
+import { sumU32 } from "../util/BinOpTemplate.js";
 
 /** @internal */
 export interface ApplyScanBlocksArgs {

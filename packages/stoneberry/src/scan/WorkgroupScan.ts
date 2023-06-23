@@ -1,9 +1,17 @@
 import { HasReactive, reactively } from "@reactively/decorate";
-import { assignParams, createDebugBuffer, gpuTiming, limitWorkgroupLength, reactiveTrackUse, trackContext } from "thimbleberry";
+import {
+  assignParams,
+  createDebugBuffer,
+  gpuTiming,
+  limitWorkgroupLength,
+  reactiveTrackUse,
+  trackContext,
+} from "thimbleberry";
 import { calcDispatchSizes } from "../util/DispatchSizes.js";
 import { Cache, ComposableShader, ValueOrFn } from "../util/Util.js";
-import { ScanTemplate, sumU32 } from "./ScanTemplate.js";
+import { ScanTemplate } from "./ScanTemplate.js";
 import { getWorkgroupScanPipeline } from "./WorkgroupScanPipeline";
+import { sumU32 } from "../util/BinOpTemplate.js";
 
 /** @internal */
 export interface WorkgroupScanArgs {
@@ -126,7 +134,6 @@ export class WorkgroupScan extends HasReactive implements ComposableShader {
     return buffer;
   }
 
-
   @reactively get debugBuffer(): GPUBuffer {
     const buffer = createDebugBuffer(this.device, `${this.label} workgroup scan debug`);
     reactiveTrackUse(buffer, this.usageContext);
@@ -244,5 +251,4 @@ export class WorkgroupScan extends HasReactive implements ComposableShader {
   @reactively private get actualWorkgroupLength(): number {
     return limitWorkgroupLength(this.device, this.workgroupLength);
   }
-
 }
