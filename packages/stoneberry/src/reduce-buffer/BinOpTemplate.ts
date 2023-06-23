@@ -5,7 +5,7 @@ export interface BinOpTemplate {
   elementSize: number; // size of our structure in bytes
   pureOp: string; // create our structure from from an f32
   binaryOp: string; // combine two of our structures
-  inputOp: string; // convert an input structure to our structure
+  loadOp: string;   // convert an input structure to our structure
   identityOp: string; // create our structure with the identity value for our op type (e.g. 0 for sum, 1 for multiply)
 }
 
@@ -16,7 +16,7 @@ export const sumTemplate: BinOpTemplate = {
   pureOp: "return Output(a);",
   binaryOp: "return Output(a.sum + b.sum);",
   identityOp: "return Output(0.0);",
-  inputOp: "return Output(a.sum);"
+  loadOp: "return Output(a.sum);"
 };
 
 export const sumTemplateUnsigned: BinOpTemplate = {
@@ -26,7 +26,7 @@ export const sumTemplateUnsigned: BinOpTemplate = {
   pureOp: "return Output(a);",
   binaryOp: "return Output(a.sum + b.sum);",
   identityOp: "return Output(0);",
-  inputOp: "return Output(a.sum);"
+  loadOp: "return Output(a.sum);"
 };
 
 export const minMaxTemplate: BinOpTemplate = {
@@ -35,7 +35,7 @@ export const minMaxTemplate: BinOpTemplate = {
   inputStruct: "min: f32, max: f32,",
   binaryOp: "return Output(min(a.min, b.min), max(a.max, b.max));",
   identityOp: "return Output(1e38, -1e38);",
-  inputOp: "return Output(a.min, a.max);", // assumes Input is a struct with min and max
+  loadOp: "return Output(a.min, a.max);", // assumes Input is a struct with min and max
   pureOp: `
     if (a > 0.0) {
         return Output(a, a);
@@ -52,7 +52,7 @@ export const maxTemplate: BinOpTemplate = {
   pureOp: "return Output(a);",
   binaryOp: "return Output(max(a.max, b.max));",
   identityOp: "return Output(0.0);",
-  inputOp: "return Output(a.max);"
+  loadOp: "return Output(a.max);"
 };
 
 // find min max of the alpha channel
@@ -62,7 +62,7 @@ export const minMaxAlphaTemplate: BinOpTemplate = {
   inputStruct: "min: f32, max: f32,",
   binaryOp: "return Output(min(a.min, b.min), max(a.max, b.max));",
   identityOp: "return Output(1e38, -1e38);",
-  inputOp: "return Output(a.min, a.max);", // assumes Input is a struct with min and max
+  loadOp: "return Output(a.min, a.max);", // assumes Input is a struct with min and max
   pureOp: `
     if (a > 0.0) {
         return Output(a, a);

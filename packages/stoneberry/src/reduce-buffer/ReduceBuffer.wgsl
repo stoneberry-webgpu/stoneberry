@@ -56,7 +56,7 @@ fn fetchSrcBuffer(start: u32) -> array<Output, 4> {  //! 4=blockArea
     for (var i = 0u; i < 4u; i = i + 1u) { //! 4=blockArea
         var idx = i + start;
         if (idx < end) {
-            a[i] = inputOp(src[idx]);
+            a[i] = loadOp(src[idx]);
         } else {
             a[i] = identityOp();
         }
@@ -85,8 +85,8 @@ fn binaryOp(a: Output, b: Output) -> Output {
     return Output(a.sum + b.sum);  //! "return Output(a.sum + b.sum);"=binaryOp
 }
 
-fn inputOp(a: Input) -> Output {
-    return Output(a.sum);  //! "return Output(a.sum);"=inputOp
+fn loadOp(a: Input) -> Output {
+    return Output(a.sum);  //! "return Output(a.sum);"=loadOp
 }
 
 fn identityOp() -> Output {
