@@ -1,5 +1,5 @@
 /** wgsl text substitutions that define binary operations for reduce and scan shaders */
-export interface BinOpTemplate {
+export interface ReduceBufferTemplate {
   binaryOp: string; // combine two of our structures
   identityOp: string; // create our structure with the identity value for our op type (e.g. 0 for sum, 1 for multiply)
   loadOp: string;   // convert an input structure to our structure
@@ -10,7 +10,7 @@ export interface BinOpTemplate {
   pureOp: string; // create our structure from from an f32
 }
 
-export const sumTemplate: BinOpTemplate = {
+export const sumTemplate: ReduceBufferTemplate = {
   elementSize: 4,
   outputStruct: "sum: f32,",
   inputStruct: "sum: f32,",
@@ -20,7 +20,7 @@ export const sumTemplate: BinOpTemplate = {
   loadOp: "return Output(a.sum);"
 };
 
-export const sumTemplateUnsigned: BinOpTemplate = {
+export const sumTemplateUnsigned: ReduceBufferTemplate = {
   elementSize: 4,
   outputStruct: "sum: u32,",
   inputStruct: "sum: u32,",
@@ -30,7 +30,7 @@ export const sumTemplateUnsigned: BinOpTemplate = {
   loadOp: "return Output(a.sum);"
 };
 
-export const minMaxTemplate: BinOpTemplate = {
+export const minMaxTemplate: ReduceBufferTemplate = {
   elementSize: 8,
   outputStruct: "min: f32, max: f32,",
   inputStruct: "min: f32, max: f32,",
@@ -46,7 +46,7 @@ export const minMaxTemplate: BinOpTemplate = {
     `
 };
 
-export const maxTemplate: BinOpTemplate = {
+export const maxTemplate: ReduceBufferTemplate = {
   elementSize: 4,
   outputStruct: "max: f32,",
   inputStruct: "max: f32,",
@@ -57,7 +57,7 @@ export const maxTemplate: BinOpTemplate = {
 };
 
 // find min max of the alpha channel
-export const minMaxAlphaTemplate: BinOpTemplate = {
+export const minMaxAlphaTemplate: ReduceBufferTemplate = {
   elementSize: 8,
   outputStruct: "min: f32, max: f32,",
   inputStruct: "min: f32, max: f32,",
