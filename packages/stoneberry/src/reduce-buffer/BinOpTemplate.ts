@@ -1,12 +1,13 @@
 /** wgsl text substitutions that define binary operations for reduce and scan shaders */
 export interface BinOpTemplate {
+  binaryOp: string; // combine two of our structures
+  identityOp: string; // create our structure with the identity value for our op type (e.g. 0 for sum, 1 for multiply)
+  loadOp: string;   // convert an input structure to our structure
   inputStruct: string; // internal format of a potentially different input structure
   outputStruct: string; // internal format of our structure
+
   elementSize: number; // size of our structure in bytes
   pureOp: string; // create our structure from from an f32
-  binaryOp: string; // combine two of our structures
-  loadOp: string;   // convert an input structure to our structure
-  identityOp: string; // create our structure with the identity value for our op type (e.g. 0 for sum, 1 for multiply)
 }
 
 export const sumTemplate: BinOpTemplate = {
