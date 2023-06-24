@@ -8,10 +8,9 @@ import {
   trackContext,
 } from "thimbleberry";
 import { getApplyBlocksPipeline } from "./ApplyScanBlocksPipeline";
-import { ScanTemplate } from "./ScanTemplate.js";
 import { Cache, ComposableShader } from "../util/Util.js";
 import { calcDispatchSizes } from "../util/DispatchSizes.js";
-import { sumU32 } from "../util/BinOpTemplate.js";
+import { BinOpTemplate, sumU32 } from "../util/BinOpTemplate.js";
 
 /** @internal */
 export interface ApplyScanBlocksArgs {
@@ -21,7 +20,7 @@ export interface ApplyScanBlocksArgs {
   workgroupLength?: number;
   maxWorkgroups?: number | undefined;
   label?: string;
-  template?: ScanTemplate;
+  template?: BinOpTemplate;
   exclusiveLarge?: boolean;
   initialValue?: number;
   partialScanOffset?: number;
@@ -48,7 +47,7 @@ export class ApplyScanBlocks extends HasReactive implements ComposableShader {
   @reactively partialScan!: GPUBuffer;
   @reactively blockSums!: GPUBuffer;
   @reactively workgroupLength?: number;
-  @reactively template!: ScanTemplate;
+  @reactively template!: BinOpTemplate;
   @reactively label!: string;
   @reactively exclusiveLarge!: boolean;
   @reactively initialValue!: number;

@@ -1,13 +1,12 @@
 import { applyTemplate, memoizeWithDevice } from "thimbleberry";
-import { ScanTemplate } from "./ScanTemplate.js";
 import shaderWGSL from "./WorkgroupScan.wgsl?raw";
-import { sumU32 } from "../util/BinOpTemplate.js";
+import { BinOpTemplate, sumU32 } from "../util/BinOpTemplate.js";
 
 interface WorkGroupScanPipelineArgs {
   device: GPUDevice;
   workgroupSize: number;
   blockSums: boolean;
-  template: ScanTemplate;
+  template: BinOpTemplate;
 }
 
 /** @internal */

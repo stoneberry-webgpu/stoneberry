@@ -9,9 +9,8 @@ import {
 } from "thimbleberry";
 import { ApplyScanBlocks } from "./ApplyScanBlocks.js";
 import { Cache, ComposableShader, ValueOrFn } from "../util/Util.js";
-import { ScanTemplate } from "./ScanTemplate.js";
 import { WorkgroupScan } from "./WorkgroupScan.js";
-import { sumU32 } from "../util/BinOpTemplate.js";
+import { BinOpTemplate, sumU32 } from "../util/BinOpTemplate.js";
 
 /** Parameters to construct a {@link PrefixScan} instance.  */
 export interface PrefixScanArgs {
@@ -26,7 +25,7 @@ export interface PrefixScanArgs {
   src: ValueOrFn<GPUBuffer>;
 
   /** {@inheritDoc PrefixScan#template} */
-  template?: ScanTemplate;
+  template?: BinOpTemplate;
 
   /** {@inheritDoc PrefixScan#exclusive} */
   exclusive?: boolean;
@@ -82,7 +81,7 @@ const defaults: Partial<PrefixScanArgs> = {
  */
 export class PrefixScan<T = number> extends HasReactive implements ComposableShader {
   /** customize the type of scan (e.g. prefix sum on 32 bit floats) */
-  @reactively template!: ScanTemplate;
+  @reactively template!: BinOpTemplate;
 
   /** Source data to be scanned */
   @reactively src!: GPUBuffer;
@@ -159,7 +158,7 @@ export class PrefixScan<T = number> extends HasReactive implements ComposableSha
         `outputElement format not defined: ${JSON.stringify(this.template, null, 2)}`
       );
     }
-    const data = await withBufferCopy(this.device, this.result, format, d => d.slice()); 
+    const data = await withBufferCopy(this.device, this.result, format, d => d.slice());
     return [...data];
   }
 

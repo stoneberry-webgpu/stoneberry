@@ -9,9 +9,8 @@ import {
 } from "thimbleberry";
 import { calcDispatchSizes } from "../util/DispatchSizes.js";
 import { Cache, ComposableShader, ValueOrFn } from "../util/Util.js";
-import { ScanTemplate } from "./ScanTemplate.js";
 import { getWorkgroupScanPipeline } from "./WorkgroupScanPipeline";
-import { sumU32 } from "../util/BinOpTemplate.js";
+import { BinOpTemplate, sumU32 } from "../util/BinOpTemplate.js";
 
 /** @internal */
 export interface WorkgroupScanArgs {
@@ -21,7 +20,7 @@ export interface WorkgroupScanArgs {
   workgroupLength?: ValueOrFn<number>;
   maxWorkgroups?: ValueOrFn<number | undefined>;
   label?: ValueOrFn<string>;
-  template?: ValueOrFn<ScanTemplate>;
+  template?: ValueOrFn<BinOpTemplate>;
   exclusiveSmall?: boolean;
   initialValue?: ValueOrFn<number>;
   sourceOffset?: ValueOrFn<number>;
@@ -60,7 +59,7 @@ export class WorkgroupScan extends HasReactive implements ComposableShader {
   @reactively source!: GPUBuffer;
 
   /** macros to customize wgsl shader for size of data and type of scan */
-  @reactively template!: ScanTemplate;
+  @reactively template!: BinOpTemplate;
 
   /** emit the final value of each block into a separate output buffer. (true) */
   @reactively emitBlockSums!: boolean;
