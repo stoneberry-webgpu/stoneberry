@@ -1,4 +1,5 @@
 import { GPUElementFormat } from "thimbleberry";
+
 /** Snippets of wgsl text to substitue in the wgsl shader for given scan type */
 export interface BinOpTemplate {
   /** combine two elements, e.g. sum. aka flatMap, join */
@@ -23,8 +24,14 @@ export interface BinOpTemplate {
   elementSize: number; 
 }
 
+/** extended wgsl substitutions that also support creation from internal elements */
+export interface BinOpCreateTemplate extends BinOpTemplate {
+  /** create our output structure from an internal value */
+  pureOp: string;  // TODO rename to createOp
+}
+
 /** prefix sum template for unsigned 32 bit values as input and output */
-export const sumU32: BinOpTemplate = {
+export const sumU32: BinOpCreateTemplate = {
   elementSize: 4,
   binaryOp: "return Output(a.sum + b.sum);",
   identityOp: "return Output(0);",
@@ -32,9 +39,10 @@ export const sumU32: BinOpTemplate = {
   inputStruct: "sum: u32,",
   outputStruct: "sum: u32,",
   outputElements: "u32",
+  pureOp: "return Output(a);",
 };
 
-export const sumF32: BinOpTemplate = {
+export const sumF32: BinOpCreateTemplate = {
   elementSize: 4,
   binaryOp: "return Output(a.sum + b.sum);",
   identityOp: "return Output(0);",
@@ -42,4 +50,31 @@ export const sumF32: BinOpTemplate = {
   inputStruct: "sum: f32,",
   outputStruct: "sum: f32,",
   outputElements: "f32",
+  pureOp: "return Output(a);",
+};
+
+export const minMaxF32: BinOpCreateTemplate = {
+  elementSize: 8,
+  outputStruct: "min: f32, max: f32,",
+  inputStruct: "min: f32, max: f32,",
+  binaryOp: "return Output(min(a.min, b.min), max(a.max, b.max));",
+  identityOp: "return Output(1e38, -1e38);",
+  loadOp: "return Output(a.min, a.max);", 
+  pureOp: `
+    if (a > 0.0) {
+        return Output(a, a);
+    } else {
+        return identityOp();
+    }
+    `
+};
+
+export const maxF32: BinOpCreateTemplate = {
+  elementSize: 4,
+  outputStruct: "max: f32,",
+  inputStruct: "max: f32,",
+  pureOp: "return Output(a);",
+  binaryOp: "return Output(max(a.max, b.max));",
+  identityOp: "return Output(0.0);",
+  loadOp: "return Output(a.max);"
 };

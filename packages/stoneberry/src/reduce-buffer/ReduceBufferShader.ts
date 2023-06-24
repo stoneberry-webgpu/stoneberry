@@ -1,10 +1,11 @@
 import { HasReactive, reactively } from "@reactively/decorate";
-import { ReduceBufferTemplate, maxTemplate } from "./ReduceBufferTemplate.js";
+import { ReduceBufferTemplate } from "./ReduceBufferTemplate.js";
 import { Cache, gpuTiming, createDebugBuffer } from "thimbleberry";
 import { assignParams, ValueOrFn, reactiveTrackUse } from "thimbleberry";
 import { ComposableShader } from "thimbleberry";
 import { trackContext } from "thimbleberry";
 import { getBufferReducePipeline } from "./ReduceBufferPipeline";
+import { maxF32 } from "../util/BinOpTemplate.js";
 
 export interface BufferReduceParams {
   device: GPUDevice;
@@ -22,7 +23,7 @@ export interface BufferReduceParams {
 const defaults: Partial<BufferReduceParams> = {
   blockLength: 4,
   sourceStart: 0,
-  reduceTemplate: maxTemplate,
+  reduceTemplate: maxF32,
   workgroupLength: undefined,
   sourceEnd: undefined,
 };

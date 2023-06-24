@@ -1,8 +1,5 @@
 import {
-  maxTemplate,
-  minMaxTemplate,
   ReduceBuffer,
-  sumTemplate,
 } from "stoneberry/reduce-buffer";
 import {
   labeledGpuDevice,
@@ -15,6 +12,7 @@ import {
   withLeakTrack,
 } from "thimbleberry";
 import { makeBuffer } from "./util/MakeBuffer";
+import { maxF32, minMaxF32, sumF32 } from "../../src/util/BinOpTemplate.js";
 
 it("buffer reduce sum, two dispatches", async () => {
   await withAsyncUsage(async () => {
@@ -30,7 +28,7 @@ it("buffer reduce sum, two dispatches", async () => {
         dispatchLength: 2,
         blockLength: 2,
         workgroupLength: 2,
-        reduceTemplate: sumTemplate,
+        reduceTemplate: sumF32,
       });
       trackUse(shader);
       const shaderGroup = new ShaderGroup(device, shader);
@@ -62,7 +60,7 @@ it("buffer reduce max, two dispatches", async () => {
       dispatchLength: 2,
       blockLength: 2,
       workgroupLength: 2,
-      reduceTemplate: maxTemplate,
+      reduceTemplate: maxF32,
     });
     const shaderGroup = new ShaderGroup(device, shader);
     shaderGroup.dispatch();
@@ -100,7 +98,7 @@ it("buffer reduce min/max, two dispatches", async () => {
       dispatchLength: 2,
       blockLength: 2,
       workgroupLength: 2,
-      reduceTemplate: minMaxTemplate,
+      reduceTemplate: minMaxF32,
     });
 
     const shaderGroup = new ShaderGroup(device, shader);

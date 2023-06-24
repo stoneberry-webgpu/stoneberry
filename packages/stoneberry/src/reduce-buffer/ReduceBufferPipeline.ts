@@ -1,6 +1,7 @@
 import { applyTemplate, memoizeWithDevice } from "thimbleberry";
-import { ReduceBufferTemplate, maxTemplate } from "./ReduceBufferTemplate.js";
+import { ReduceBufferTemplate } from "./ReduceBufferTemplate.js";
 import shaderWGSL from "./ReduceBuffer.wgsl?raw";
+import { maxF32 } from "../util/BinOpTemplate.js";
 
 export interface ReduceBufferPipelineArgs {
   device: GPUDevice;
@@ -14,7 +15,7 @@ function createBufferReducePipeline(
   params: ReduceBufferPipelineArgs
 ): GPUComputePipeline {
   const { device, workgroupThreads = 4, blockArea = 4 } = params;
-  const { reduceTemplate = maxTemplate } = params;
+  const { reduceTemplate = maxF32 } = params;
 
   const bindGroupLayout = device.createBindGroupLayout({
     label: "reduceBuffer",
