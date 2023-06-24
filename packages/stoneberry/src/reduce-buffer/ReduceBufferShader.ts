@@ -9,7 +9,7 @@ import {
   reactiveTrackUse,
   trackContext,
 } from "thimbleberry";
-import { BinOpCreateTemplate, maxF32 } from "../util/BinOpTemplate.js";
+import { BinOpTemplate, maxF32 } from "../util/BinOpTemplate.js";
 import { getBufferReducePipeline } from "./ReduceBufferPipeline";
 
 export interface BufferReduceParams {
@@ -21,7 +21,7 @@ export interface BufferReduceParams {
   sourceEnd?: ValueOrFn<number>;
   blockLength?: ValueOrFn<number>;
   workgroupLength?: ValueOrFn<number>;
-  reduceTemplate?: ValueOrFn<BinOpCreateTemplate>;
+  reduceTemplate?: ValueOrFn<BinOpTemplate>;
   pipelineCache?: <T extends object>() => Cache<T>;
 }
 
@@ -49,7 +49,7 @@ export class ReduceBuffer extends HasReactive implements ComposableShader {
   @reactively dispatchLength!: number;
   @reactively blockLength!: number;
   @reactively workgroupLength?: number;
-  @reactively reduceTemplate!: BinOpCreateTemplate;
+  @reactively reduceTemplate!: BinOpTemplate;
 
   private device!: GPUDevice;
   private usageContext = trackContext();
