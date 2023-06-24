@@ -1,13 +1,12 @@
 import { applyTemplate, memoizeWithDevice } from "thimbleberry";
-import { ReduceBufferTemplate } from "./ReduceBufferTemplate.js";
+import { BinOpCreateTemplate, maxF32 } from "../util/BinOpTemplate.js";
 import shaderWGSL from "./ReduceBuffer.wgsl?raw";
-import { maxF32 } from "../util/BinOpTemplate.js";
 
 export interface ReduceBufferPipelineArgs {
   device: GPUDevice;
   workgroupThreads: number;
   blockArea: number;
-  reduceTemplate: ReduceBufferTemplate;
+  reduceTemplate: BinOpCreateTemplate;
 }
 export const getBufferReducePipeline = memoizeWithDevice(createBufferReducePipeline);
 
