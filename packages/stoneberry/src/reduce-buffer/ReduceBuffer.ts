@@ -11,7 +11,7 @@ import {
   withBufferCopy,
 } from "thimbleberry";
 import { BinOpTemplate, maxF32 } from "../util/BinOpTemplate.js";
-import { getBufferReducePipeline } from "./ReduceBufferPipeline";
+import { getBufferReducePipeline } from "./ReduceBufferPipeline.js";
 
 export interface BufferReduceParams {
   device: GPUDevice;
