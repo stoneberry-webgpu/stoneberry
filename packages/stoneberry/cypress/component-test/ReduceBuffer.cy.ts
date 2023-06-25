@@ -24,11 +24,11 @@ it("buffer reduce sum, two dispatches", async () => {
       const shader = new ReduceBuffer({
         device,
         source: makeBuffer(device, sourceData, "source buffer", Float32Array),
-        reducedResult: makeBuffer(device, [0, 0], "result", Float32Array),
+        result: makeBuffer(device, [0, 0], "result", Float32Array),
         dispatchLength: 2,
         blockLength: 2,
         workgroupLength: 2,
-        reduceTemplate: sumF32,
+        template: sumF32,
       });
       trackUse(shader);
       const shaderGroup = new ShaderGroup(device, shader);
@@ -39,7 +39,7 @@ it("buffer reduce sum, two dispatches", async () => {
         part.reduce((a, b) => a + b)
       );
 
-      await withBufferCopy(device, shader.reducedResult, "f32", data => {
+      await withBufferCopy(device, shader.result, "f32", data => {
         expect([...data]).deep.eq(expected);
       });
       trackRelease(shader);
@@ -56,11 +56,11 @@ it("buffer reduce max, two dispatches", async () => {
     const shader = new ReduceBuffer({
       device,
       source: makeBuffer(device, sourceData, "source buffer", Float32Array),
-      reducedResult: makeBuffer(device, [0, 0], "result", Float32Array),
+      result: makeBuffer(device, [0, 0], "result", Float32Array),
       dispatchLength: 2,
       blockLength: 2,
       workgroupLength: 2,
-      reduceTemplate: maxF32,
+      template: maxF32,
     });
     const shaderGroup = new ShaderGroup(device, shader);
     shaderGroup.dispatch();
@@ -70,7 +70,7 @@ it("buffer reduce max, two dispatches", async () => {
       part.reduce((a, b) => Math.max(a, b))
     );
 
-    await withBufferCopy(device, shader.reducedResult, "f32", data => {
+    await withBufferCopy(device, shader.result, "f32", data => {
       expect([...data]).deep.eq(expected);
     });
   });
@@ -94,17 +94,17 @@ it("buffer reduce min/max, two dispatches", async () => {
     const shader = new ReduceBuffer({
       device,
       source: makeBuffer(device, sourceData, "source buffer", Float32Array),
-      reducedResult: makeBuffer(device, [0, 0, 0, 0], "result", Float32Array),
+      result: makeBuffer(device, [0, 0, 0, 0], "result", Float32Array),
       dispatchLength: 2,
       blockLength: 2,
       workgroupLength: 2,
-      reduceTemplate: minMaxF32,
+      template: minMaxF32,
     });
 
     const shaderGroup = new ShaderGroup(device, shader);
     shaderGroup.dispatch();
 
-    await withBufferCopy(device, shader.reducedResult, "f32", data => {
+    await withBufferCopy(device, shader.result, "f32", data => {
       expect([...data]).deep.eq([1, 3, 1, 6]);
     });
   });
