@@ -14,6 +14,12 @@ import {
 import { makeBuffer } from "./util/MakeBuffer";
 import { maxF32, minMaxF32, sumF32 } from "../../src/util/BinOpTemplate.js";
 
+it ("sum, simple api", async () => {
+  await withAsyncUsage(async () => {
+
+  });
+});
+
 it("buffer reduce sum, two dispatches", async () => {
   await withAsyncUsage(async () => {
     const device = await labeledGpuDevice();
