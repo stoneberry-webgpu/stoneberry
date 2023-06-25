@@ -22,6 +22,9 @@ export interface BinOpTemplate {
 
   /** size of output structure in bytes */
   elementSize: number; 
+
+  /** size of input structure in bytes */
+  inputElementSize: number; 
 }
 
 /** extended wgsl substitutions that also support creation from internal elements */
@@ -33,6 +36,7 @@ export interface BinOpCreateTemplate extends BinOpTemplate {
 /** prefix sum template for unsigned 32 bit values as input and output */
 export const sumU32: BinOpCreateTemplate = {
   elementSize: 4,
+  inputElementSize: 4,
   binaryOp: "return Output(a.sum + b.sum);",
   identityOp: "return Output(0);",
   loadOp: "return Output(a.sum);",
@@ -43,6 +47,7 @@ export const sumU32: BinOpCreateTemplate = {
 };
 
 export const sumF32: BinOpCreateTemplate = {
+  inputElementSize: 4,
   elementSize: 4,
   binaryOp: "return Output(a.sum + b.sum);",
   identityOp: "return Output(0);",
@@ -54,6 +59,7 @@ export const sumF32: BinOpCreateTemplate = {
 };
 
 export const minMaxF32: BinOpCreateTemplate = {
+  inputElementSize: 8,
   elementSize: 8,
   outputStruct: "min: f32, max: f32,",
   inputStruct: "min: f32, max: f32,",
@@ -70,6 +76,7 @@ export const minMaxF32: BinOpCreateTemplate = {
 };
 
 export const maxF32: BinOpCreateTemplate = {
+  inputElementSize: 4,
   elementSize: 4,
   outputStruct: "max: f32,",
   inputStruct: "max: f32,",
