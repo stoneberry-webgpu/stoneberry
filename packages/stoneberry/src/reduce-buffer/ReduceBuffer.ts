@@ -100,7 +100,7 @@ export class ReduceBuffer extends HasReactive implements ComposableShader {
       );
     }
     const data = await withBufferCopy(this.device, this.result, format, d => d.slice());
-    this.template.elementSize
+    this.template.outputElementSize
     return [...data];
   }
 
