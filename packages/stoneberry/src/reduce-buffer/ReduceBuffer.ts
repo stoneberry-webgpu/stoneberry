@@ -16,12 +16,12 @@ import { getBufferReducePipeline } from "./ReduceBufferPipeline.js";
 export interface BufferReduceParams {
   device: GPUDevice;
   source: ValueOrFn<GPUBuffer>;
-  dispatchLength: ValueOrFn<number>;
-  sourceStart?: ValueOrFn<number>;
-  sourceEnd?: ValueOrFn<number>;
-  blockLength?: ValueOrFn<number>;
-  workgroupLength?: ValueOrFn<number>;
-  template?: ValueOrFn<BinOpTemplate>;
+  dispatchLength: number;
+  sourceStart?: number;
+  sourceEnd?: number;
+  blockLength?: number;
+  workgroupLength?: number;
+  template?: BinOpTemplate;
   pipelineCache?: <T extends object>() => Cache<T>;
 
   /** {@inheritDoc ReduceBuffer#label} */
