@@ -1,6 +1,6 @@
-/** return dispatches to cover the source elements */
+/** @return a sequence of dispatches sizes large enough to cover all
+ * of the source elements, without exceeding the maximum dispatch size */
 export function calcDispatchSizes(
-  device: GPUDevice,
   elems: number,
   workgroupLength: number,
   maxWorkgroups: number

@@ -92,9 +92,8 @@ export class ApplyScanBlocks extends HasReactive implements ComposableShader {
   @reactively private get dispatchSizes(): number[] {
     const sourceElems = this.partialScanSize / Uint32Array.BYTES_PER_ELEMENT;
     const maxWorkgroups = this.actualMaxWorkgroups;
-    const device = this.device;
     const actualWorkgroupLength = this.actualWorkgroupLength;
-    return calcDispatchSizes(device, sourceElems, actualWorkgroupLength, maxWorkgroups);
+    return calcDispatchSizes(sourceElems, actualWorkgroupLength, maxWorkgroups);
   }
 
   @reactively private get actualMaxWorkgroups(): number {
