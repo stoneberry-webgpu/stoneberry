@@ -6,14 +6,28 @@ import {
   trackUse,
   withAsyncUsage,
   withBufferCopy,
-  withLeakTrack
+  withLeakTrack,
 } from "thimbleberry";
-import { maxF32, minMaxF32, sumF32 } from "../../src/util/BinOpTemplate.js";
+import { maxF32, minMaxF32, sumF32, sumU32 } from "../../src/util/BinOpTemplate.js";
 import { makeBuffer } from "./util/MakeBuffer";
 
 it("sum, simple api", async () => {
   await withAsyncUsage(async () => {
-
+    const device = trackUse(await labeledGpuDevice());
+    const sourceData = [0, 1, 2, 3, 4, 5, 6, 7];
+    const shader = new ReduceBuffer({
+      device,
+      source: makeBuffer(device, sourceData, "source buffer", Uint32Array),
+      dispatchLength: 2,
+      blockLength: 2,
+      workgroupLength: 2,
+      template: sumU32,
+    });
+    trackUse(shader);
+    const result = await shader.reduce();
+    const expected = sourceData.reduce((a, b) => a + b);
+    expect(result).deep.eq([expected]);
+    trackRelease(shader);
   });
 });
 
