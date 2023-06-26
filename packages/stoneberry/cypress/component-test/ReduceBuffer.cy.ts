@@ -20,7 +20,8 @@ it ("sum, simple api", async () => {
   });
 });
 
-it("buffer reduce sum, two dispatches", async () => {
+it.only("buffer reduce sum, two dispatches", async () => {
+  console.clear();
   await withAsyncUsage(async () => {
     const device = await labeledGpuDevice();
     trackUse(device);
@@ -30,23 +31,18 @@ it("buffer reduce sum, two dispatches", async () => {
       const shader = new ReduceBuffer({
         device,
         source: makeBuffer(device, sourceData, "source buffer", Float32Array),
-        result: makeBuffer(device, [0, 0], "result", Float32Array),
         dispatchLength: 2,
         blockLength: 2,
         workgroupLength: 2,
         template: sumF32,
       });
       trackUse(shader);
-      const shaderGroup = new ShaderGroup(device, shader);
-      shaderGroup.dispatch();
+      (new ShaderGroup(device, shader)).dispatch();
 
-      const elemsPerDispatch = shader.blockLength * shader.workgroupLength!;
-      const expected = [...partitionBySize(sourceData, elemsPerDispatch)].map(part =>
-        part.reduce((a, b) => a + b)
-      );
+      const expected = sourceData.reduce((a, b) => a + b);
 
       await withBufferCopy(device, shader.result, "f32", data => {
-        expect([...data]).deep.eq(expected);
+        expect([...data]).deep.eq([expected]);
       });
       trackRelease(shader);
     });
@@ -62,7 +58,6 @@ it("buffer reduce max, two dispatches", async () => {
     const shader = new ReduceBuffer({
       device,
       source: makeBuffer(device, sourceData, "source buffer", Float32Array),
-      result: makeBuffer(device, [0, 0], "result", Float32Array),
       dispatchLength: 2,
       blockLength: 2,
       workgroupLength: 2,
@@ -100,7 +95,6 @@ it("buffer reduce min/max, two dispatches", async () => {
     const shader = new ReduceBuffer({
       device,
       source: makeBuffer(device, sourceData, "source buffer", Float32Array),
-      result: makeBuffer(device, [0, 0, 0, 0], "result", Float32Array),
       dispatchLength: 2,
       blockLength: 2,
       workgroupLength: 2,

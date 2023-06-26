@@ -16,7 +16,6 @@ import { getBufferReducePipeline } from "./ReduceBufferPipeline.js";
 export interface BufferReduceParams {
   device: GPUDevice;
   source: ValueOrFn<GPUBuffer>;
-  result: ValueOrFn<GPUBuffer>;
   dispatchLength: ValueOrFn<number>;
   sourceStart?: ValueOrFn<number>;
   sourceEnd?: ValueOrFn<number>;
@@ -50,7 +49,6 @@ const defaults: Partial<BufferReduceParams> = {
  */
 export class ReduceBuffer extends HasReactive implements ComposableShader {
   @reactively source!: GPUBuffer;
-  @reactively result!: GPUBuffer;
   @reactively dispatchLength!: number;
   @reactively blockLength!: number;
   @reactively workgroupLength?: number;
@@ -68,17 +66,19 @@ export class ReduceBuffer extends HasReactive implements ComposableShader {
   }
 
   commands(commandEncoder: GPUCommandEncoder): void {
-    const bindGroup = this.bindGroup();
+    const bindGroups = this.bindGroups();
 
     const elems = this.source.size;
-    const label = `bufferReduce ${elems}`;
-    const timestampWrites = gpuTiming?.timestampWrites(label);
-    const passEncoder = commandEncoder.beginComputePass({ timestampWrites });
-    passEncoder.label = label;
-    passEncoder.setPipeline(this.pipeline());
-    passEncoder.setBindGroup(0, bindGroup);
-    passEncoder.dispatchWorkgroups(this.dispatchLength, 1, 1);
-    passEncoder.end();
+    this.dispatchSizes.forEach((dispatchSize, i) => {
+      const label = `${this.label} bufferReduce ${elems} #${i}`;
+      const timestampWrites = gpuTiming?.timestampWrites(label);
+      const passEncoder = commandEncoder.beginComputePass({ timestampWrites });
+      passEncoder.label = label;
+      passEncoder.setPipeline(this.pipeline());
+      passEncoder.setBindGroup(0, bindGroups[i]);
+      passEncoder.dispatchWorkgroups(this.dispatchLength, 1, 1);
+      passEncoder.end();
+    });
   }
 
   destroy(): void {
@@ -100,7 +100,7 @@ export class ReduceBuffer extends HasReactive implements ComposableShader {
       );
     }
     const data = await withBufferCopy(this.device, this.result, format, d => d.slice());
-    this.template.outputElementSize
+    this.template.outputElementSize;
     return [...data];
   }
 
@@ -108,6 +108,41 @@ export class ReduceBuffer extends HasReactive implements ComposableShader {
     const buffer = createDebugBuffer(this.device, "BufferReduce debug");
     reactiveTrackUse(buffer, this.usageContext);
     return buffer;
+  }
+
+  /** number of workgroups dispatched for each phase of buffer reduce */
+  @reactively private get dispatchSizes(): number[] {
+    const { blockLength } = this;
+    const dispatches = [];
+    // TODO handle case where source buffer requires more dispatches than maxComputerWorkgroupPerDimension
+    const reductionFactor = blockLength * this.actualWorkgroupLength();
+    for (let reducedSize = this.sourceElems; reducedSize > 1; ) {
+      reducedSize = Math.ceil(reducedSize / reductionFactor);
+      dispatches.push(reducedSize);
+    }
+
+    return dispatches;
+  }
+
+  @reactively get result(): GPUBuffer {
+    return this.resultBuffers().slice(-1)[0];
+  }
+
+  @reactively private resultBuffers(): GPUBuffer[] {
+    return this.dispatchSizes.map(dispatchSize => {
+      const size = dispatchSize * this.template.outputElementSize;
+      const buffer = this.device.createBuffer({
+        label: `${this.label} bufferReduce ${dispatchSize}`,
+        size,
+        usage: GPUBufferUsage.STORAGE | GPUBufferUsage.COPY_SRC,
+      });
+      reactiveTrackUse(buffer, this.usageContext);
+      return buffer;
+    });
+  }
+
+  @reactively private get sourceElems(): number {
+    return this.source.size / this.template.inputElementSize;
   }
 
   @reactively private pipeline(): GPUComputePipeline {
@@ -122,16 +157,24 @@ export class ReduceBuffer extends HasReactive implements ComposableShader {
     );
   }
 
-  @reactively private bindGroup(): GPUBindGroup {
-    const srcSize = this.source.size;
-    return this.device.createBindGroup({
-      label: `bufferReduce ${srcSize}`,
-      layout: this.pipeline().getBindGroupLayout(0),
-      entries: [
-        { binding: 1, resource: { buffer: this.source } },
-        { binding: 2, resource: { buffer: this.result } },
-        { binding: 11, resource: { buffer: this.debugBuffer } },
-      ],
+  @reactively private bindGroups(): GPUBindGroup[] {
+    let srcElems = this.sourceElems;
+    let srcBuf = this.source;
+    // chain source -> result1 -> result2 -> ...
+    return this.resultBuffers().map(resultBuf => {
+      const resultElems = resultBuf.size / this.template.outputElementSize;
+      const bindGroup = this.device.createBindGroup({
+        label: `${this.label} bufferReduce ${srcElems}`,
+        layout: this.pipeline().getBindGroupLayout(0),
+        entries: [
+          { binding: 1, resource: { buffer: srcBuf } },
+          { binding: 2, resource: { buffer: resultBuf } },
+          { binding: 11, resource: { buffer: this.debugBuffer } },
+        ],
+      });
+      srcElems = resultElems;
+      srcBuf = resultBuf;
+      return bindGroup;
     });
   }
 
