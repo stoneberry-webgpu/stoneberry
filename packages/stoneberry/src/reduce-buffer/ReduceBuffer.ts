@@ -16,7 +16,6 @@ import { getBufferReducePipeline } from "./ReduceBufferPipeline.js";
 export interface BufferReduceParams {
   device: GPUDevice;
   source: ValueOrFn<GPUBuffer>;
-  dispatchLength: number;
   sourceStart?: number;
   sourceEnd?: number;
   blockLength?: number;
@@ -49,7 +48,6 @@ const defaults: Partial<BufferReduceParams> = {
  */
 export class ReduceBuffer extends HasReactive implements ComposableShader {
   @reactively source!: GPUBuffer;
-  @reactively dispatchLength!: number;
   @reactively blockLength!: number;
   @reactively workgroupLength?: number;
   @reactively template!: BinOpTemplate;
@@ -76,7 +74,7 @@ export class ReduceBuffer extends HasReactive implements ComposableShader {
       passEncoder.label = label;
       passEncoder.setPipeline(this.pipeline());
       passEncoder.setBindGroup(0, bindGroups[i]);
-      passEncoder.dispatchWorkgroups(this.dispatchLength, 1, 1);
+      passEncoder.dispatchWorkgroups(dispatchSize, 1, 1);
       passEncoder.end();
     });
   }

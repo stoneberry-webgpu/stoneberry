@@ -18,7 +18,6 @@ it("sum, simple api", async () => {
     const shader = new ReduceBuffer({
       device,
       source: makeBuffer(device, sourceData, "source buffer", Uint32Array),
-      dispatchLength: 2,
       blockLength: 2,
       workgroupLength: 2,
       template: sumU32,
@@ -40,7 +39,6 @@ it("buffer reduce sum, two dispatches", async () => {
       const shader = new ReduceBuffer({
         device,
         source: makeBuffer(device, sourceData, "source buffer", Float32Array),
-        dispatchLength: 2,
         blockLength: 2,
         workgroupLength: 2,
         template: sumF32,
@@ -65,7 +63,6 @@ it("buffer reduce max, two dispatches", async () => {
     const shader = new ReduceBuffer({
       device,
       source: makeBuffer(device, sourceData, "source buffer", Float32Array),
-      dispatchLength: 2,
       blockLength: 2,
       workgroupLength: 2,
       template: maxF32,
@@ -98,7 +95,6 @@ it("buffer reduce min/max, two dispatches", async () => {
     const shader = new ReduceBuffer({
       device,
       source: makeBuffer(device, sourceData.flat(), "source buffer", Float32Array),
-      dispatchLength: 2,
       blockLength: 2,
       workgroupLength: 2,
       template: minMaxF32,
