@@ -20,7 +20,7 @@ export interface PrefixScanArgs {
    * Source data to be scanned.
    *
    * A function returning the source buffer will be executed lazily,
-   * and reexecuted if the functions `@reactively` source values change.
+   * and reexecuted if the function's `@reactively` source values change.
    */
   source: ValueOrFn<GPUBuffer>;
 
@@ -162,7 +162,7 @@ export class PrefixScan<T = number> extends HasReactive implements ComposableSha
     return [...data];
   }
 
-  /** Buffer Containing results of the scan after the shader has run. */
+  /** Buffer containing results of the scan after the shader has run. */
   @reactively get result(): GPUBuffer {
     if (this.fitsInWorkGroup) {
       return this._sourceScan.prefixScan;

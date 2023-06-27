@@ -15,11 +15,18 @@ import { getBufferReducePipeline } from "./ReduceBufferPipeline.js";
 
 export interface BufferReduceParams {
   device: GPUDevice;
+  /**
+   * Source data to be reduced.
+   *
+   * A function returning the source buffer will be executed lazily,
+   * and reexecuted if the function's `@reactively` source values change.
+   */
   source: ValueOrFn<GPUBuffer>;
   sourceStart?: number;
   sourceEnd?: number;
   blockLength?: number;
   workgroupLength?: number;
+
   template?: BinOpTemplate;
   pipelineCache?: <T extends object>() => Cache<T>;
 
@@ -47,16 +54,31 @@ const defaults: Partial<BufferReduceParams> = {
  * The reduce operation is controlled by template: could be sum,min,max, etc.
  */
 export class ReduceBuffer extends HasReactive implements ComposableShader {
+  /** Source data to be reduced */
   @reactively source!: GPUBuffer;
-  @reactively blockLength!: number;
-  @reactively workgroupLength?: number;
+
+  /** macros to customize wgsl shader for size of data and type of reduce*/
   @reactively template!: BinOpTemplate;
+
   /** Debug label attached to gpu objects for error reporting */
   @reactively label?: string;
 
+  /** number of elements to reduce in each invocation (4) */
+  @reactively blockLength!: number;
+
+  /** Override to set compute workgroup size e.g. for testing. 
+    @defaultValue maxComputeInvocationsPerWorkgroup of the `GPUDevice`
+    */
+  @reactively workgroupLength?: number;
+
+  /** Override to set max number of workgroups for dispatch e.g. for testing. 
+    @defaultValue maxComputeWorkgroupsPerDimension from the `GPUDevice`
+    */
+  @reactively maxWorkgroups?: number;
+
   private device!: GPUDevice;
-  private usageContext = trackContext();
   private pipelineCache?: <T extends object>() => Cache<T>;
+  private usageContext = trackContext();
 
   constructor(params: BufferReduceParams) {
     super();
@@ -79,10 +101,15 @@ export class ReduceBuffer extends HasReactive implements ComposableShader {
     });
   }
 
+  /** Release the result buffer and intermediate buffers for destruction. */
   destroy(): void {
     this.usageContext.finish();
   }
 
+  /** Execute the reduce immediately and copy the results back to the CPU.
+   * (results are copied from the {@link ReduceBuffer.result} GPUBuffer)
+   * @returns a single reduced result value in an array
+   */
   async reduce(): Promise<number[]> {
     const commands = this.device.createCommandEncoder({
       label: `${this.label} reduceBuffer`,
@@ -102,6 +129,12 @@ export class ReduceBuffer extends HasReactive implements ComposableShader {
     return [...data];
   }
 
+  /** Buffer containing results of the reduce after the shader has run. */
+  @reactively get result(): GPUBuffer {
+    return this.resultBuffers().slice(-1)[0];
+  }
+
+  /** @internal */
   @reactively get debugBuffer(): GPUBuffer {
     const buffer = createDebugBuffer(this.device, "BufferReduce debug");
     reactiveTrackUse(buffer, this.usageContext);
@@ -120,10 +153,6 @@ export class ReduceBuffer extends HasReactive implements ComposableShader {
     }
 
     return dispatches;
-  }
-
-  @reactively get result(): GPUBuffer {
-    return this.resultBuffers().slice(-1)[0];
   }
 
   @reactively private resultBuffers(): GPUBuffer[] {

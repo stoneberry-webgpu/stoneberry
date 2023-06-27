@@ -83,7 +83,7 @@ export class WorkgroupScan extends HasReactive implements ComposableShader {
   @reactively blockSumsOffset!: number;
 
   /** Override to set compute workgroup size e.g. for testing. 
-    @defaultValue max workgroup size of the `GPUDevice`
+    @defaultValue maxComputeInvocationsPerWorkgroup of the `GPUDevice`
     */
   @reactively workgroupLength?: number;
 
