@@ -49,7 +49,7 @@ fn reduceFromBuffer(
 }
 
 fn reduceBufferToWork(grid: vec2<u32>, workGrid: vec2<u32>) {
-    var values = fetchSrcBuffer(grid.x * 4u); //! 4=blockArea
+    var values = fetchSrcBuffer(u.sourceOffset + grid.x * 4u); //! 4=blockArea
     var v = reduceBlock(values);
     work[workGrid.x] = v;
 }

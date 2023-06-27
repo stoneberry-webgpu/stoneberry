@@ -15,14 +15,10 @@ it("sum, simple api", async () => {
   await withAsyncUsage(async () => {
     const device = trackUse(await labeledGpuDevice());
     const sourceData = [0, 1, 2, 3, 4, 5, 6, 7];
-    const shader = new ReduceBuffer({
-      device,
-      source: makeBuffer(device, sourceData, "source buffer", Uint32Array),
-      blockLength: 2,
-      workgroupLength: 2,
-      template: sumU32,
-    });
+    const source = makeBuffer(device, sourceData, "source buffer", Uint32Array);
+    const shader = new ReduceBuffer({ device, source, template: sumU32 });
     trackUse(shader);
+
     const result = await shader.reduce();
     const expected = sourceData.reduce((a, b) => a + b);
     expect(result).deep.eq([expected]);
@@ -108,5 +104,25 @@ it("buffer reduce min/max, two dispatches", async () => {
     await withBufferCopy(device, shader.result, "f32", data => {
       expect([...data]).deep.eq([min, max]);
     });
+  });
+});
+
+it("sourceOffset", async () => {
+  await withAsyncUsage(async () => {
+    const device = trackUse(await labeledGpuDevice());
+    const sourceData = [0, 1, 2, 3, 4, 5, 6, 7];
+    const source = makeBuffer(device, sourceData, "source buffer", Uint32Array);
+    const shader = new ReduceBuffer({
+      device,
+      source,
+      template: sumU32,
+      sourceOffset: 4,
+    });
+    trackUse(shader);
+
+    const result = await shader.reduce();
+    const expected = sourceData.slice(4).reduce((a, b) => a + b);
+    expect(result).deep.eq([expected]);
+    trackRelease(shader);
   });
 });
