@@ -6,6 +6,11 @@ struct Output {
     sum: f32,  //! "sum: f32,"=outputStruct 
 }
 
+struct Uniforms {
+    sourceOffset: u32,        // offset in Input elements to start reading in the source
+}
+
+@group(0) @binding(0) var<uniform> u: Uniforms;                     // uniforms
 @group(0) @binding(1) var<storage, read> src: array<Input>; 
 @group(0) @binding(2) var<storage, read_write> out: array<Output>;  
 @group(0) @binding(11) var<storage, read_write> debug: array<f32>; // buffer to hold debug values
@@ -37,7 +42,7 @@ fn reduceFromBuffer(
 ) {
     reduceBufferToWork(grid.xy, workGrid.xy);
     workgroupBarrier();
-    if (workGrid.x == 0u && workGrid.y == 0u) {
+    if workGrid.x == 0u && workGrid.y == 0u {
         let workIndex = workgroupId.x + workgroupId.y * numWorkgroups.x;
         reduceWorkgroupToOut(grid.xy, workIndex);
     }
@@ -55,7 +60,7 @@ fn fetchSrcBuffer(start: u32) -> array<Output, 4> {  //! 4=blockArea
     var a = array<Output,4>(); //! 4=blockArea
     for (var i = 0u; i < 4u; i = i + 1u) { //! 4=blockArea
         var idx = i + start;
-        if (idx < end) {
+        if idx < end {
             a[i] = loadOp(src[idx]);
         } else {
             a[i] = identityOp();

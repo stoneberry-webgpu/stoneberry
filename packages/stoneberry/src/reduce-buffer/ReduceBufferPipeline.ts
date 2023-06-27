@@ -20,25 +20,24 @@ function createBufferReducePipeline(
     label: "reduceBuffer",
     entries: [
       {
+        binding: 0, // uniforms
+        visibility: GPUShaderStage.COMPUTE,
+        buffer: { type: "uniform" },
+      },
+      {
         binding: 1, // reduced values input
         visibility: GPUShaderStage.COMPUTE,
-        buffer: {
-          type: "read-only-storage",
-        },
+        buffer: { type: "read-only-storage" },
       },
       {
         binding: 2, // reduced values output
         visibility: GPUShaderStage.COMPUTE,
-        buffer: {
-          type: "storage",
-        },
+        buffer: { type: "storage" },
       },
       {
         binding: 11, // debug buffer
         visibility: GPUShaderStage.COMPUTE,
-        buffer: {
-          type: "storage",
-        },
+        buffer: { type: "storage" },
       },
     ],
   });

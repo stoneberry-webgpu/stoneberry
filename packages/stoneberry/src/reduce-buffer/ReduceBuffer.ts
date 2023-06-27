@@ -22,10 +22,11 @@ export interface BufferReduceParams {
    * and reexecuted if the function's `@reactively` source values change.
    */
   source: ValueOrFn<GPUBuffer>;
-  sourceStart?: number;
+  sourceOffset?: number;
   sourceEnd?: number;
   blockLength?: number;
   workgroupLength?: number;
+  maxWorkgroups?: number | undefined;
 
   template?: BinOpTemplate;
   pipelineCache?: <T extends object>() => Cache<T>;
@@ -36,9 +37,10 @@ export interface BufferReduceParams {
 
 const defaults: Partial<BufferReduceParams> = {
   blockLength: 4,
-  sourceStart: 0,
+  sourceOffset: 0,
   template: maxF32,
   workgroupLength: undefined,
+  maxWorkgroups: undefined,
   sourceEnd: undefined,
   label: "",
 };
@@ -63,6 +65,9 @@ export class ReduceBuffer extends HasReactive implements ComposableShader {
   /** Debug label attached to gpu objects for error reporting */
   @reactively label?: string;
 
+  /** start scan at this element offset in the source. (0) */
+  @reactively sourceOffset!: number;
+
   /** number of elements to reduce in each invocation (4) */
   @reactively blockLength!: number;
 
@@ -86,6 +91,7 @@ export class ReduceBuffer extends HasReactive implements ComposableShader {
   }
 
   commands(commandEncoder: GPUCommandEncoder): void {
+    this.writeUniforms();
     const bindGroups = this.bindGroups();
 
     const elems = this.source.size;
@@ -187,6 +193,7 @@ export class ReduceBuffer extends HasReactive implements ComposableShader {
   @reactively private bindGroups(): GPUBindGroup[] {
     let srcElems = this.sourceElems;
     let srcBuf = this.source;
+    const uniforms = this.uniforms;
     // chain source -> result1 -> result2 -> ...
     return this.resultBuffers().map(resultBuf => {
       const resultElems = resultBuf.size / this.template.outputElementSize;
@@ -194,6 +201,7 @@ export class ReduceBuffer extends HasReactive implements ComposableShader {
         label: `${this.label} bufferReduce ${srcElems}`,
         layout: this.pipeline().getBindGroupLayout(0),
         entries: [
+          { binding: 0, resource: { buffer: uniforms } },
           { binding: 1, resource: { buffer: srcBuf } },
           { binding: 2, resource: { buffer: resultBuf } },
           { binding: 11, resource: { buffer: this.debugBuffer } },
@@ -203,6 +211,21 @@ export class ReduceBuffer extends HasReactive implements ComposableShader {
       srcBuf = resultBuf;
       return bindGroup;
     });
+  }
+
+  @reactively private get uniforms(): GPUBuffer {
+    const uniforms = this.device.createBuffer({
+      label: `${this.label} bufferReduce uniforms`,
+      size: 4 * 4,
+      usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
+    });
+    reactiveTrackUse(uniforms, this.usageContext);
+    return uniforms;
+  }
+
+  @reactively private writeUniforms(): void {
+    const data = new Uint32Array([this.sourceOffset]);
+    this.device.queue.writeBuffer(this.uniforms, 0, data);
   }
 
   @reactively private actualWorkgroupLength(): number {
