@@ -6,12 +6,12 @@ withGpuDevice(main);
 
 async function main(device: GPUDevice): Promise<void> {
   const srcData = [1, 2, 3, 4, 5, 6];
-  const src = bufferI32(device, srcData);
+  const source = bufferI32(device, srcData);
 
-  const prefixScan = new PrefixScan({ device, src, exclusive: true, initialValue: 19 });
+  const prefixScan = new PrefixScan({ device, source, exclusive: true, initialValue: 19 });
 
   // note dynamic link to previous
-  const otherShader = new PrefixScan({ device, src: () => prefixScan.result }); 
+  const otherShader = new PrefixScan({ device, source: () => prefixScan.result });
 
   // launch shaders
   const group = new ShaderGroup(device, prefixScan, otherShader);

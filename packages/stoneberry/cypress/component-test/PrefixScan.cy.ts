@@ -17,9 +17,9 @@ it("scan api", async () => {
     const device = trackUse(await labeledGpuDevice());
     const srcData = [0, 1, 2, 3, 4, 5, 6];
     const expected = inclusiveSum(srcData);
-    const src = makeBuffer(device, srcData, "source", Uint32Array);
+    const source = makeBuffer(device, srcData, "source", Uint32Array);
 
-    const scan = new PrefixScan({ device, src });
+    const scan = new PrefixScan({ device, source });
     const result = await scan.scan();
 
     expect(result).deep.equals(expected);
@@ -35,7 +35,7 @@ it("scan sequence: unevenly sized buffer, two workgroups, one level block scanni
 
     const scan = new PrefixScan({
       device,
-      src: makeBuffer(device, srcData, "source", Uint32Array),
+      source: makeBuffer(device, srcData, "source", Uint32Array),
       template: sumU32,
       workgroupLength: 4,
     });
@@ -66,7 +66,7 @@ it("scan sequence: large buffer, two levels of block scanning", async () => {
 
     const scan = new PrefixScan({
       device,
-      src: makeBuffer(device, srcData, "source", Uint32Array),
+      source: makeBuffer(device, srcData, "source", Uint32Array),
       template: sumU32,
       workgroupLength: 4,
     });
@@ -91,7 +91,7 @@ it("scan sequence: large buffer, three levels of block scanning", async () => {
     await withLeakTrack(async () => {
       const scan = new PrefixScan({
         device,
-        src: makeBuffer(device, srcData, "source", Uint32Array),
+        source: makeBuffer(device, srcData, "source", Uint32Array),
         template: sumU32,
         workgroupLength: 4,
       });
@@ -113,11 +113,10 @@ it("exclusive scan small", async () => {
     const srcData = [0, 1, 2, 3];
     const initialValue = 37;
     const expected = exclusiveSum(srcData, 37);
-    const src = makeBuffer(device, srcData, "source", Uint32Array);
 
     const scan = new PrefixScan({
       device,
-      src,
+      source: makeBuffer(device, srcData, "source", Uint32Array),
       workgroupLength: 4,
       exclusive: true,
       initialValue,
@@ -133,12 +132,11 @@ it("exclusive scan large", async () => {
     const device = trackUse(await labeledGpuDevice());
     const srcData = [0, 1, 2, 3, 4, 5, 6];
     const initialValue = 37;
-    const expected = exclusiveSum(srcData, 37);
-    const src = makeBuffer(device, srcData, "source", Uint32Array);
+    const expected = exclusiveSum(srcData, initialValue);
 
     const scan = new PrefixScan({
       device,
-      src,
+      source: makeBuffer(device, srcData, "source", Uint32Array),
       workgroupLength: 4,
       exclusive: true,
       initialValue,
@@ -154,9 +152,9 @@ it("scan f32", async () => {
     const device = trackUse(await labeledGpuDevice());
     const srcData = [0, 1, 2, 3, 4, 5, 6];
     const expected = inclusiveSum(srcData);
-    const src = makeBuffer(device, srcData, "source", Float32Array);
+    const source = makeBuffer(device, srcData, "source", Float32Array);
 
-    const scan = new PrefixScan({ device, src, template: sumF32 });
+    const scan = new PrefixScan({ device, source, template: sumF32 });
     const result = await scan.scan();
 
     expect(result).deep.equals(expected);
@@ -168,9 +166,9 @@ it("multi dispatch for large source", async () => {
     const device = trackUse(await labeledGpuDevice());
     const srcData = [0, 1, 2, 3, 4, 5, 6];
     const expected = inclusiveSum(srcData);
-    const src = makeBuffer(device, srcData, "source", Uint32Array);
+    const source = makeBuffer(device, srcData, "source", Uint32Array);
 
-    const scan = new PrefixScan({ device, src, maxWorkgroups: 1, workgroupLength: 4 });
+    const scan = new PrefixScan({ device, source, maxWorkgroups: 1, workgroupLength: 4 });
     const result = await scan.scan();
 
     expect(result).deep.equals(expected);

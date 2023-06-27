@@ -22,7 +22,7 @@ export interface PrefixScanArgs {
    * A function returning the source buffer will be executed lazily,
    * and reexecuted if the functions `@reactively` source values change.
    */
-  src: ValueOrFn<GPUBuffer>;
+  source: ValueOrFn<GPUBuffer>;
 
   /** {@inheritDoc PrefixScan#template} */
   template?: BinOpTemplate;
@@ -84,7 +84,7 @@ export class PrefixScan<T = number> extends HasReactive implements ComposableSha
   @reactively template!: BinOpTemplate;
 
   /** Source data to be scanned */
-  @reactively src!: GPUBuffer;
+  @reactively source!: GPUBuffer;
 
   /** Debug label attached to gpu objects for error reporting */
   @reactively label?: string;
@@ -180,7 +180,7 @@ export class PrefixScan<T = number> extends HasReactive implements ComposableSha
     const exclusiveSmall = this.exclusive && this.fitsInWorkGroup;
     const shader = new WorkgroupScan({
       device: this.device,
-      source: this.src,
+      source: this.source,
       emitBlockSums: true,
       exclusiveSmall,
       initialValue: this.initialValue,
@@ -228,7 +228,7 @@ export class PrefixScan<T = number> extends HasReactive implements ComposableSha
   }
 
   @reactively private get sourceSize(): number {
-    return this.src.size;
+    return this.source.size;
   }
 
   @reactively private get fitsInWorkGroup(): boolean {
