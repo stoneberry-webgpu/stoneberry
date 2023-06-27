@@ -42,7 +42,7 @@ export interface PrefixScanArgs {
   /** {@inheritDoc PrefixScan#maxWorkgroups} */
   maxWorkgroups?: number;
 
-  /** cache for GPUComputePipeline or GPURenderPipeline */
+  /** cache for GPUComputePipeline */
   pipelineCache?: <T extends object>() => Cache<T>;
 }
 

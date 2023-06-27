@@ -22,13 +22,23 @@ export interface BufferReduceParams {
    * and reexecuted if the function's `@reactively` source values change.
    */
   source: ValueOrFn<GPUBuffer>;
+
+  /** {@inheritDoc ReduceBuffer#sourceOffset} */
   sourceOffset?: number;
-  sourceEnd?: number;
+
+  /** {@inheritDoc ReduceBuffer#blockLength} */
   blockLength?: number;
+
+  /** {@inheritDoc ReduceBuffer#workgroupLength} */
   workgroupLength?: number;
+
+  /** {@inheritDoc ReduceBuffer#maxWorkgroups} */
   maxWorkgroups?: number | undefined;
 
+  /** {@inheritDoc ReduceBuffer#template} */
   template?: BinOpTemplate;
+
+  /** cache for GPUComputePipeline */
   pipelineCache?: <T extends object>() => Cache<T>;
 
   /** {@inheritDoc ReduceBuffer#label} */
@@ -41,7 +51,6 @@ const defaults: Partial<BufferReduceParams> = {
   template: maxF32,
   workgroupLength: undefined,
   maxWorkgroups: undefined,
-  sourceEnd: undefined,
   label: "",
 };
 
