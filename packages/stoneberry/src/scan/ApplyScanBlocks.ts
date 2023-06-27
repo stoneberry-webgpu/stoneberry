@@ -149,6 +149,7 @@ export class ApplyScanBlocks extends HasReactive implements ComposableShader {
     return buffer;
   }
 
+  // TODO use one uniform buffer, with dynamic offsets instead
   @reactively private get uniforms(): GPUBuffer[] {
     return this.dispatchSizes.map((_, i) => this.uniformsBuffer(i));
   }
