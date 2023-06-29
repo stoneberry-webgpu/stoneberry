@@ -2,6 +2,7 @@ import { exec } from "child_process";
 import { promisify } from "util";
 import { createServer as createViteServer } from "vite";
 import { writeGitVersionTs } from "./extractGitVersion.js";
+import os from "os";
 
 const execPromise = promisify(exec);
 
@@ -38,9 +39,13 @@ export async function bench(): Promise<void> {
 
 export async function benchBrowser(searchParams?: Record<string, string>): Promise<void> {
   const query = searchParams ? "?" + new URLSearchParams(searchParams) : "";
-  // TODO implement for windows
-  const browserCmd =
-    `open -a "Google Chrome Canary" http://localhost:${benchWebPort}/${query} --args` +
+
+  console.log(os.platform());
+  let browserCmd = `open -a "Google Chrome Canary"`;
+  if (os.platform() == "win32") {
+    browserCmd = "\"%LOCALAPPDATA%\\Google\\Chrome SxS\\Application\\chrome.exe\""
+  }
+  browserCmd += ` http://localhost:${benchWebPort}/${query} --args` +
     " --enable-dawn-features=allow_unsafe_apis" +
     " --profile-directory=bench";
   console.log(browserCmd);
