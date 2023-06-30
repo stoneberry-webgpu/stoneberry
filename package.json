@@ -2,6 +2,9 @@
   "name": "stonberry-root",
   "version": "0.0.1",
   "type": "module",
+  "scripts": {
+    "bench": "pnpm --filter stoneberry-benchmarks bench"
+  },
   "pnpm": {
     "overrides": {
     }
