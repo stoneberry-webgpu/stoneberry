@@ -78,6 +78,7 @@ export const minMaxF32: BinOpCreateTemplate = {
 export const maxF32: BinOpCreateTemplate = {
   inputElementSize: 4,
   outputElementSize: 4,
+  outputElements: "f32",
   outputStruct: "max: f32,",
   inputStruct: "max: f32,",
   createOp: "return Output(a);",
