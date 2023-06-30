@@ -152,7 +152,7 @@ it("2 workgroups > max (1)", async () => {
 it("4 dispatched workgroups > max (2), 2 threads/workgroup ", async () => {
   await withAsyncUsage(async () => {
     const device = trackUse(await labeledGpuDevice());
-    const sourceData = Array.from({length: 32}).map((_, i) => i);
+    const sourceData = Array.from({ length: 32 }).map((_, i) => i);
     const source = makeBuffer(device, sourceData, "source buffer", Uint32Array);
     const shader = new ReduceBuffer({
       device,
