@@ -1,5 +1,5 @@
 /** return a GPU Device with some expanded limits */
-export async function benchDevice(label: string): Promise<GPUDevice> {
+export async function benchDevice(label = ""): Promise<GPUDevice> {
   const adapter = (await navigator.gpu.requestAdapter())!;
   const {
     maxBufferSize,
