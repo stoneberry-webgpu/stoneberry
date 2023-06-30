@@ -4,10 +4,10 @@ export async function benchDevice(label = ""): Promise<GPUDevice> {
   const {
     maxBufferSize,
     maxStorageBufferBindingSize,
-    // maxComputeWorkgroupSizeX,
-    // maxComputeWorkgroupSizeY,
-    // maxComputeWorkgroupSizeZ,
-    // maxComputeInvocationsPerWorkgroup, 
+    maxComputeWorkgroupSizeX,
+    maxComputeWorkgroupSizeY,
+    maxComputeWorkgroupSizeZ,
+    maxComputeInvocationsPerWorkgroup, 
   } = adapter.limits;
   const requiredLimits = {
     maxBufferSize,
@@ -15,10 +15,10 @@ export async function benchDevice(label = ""): Promise<GPUDevice> {
 
     // suprisingly, larger workgroups seems to be slower on Mac M1Max
 
-    // maxComputeWorkgroupSizeX,
-    // maxComputeWorkgroupSizeY,
-    // maxComputeWorkgroupSizeZ,
-    // maxComputeInvocationsPerWorkgroup,
+    maxComputeWorkgroupSizeX,
+    maxComputeWorkgroupSizeY,
+    maxComputeWorkgroupSizeZ,
+    maxComputeInvocationsPerWorkgroup,
   };
 
   const requiredFeatures: Iterable<GPUFeatureName> = ["timestamp-query"];

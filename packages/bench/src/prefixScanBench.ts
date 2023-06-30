@@ -6,7 +6,6 @@ export async function prefixScanBench(
   size: number,
   runs = 1
 ): Promise<BenchResult> {
-
   const source = device.createBuffer({
     label: "source",
     size: size * Uint32Array.BYTES_PER_ELEMENT,
@@ -20,6 +19,6 @@ export async function prefixScanBench(
     srcData[i] = i & 0x111111 ? 0 : 1;
   }
   source.unmap();
-  const scan = new PrefixScan({ device, source });
+  const scan = new PrefixScan({ device, source, workgroupLength: 256 });
   return benchShader({ device, runs }, scan);
 }

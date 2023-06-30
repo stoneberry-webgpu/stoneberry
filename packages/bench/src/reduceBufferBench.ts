@@ -20,7 +20,13 @@ export async function reduceBufferBench(
   }
   const expected = srcData.reduce((a, b) => a + b);
   source.unmap();
-  const reduce = new ReduceBuffer({ device, source, template: sumU32, blockLength: 4 });
+  const reduce = new ReduceBuffer({
+    device,
+    source,
+    template: sumU32,
+    workgroupLength: 256,
+    blockLength: 4,
+  });
 
   // verify correctness
   const result = await reduce.reduce();
