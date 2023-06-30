@@ -22,7 +22,7 @@ function createBufferReducePipeline(
       {
         binding: 0, // uniforms
         visibility: GPUShaderStage.COMPUTE,
-        buffer: { type: "uniform" },
+        buffer: { type: "uniform", hasDynamicOffset: true },
       },
       {
         binding: 1, // reduced values input

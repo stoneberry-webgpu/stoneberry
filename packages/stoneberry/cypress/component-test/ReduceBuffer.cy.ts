@@ -40,12 +40,10 @@ it("buffer reduce sum, two dispatches", async () => {
         template: sumF32,
       });
       trackUse(shader);
-      new ShaderGroup(device, shader).dispatch();
 
+      const result = await shader.reduce();
       const expected = sourceData.reduce((a, b) => a + b);
-      await withBufferCopy(device, shader.result, "f32", data => {
-        expect([...data]).deep.eq([expected]);
-      });
+      expect(result).deep.eq([expected]);
       trackRelease(shader);
     });
   });
@@ -121,7 +119,31 @@ it("sourceOffset", async () => {
     trackUse(shader);
 
     const result = await shader.reduce();
+
     const expected = sourceData.slice(4).reduce((a, b) => a + b);
+    expect(result).deep.eq([expected]);
+    trackRelease(shader);
+  });
+});
+
+it("generated offsets workgroups > max", async () => {
+  await withAsyncUsage(async () => {
+    const device = trackUse(await labeledGpuDevice());
+    const sourceData = [0, 1, 2, 3, 4, 5, 6, 7];
+    const source = makeBuffer(device, sourceData, "source buffer", Uint32Array);
+    const shader = new ReduceBuffer({
+      device,
+      source,
+      template: sumU32,
+      workgroupLength: 2,
+      blockLength: 2,
+      maxWorkgroups: 1,
+    });
+    trackUse(shader);
+
+    const result = await shader.reduce();
+
+    const expected = sourceData.reduce((a, b) => a + b);
     expect(result).deep.eq([expected]);
     trackRelease(shader);
   });

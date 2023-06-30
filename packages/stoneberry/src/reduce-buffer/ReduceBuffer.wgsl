@@ -8,6 +8,7 @@ struct Output {
 
 struct Uniforms {
     sourceOffset: u32,        // offset in Input elements to start reading in the source
+    resultOffset: u32,        // offset in Output elements to start writing in the results
 }
 
 @group(0) @binding(0) var<uniform> u: Uniforms;                     // uniforms
@@ -43,19 +44,20 @@ fn reduceFromBuffer(
     reduceBufferToWork(grid.xy, workGrid.xy);
     workgroupBarrier();
     if workGrid.x == 0u && workGrid.y == 0u {
-        let workIndex = workgroupId.x + workgroupId.y * numWorkgroups.x;
-        reduceWorkgroupToOut(grid.xy, workIndex);
+        let workIndex = workgroupId.x + workgroupId.y * numWorkgroups.x; // TODO just use local_invocation_index?
+        reduceWorkgroupToOut(grid.xy, workIndex + u.resultOffset);
     }
 }
 
 fn reduceBufferToWork(grid: vec2<u32>, workGrid: vec2<u32>) {
-    var values = fetchSrcBuffer(u.sourceOffset + grid.x * 4u); //! 4=blockArea
+    var values = fetchSrcBuffer(grid.x);
     var v = reduceBlock(values);
     work[workGrid.x] = v;
 }
 
 // LATER benchmark striping/striding should reduce memory bank conflict
-fn fetchSrcBuffer(start: u32) -> array<Output, 4> {  //! 4=blockArea
+fn fetchSrcBuffer(gridX: u32) -> array<Output, 4> {  //! 4=blockArea
+    let start = u.sourceOffset + (gridX * 4u); //! 4=blockArea
     let end = arrayLength(&src);
     var a = array<Output,4>(); //! 4=blockArea
     for (var i = 0u; i < 4u; i = i + 1u) { //! 4=blockArea

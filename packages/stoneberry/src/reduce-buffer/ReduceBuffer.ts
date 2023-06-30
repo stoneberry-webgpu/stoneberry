@@ -11,6 +11,7 @@ import {
   withBufferCopy,
 } from "thimbleberry";
 import { BinOpTemplate, maxF32 } from "../util/BinOpTemplate.js";
+import { SlicingResults, inputSlicing } from "../util/InputSlicing.js";
 import { getBufferReducePipeline } from "./ReduceBufferPipeline.js";
 
 export interface BufferReduceParams {
@@ -25,6 +26,9 @@ export interface BufferReduceParams {
 
   /** {@inheritDoc ReduceBuffer#sourceOffset} */
   sourceOffset?: number;
+
+  /** {@inheritDoc ReduceBuffer#resultOffset} */
+  resultOffset?: number;
 
   /** {@inheritDoc ReduceBuffer#blockLength} */
   blockLength?: number;
@@ -48,6 +52,7 @@ export interface BufferReduceParams {
 const defaults: Partial<BufferReduceParams> = {
   blockLength: 4,
   sourceOffset: 0,
+  resultOffset: 0,
   template: maxF32,
   workgroupLength: undefined,
   maxWorkgroups: undefined,
@@ -77,16 +82,19 @@ export class ReduceBuffer extends HasReactive implements ComposableShader {
   /** start scan at this element offset in the source. (0) */
   @reactively sourceOffset!: number;
 
+  /** start emitting results at this element offset in the results. (0) */
+  @reactively resultOffset!: number;
+
   /** number of elements to reduce in each invocation (4) */
   @reactively blockLength!: number;
 
   /** Override to set compute workgroup size e.g. for testing. 
-    @defaultValue maxComputeInvocationsPerWorkgroup of the `GPUDevice`
+    @defaultValue maxComputeInvocationsPerWorkgroup of the `GPUDevice` (256)
     */
   @reactively workgroupLength?: number;
 
   /** Override to set max number of workgroups for dispatch e.g. for testing. 
-    @defaultValue maxComputeWorkgroupsPerDimension from the `GPUDevice`
+    @defaultValue maxComputeWorkgroupsPerDimension from the `GPUDevice` (65535)
     */
   @reactively maxWorkgroups?: number;
 
@@ -101,19 +109,40 @@ export class ReduceBuffer extends HasReactive implements ComposableShader {
 
   commands(commandEncoder: GPUCommandEncoder): void {
     this.writeUniforms();
-    const bindGroups = this.bindGroups();
 
-    const elems = this.source.size;
-    this.dispatchSizes.forEach((dispatchSize, i) => {
-      const label = `${this.label} bufferReduce ${elems} #${i}`;
-      const timestampWrites = gpuTiming?.timestampWrites(label);
-      const passEncoder = commandEncoder.beginComputePass({ timestampWrites });
-      passEncoder.label = label;
-      passEncoder.setPipeline(this.pipeline());
-      passEncoder.setBindGroup(0, bindGroups[i]);
-      passEncoder.dispatchWorkgroups(dispatchSize, 1, 1);
-      passEncoder.end();
+    const sourceBind = this.sourceBindGroup;
+    const inputSlices = this.inputSlicing;
+    this.sourceReductions.forEach((dispatchSize, i) => {
+      const dispatchLabel = `${dispatchSize} #${i}`;
+      const offset = [inputSlices.slices[i].uniformOffset];
+      // dlog({ sourceDispatchSize: dispatchSize, i, offset });
+      this.encodePass(commandEncoder, sourceBind, dispatchSize, offset, dispatchLabel);
     });
+
+    const layerBindGroups = this.layerBindGroups;
+    this.layerReductions.forEach((dispatchSize, i) => {
+      // dlog({ layerDispatchSize: dispatchSize, i });
+      const dispatchLabel = `${dispatchSize} #${i}`;
+      const bindGroup = layerBindGroups[i];
+      this.encodePass(commandEncoder, bindGroup, dispatchSize, [0], dispatchLabel);
+    });
+  }
+
+  private encodePass(
+    commandEncoder: GPUCommandEncoder,
+    bindGroup: GPUBindGroup,
+    dispatch: number,
+    dynamicOffsets: Uint32Array | number[] | undefined,
+    dispatchLabel: string
+  ): void {
+    const label = `${this.label} bufferReduce ${dispatchLabel}`;
+    const timestampWrites = gpuTiming?.timestampWrites(label);
+    const passEncoder = commandEncoder.beginComputePass({ timestampWrites });
+    passEncoder.label = label;
+    passEncoder.setPipeline(this.pipeline());
+    passEncoder.setBindGroup(0, bindGroup, dynamicOffsets);
+    passEncoder.dispatchWorkgroups(dispatch, 1, 1);
+    passEncoder.end();
   }
 
   /** Release the result buffer and intermediate buffers for destruction. */
@@ -156,42 +185,69 @@ export class ReduceBuffer extends HasReactive implements ComposableShader {
     return buffer;
   }
 
-  /** number of workgroups dispatched for each phase of buffer reduce */
-  @reactively private get dispatchSizes(): number[] {
-    const { blockLength } = this;
-    const dispatches = [];
-    // TODO handle case where source buffer requires more dispatches than maxComputerWorkgroupPerDimension
-    const reductionFactor = blockLength * this.actualWorkgroupLength();
-    for (let reducedSize = this.sourceElems; reducedSize > 1; ) {
-      reducedSize = Math.ceil(reducedSize / reductionFactor);
-      dispatches.push(reducedSize);
-    }
-
-    return dispatches;
-  }
-
-  @reactively private resultBuffers(): GPUBuffer[] {
-    return this.dispatchSizes.map(dispatchSize => {
-      const size = dispatchSize * this.template.outputElementSize;
-      const buffer = this.device.createBuffer({
-        label: `${this.label} bufferReduce ${dispatchSize}`,
-        size,
-        usage: GPUBufferUsage.STORAGE | GPUBufferUsage.COPY_SRC,
-      });
-      reactiveTrackUse(buffer, this.usageContext);
-      return buffer;
+  /** Strategy for partitioning large sources into multiple dispatches
+   * and a partitioned uniform buffer */
+  @reactively private get inputSlicing(): SlicingResults {
+    return inputSlicing({
+      elems: this.sourceElems,
+      elemsPerDispatch: this.actualWorkgroupLength * this.blockLength,
+      maxDispatches: this.actualMaxWorkgroups,
+      uniformAlignSize: this.device.limits.minUniformBufferOffsetAlignment,
+      baseUniformSize: 8,
     });
   }
 
-  @reactively private get sourceElems(): number {
-    return this.source.size / this.template.inputElementSize;
+  /** one or more dispatches to cover the source */
+  @reactively private get sourceReductions(): number[] {
+    return this.inputSlicing.slices.map(s => s.dispatch);
   }
 
+  /** dispatches to cover the internal layers after the source layer is reduced */
+  @reactively private get layerReductions(): number[] {
+    const reductionFactor = this.blockLength * this.actualWorkgroupLength;
+    let reducedSize = Math.ceil(this.sourceElems / reductionFactor);
+    const dispatches = [];
+    while (reducedSize > 1) {
+      reducedSize = Math.ceil(reducedSize / reductionFactor);
+      dispatches.push(reducedSize);
+    }
+    return dispatches;
+  }
+
+  /** buffers for both source and layer reductions */
+  @reactively private resultBuffers(): GPUBuffer[] {
+    return [this.sourceReductionBuffer, ...this.layerReductionBuffers];
+  }
+
+  @reactively private get sourceReductionBuffer(): GPUBuffer {
+    const sourceDispatches = this.sourceReductions.reduce((a, b) => a + b, 0);
+    const sourceSize = sourceDispatches * this.template.outputElementSize;
+    return this.createBuffer(sourceSize, `S${sourceDispatches}`);
+  }
+
+  @reactively private get layerReductionBuffers(): GPUBuffer[] {
+    return this.layerReductions.map(dispatchSize => {
+      const size = dispatchSize * this.template.outputElementSize;
+      return this.createBuffer(size, `L${dispatchSize}`);
+    });
+  }
+
+  private createBuffer(size: number, dispatchLabel: string): GPUBuffer {
+    const buffer = this.device.createBuffer({
+      label: `${this.label} bufferReduce ${dispatchLabel}`,
+      size,
+      usage: GPUBufferUsage.STORAGE | GPUBufferUsage.COPY_SRC,
+    });
+    reactiveTrackUse(buffer, this.usageContext);
+    return buffer;
+  }
+
+  /** all dispatches use the same pipeline */
   @reactively private pipeline(): GPUComputePipeline {
     return getBufferReducePipeline(
       {
         device: this.device,
-        workgroupThreads: this.actualWorkgroupLength(),
+        workgroupThreads: this.actualWorkgroupLength,
         blockArea: this.blockLength,
         reduceTemplate: this.template,
       },
@@ -199,33 +255,56 @@ export class ReduceBuffer extends HasReactive implements ComposableShader {
     );
   }
 
-  @reactively private bindGroups(): GPUBindGroup[] {
+  /** * One bind group for all source reductions,
+   * (but we'll dispatch with dynamic offsets to point at
+   * different parts of the uniform buffer) */
+  @reactively private get sourceBindGroup(): GPUBindGroup {
+    return this.createBindGroup(
+      this.uniforms,
+      this.source,
+      this.sourceReductionBuffer,
+      "source"
+    );
+  }
+
+  @reactively private get layerBindGroups(): GPUBindGroup[] {
     let srcElems = this.sourceElems;
-    let srcBuf = this.source;
+    let srcBuf = this.sourceReductionBuffer;
     const uniforms = this.uniforms;
     // chain source -> result1 -> result2 -> ...
-    return this.resultBuffers().map(resultBuf => {
+    return this.layerReductionBuffers.map(resultBuf => {
       const resultElems = resultBuf.size / this.template.outputElementSize;
-      const bindGroup = this.device.createBindGroup({
-        label: `${this.label} bufferReduce ${srcElems}`,
-        layout: this.pipeline().getBindGroupLayout(0),
-        entries: [
-          { binding: 0, resource: { buffer: uniforms } },
-          { binding: 1, resource: { buffer: srcBuf } },
-          { binding: 2, resource: { buffer: resultBuf } },
-          { binding: 11, resource: { buffer: this.debugBuffer } },
-        ],
-      });
+      const bindLabel = `${srcElems}`;
+      const bindGroup = this.createBindGroup(uniforms, srcBuf, resultBuf, bindLabel);
       srcElems = resultElems;
       srcBuf = resultBuf;
       return bindGroup;
     });
   }
 
+  private createBindGroup(
+    uniforms: GPUBuffer,
+    src: GPUBuffer,
+    result: GPUBuffer,
+    bindLabel: string
+  ): GPUBindGroup {
+    const uniformSlice = this.inputSlicing.uniformsSliceSize;
+    return this.device.createBindGroup({
+      label: `${this.label} bufferReduce ${bindLabel}`,
+      layout: this.pipeline().getBindGroupLayout(0),
+      entries: [
+        { binding: 0, resource: { buffer: uniforms, size: uniformSlice } },
+        { binding: 1, resource: { buffer: src } },
+        { binding: 2, resource: { buffer: result } },
+        { binding: 11, resource: { buffer: this.debugBuffer } },
+      ],
+    });
+  }
+
   @reactively private get uniforms(): GPUBuffer {
     const uniforms = this.device.createBuffer({
       label: `${this.label} bufferReduce uniforms`,
-      size: 4 * 4,
+      size: this.inputSlicing.uniformsBufferSize,
       usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
     });
     reactiveTrackUse(uniforms, this.usageContext);
@@ -233,11 +312,14 @@ export class ReduceBuffer extends HasReactive implements ComposableShader {
   }
 
   @reactively private writeUniforms(): void {
-    const data = new Uint32Array([this.sourceOffset]);
-    this.device.queue.writeBuffer(this.uniforms, 0, data);
+    this.inputSlicing.slices.forEach((slice, i) => {
+      const resultOffset = i * this.template.outputElementSize;
+      const data = new Uint32Array([this.sourceOffset + slice.offset, resultOffset]);
+      this.device.queue.writeBuffer(this.uniforms, slice.uniformOffset, data);
+    });
   }
 
-  @reactively private actualWorkgroupLength(): number {
+  @reactively private get actualWorkgroupLength(): number {
     const { device } = this;
     const workgroupLength = this.workgroupLength;
     const maxThreads = device.limits.maxComputeInvocationsPerWorkgroup;
@@ -246,5 +328,13 @@ export class ReduceBuffer extends HasReactive implements ComposableShader {
     } else {
       return workgroupLength;
     }
+  }
+
+  @reactively private get sourceElems(): number {
+    return this.source.size / this.template.inputElementSize - this.sourceOffset;
+  }
+
+  @reactively private get actualMaxWorkgroups(): number {
+    return this.maxWorkgroups ?? this.device.limits.maxComputeWorkgroupsPerDimension;
   }
 }
