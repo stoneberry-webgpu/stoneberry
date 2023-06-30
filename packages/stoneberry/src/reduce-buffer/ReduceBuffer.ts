@@ -60,14 +60,11 @@ const defaults: Partial<BufferReduceParams> = {
 };
 
 /**
- * Reduce workgroup sized blocks of data to single elements.
+ * Reduce a buffer of data to a single value by running an associative
+ * binary operation over every element.
  *
- * A full reduction requires running this shader repeatedly, each time
- * reducing the previously reduced buffer until only a single workgroup
- * sized block remains. Then the final reduction will reduce one block to
- * a buffer containing only a single element.
- *
- * The reduce operation is controlled by template: could be sum,min,max, etc.
+ * The binary operation is specified by a template. Possible binary
+ * operations include sum, min, and max.
  */
 export class ReduceBuffer extends HasReactive implements ComposableShader {
   /** Source data to be reduced */
