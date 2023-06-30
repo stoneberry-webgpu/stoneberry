@@ -308,10 +308,20 @@ export class ReduceBuffer extends HasReactive implements ComposableShader {
   }
 
   @reactively private writeUniforms(): void {
+    const resultOffsets = this.resultOffsets;
     this.inputSlicing.slices.forEach((slice, i) => {
-      const resultOffset = i * this.template.outputElementSize;
-      const data = new Uint32Array([this.sourceOffset + slice.offset, resultOffset]);
+      const data = new Uint32Array([this.sourceOffset + slice.offset, resultOffsets[i]]);
       this.device.queue.writeBuffer(this.uniforms, slice.uniformOffset, data);
+    });
+  }
+
+  /** offsets into the result buffer for a sliced first layer multi-dispatch */
+  @reactively private get resultOffsets(): number[] {
+    let offset = 0;
+    return this.inputSlicing.slices.map(s => {
+      const result = offset;
+      offset += s.dispatch; // each dispatched workgroup produces one result item
+      return result;
     });
   }
 

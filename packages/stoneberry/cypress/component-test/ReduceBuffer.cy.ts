@@ -126,7 +126,7 @@ it("sourceOffset", async () => {
   });
 });
 
-it("generated offsets workgroups > max", async () => {
+it("2 workgroups > max (1)", async () => {
   await withAsyncUsage(async () => {
     const device = trackUse(await labeledGpuDevice());
     const sourceData = [0, 1, 2, 3, 4, 5, 6, 7];
@@ -138,6 +138,29 @@ it("generated offsets workgroups > max", async () => {
       workgroupLength: 2,
       blockLength: 2,
       maxWorkgroups: 1,
+    });
+    trackUse(shader);
+
+    const result = await shader.reduce();
+
+    const expected = sourceData.reduce((a, b) => a + b);
+    expect(result).deep.eq([expected]);
+    trackRelease(shader);
+  });
+});
+
+it("4 dispatched workgroups > max (2), 2 threads/workgroup ", async () => {
+  await withAsyncUsage(async () => {
+    const device = trackUse(await labeledGpuDevice());
+    const sourceData = Array.from({length: 32}).map((_, i) => i);
+    const source = makeBuffer(device, sourceData, "source buffer", Uint32Array);
+    const shader = new ReduceBuffer({
+      device,
+      source,
+      template: sumU32,
+      workgroupLength: 2,
+      blockLength: 2,
+      maxWorkgroups: 2,
     });
     trackUse(shader);
 
