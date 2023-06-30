@@ -18,13 +18,13 @@ export function logCsvReport(
   const reportTexts = reports.map(report =>
     csvReport(
       report,
-      { [`${label} average clock`]: averageTimeMs },
+      { [`${label} avg clock`]: averageTimeMs },
       { utc, git: gitVersion },
       `${label} gpu time`
     )
   );
 
-  const summaryText = summaryReport([[`${label} gigabytes/sec`, gbSec]], utc, gitVersion);
+  const summaryText = summaryReport([[`${label} gb/sec`, gbSec]], utc, gitVersion);
 
   const allReports = reportTexts.join("");
   const msg = allReports + "\n\n" + summaryText;
