@@ -27,7 +27,7 @@ export function logCsvReport(
   const summaryText = summaryReport([[`${label} gb/sec`, gbSec]], utc, gitVersion);
 
   const allReports = reportTexts.join("");
-  const msg = allReports + "\n\n" + summaryText;
+  const msg = allReports + "\n\n" + summaryText + "\n\n";
   console.log(msg);
   logWebSocket(msg);
 }
