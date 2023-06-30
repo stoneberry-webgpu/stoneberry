@@ -21,7 +21,7 @@
     "src"
   ],
   "dependencies": {
-    "stoneberry": "^0.1.4",
+    "stoneberry": "workspace:^",
     "thimbleberry": "^0.1.10"
   },
   "devDependencies": {
