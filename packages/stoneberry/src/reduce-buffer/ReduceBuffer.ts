@@ -259,12 +259,8 @@ export class ReduceBuffer extends HasReactive implements ComposableShader {
    * (but we'll dispatch with dynamic offsets to point at
    * different parts of the uniform buffer) */
   @reactively private get sourceBindGroup(): GPUBindGroup {
-    return this.createBindGroup(
-      this.uniforms,
-      this.source,
-      this.sourceReductionBuffer,
-      "source"
-    );
+    const resultBuf = this.sourceReductionBuffer;
+    return this.createBindGroup(this.uniforms, this.source, resultBuf, "source");
   }
 
   @reactively private get layerBindGroups(): GPUBindGroup[] {
