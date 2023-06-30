@@ -206,7 +206,6 @@ export class PrefixScan<T = number> extends HasReactive implements ComposableSha
 
     // stitch a chain: blockSums as sources for scans
     let source = this._sourceScan.blockSums;
-    let labelNum = 0;
     for (let elements = wl; elements < sourceElements; elements *= wl) {
       const last = elements * wl >= sourceElements;
       const blockScan = new WorkgroupScan({
@@ -216,7 +215,7 @@ export class PrefixScan<T = number> extends HasReactive implements ComposableSha
         template: this.template,
         workgroupLength: this.workgroupLength,
         maxWorkgroups: this.maxWorkgroups,
-        label: `${this.label} blockToBlock ${labelNum++}`,
+        label: `${this.label} blockScan`,
         pipelineCache: this.pipelineCache,
       });
       source = blockScan.blockSums;
@@ -267,7 +266,7 @@ export class PrefixScan<T = number> extends HasReactive implements ComposableSha
         initialValue: this.initialValue,
         workgroupLength: this.actualWorkgroupLength,
         maxWorkgroups: this.maxWorkgroups,
-        label: `${this.label} applyBlock ${i}`,
+        label: `${this.label} applyBlock`,
         pipelineCache: this.pipelineCache,
       });
       blockSums = applyBlocks.result;
