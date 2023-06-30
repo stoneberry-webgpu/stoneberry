@@ -12,7 +12,7 @@ export async function gitVersion(): Promise<string> {
   return rev + (await gitDirty());
 }
 
-export async function writeGitVersionTs(filePath: string): Promise<void> {
+export async function writeGitVersionTs(filePath: string): Promise<string> {
   const version = await gitVersion();
   const text = `export const gitVersion = "${version}";\n`;
 
@@ -25,6 +25,7 @@ export async function writeGitVersionTs(filePath: string): Promise<void> {
       await fs.writeFile(filePath, text);
     }
   }
+  return version;
 }
 
 async function gitHash(): Promise<string> {
