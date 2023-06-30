@@ -61,6 +61,7 @@ export const sumF32: BinOpCreateTemplate = {
 export const minMaxF32: BinOpCreateTemplate = {
   inputElementSize: 8,
   outputElementSize: 8,
+  outputElements: "f32",
   outputStruct: "min: f32, max: f32,",
   inputStruct: "min: f32, max: f32,",
   binaryOp: "return Output(min(a.min, b.min), max(a.max, b.max));",

@@ -20,6 +20,7 @@
     "noEmit": true,
     "paths": {
       "stoneberry/scan": ["../stoneberry/src/scan"],
+      "stoneberry/reduce-buffer": ["../stoneberry/src/reduce-buffer"],
     }
   },
   "include": ["src/**/*"],
