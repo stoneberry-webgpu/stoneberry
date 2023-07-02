@@ -45,7 +45,10 @@ export interface InputSlicingArgs {
  *  since each dispatch is limited to 65K workgroups.
  *
  * So we partition the input into slices, and size a partioned uniform
- * buffer that can be indexed with dynamicOffsets.
+ * buffer that can be indexed with dynamicOffsets. The idea is that
+ * each slice of the uniform buffer will contain the corresponding offset into 
+ * the input buffer, and each dispatch selects the appropriate slice of the
+ * uniform buffer via dynamicOffsets.
  *
  *  @return array of slices
  */
