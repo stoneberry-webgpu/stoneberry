@@ -1,6 +1,6 @@
 {
   "name": "stoneberry",
-  "version": "0.1.13",
+  "version": "0.1.14",
   "description": "core WebGPU shaders",
   "type": "module",
   "scripts": {
@@ -24,12 +24,12 @@
     "./scan": {
       "import": "./dist/PrefixScan.js",
       "module": "./dist/PrefixScan.js",
-      "types": "./dist/scan/PrefixScan.d.ts"
+      "types": "./dist/scan/index.d.ts"
     },
     "./reduce-buffer": {
       "import": "./dist/ReduceBuffer.js",
       "module": "./dist/ReduceBuffer.js",
-      "types": "./dist/reduce-buffer/ReduceBuffer.d.ts"
+      "types": "./dist/reduce-buffer/index.d.ts"
     }
   },
   "keywords": [
