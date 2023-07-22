@@ -1,0 +1,65 @@
+{
+  "name": "stoneberry-code-example",
+  "version": "0.2.0",
+  "dependencies": {
+    "@monaco-editor/react": "^4.5.1",
+    "@webgpu/types": "^0.1.34",
+    "live-typescript": "file:../../../live-typescript/packages/live-typescript",
+    "monaco-editor": "^0.39.0",
+    "stoneberry": "^0.1.13",
+    "stoneberry-examples": "^0.1.5",
+    "thimbleberry": "^0.1.15"
+  },
+  "peerDependencies": {
+    "react": ">=17",
+    "react-dom": ">=17"
+  },
+  "type": "module",
+  "module": "dist/StoneberryExample.js",
+  "main": "dist/StoneberryExample.js",
+  "types": "dist/StoneberryExample.d.ts",
+  "export": {
+    ".": {
+      "import": "dist/StoneberryExample.ms",
+      "require": "dist/StoneberryExample.js",
+      "types": "dist/StoneberryExample.d.ts"
+    },
+    "./style.css": {
+      "import": "./dist/style.css",
+      "require": "./dist/style.css",
+      "resolve": "./dist/style.css",
+      "default": "./dist/style.css"
+    }
+  },
+  "files": [
+    "dist",
+    "src"
+  ],
+  "scripts": {
+    "dev": "vite",
+    "prepublish": "rimraf dist && pnpm run build && pnpm run build:types",
+    "build": "vite build",
+    "build:types": "tsc --project tsconfig.build.json"
+  },
+  "devDependencies": {
+    "@types/node": "^20.4.2",
+    "@types/react": "^18.2.14",
+    "@types/react-dom": "^18.2.6",
+    "@typescript-eslint/eslint-plugin": "^5.60.1",
+    "@typescript-eslint/parser": "^5.60.1",
+    "@vitejs/plugin-react": "^4.0.1",
+    "eslint": "^8.43.0",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "eslint-plugin-react-refresh": "^0.4.1",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "rimraf": "^5.0.1",
+    "typescript": "^5.1.6",
+    "vite": "^4.3.9",
+    "vite-plugin-externalize-deps": "^0.7.0",
+    "rollup-plugin-remap-imports": "file:../../../live-typescript/packages/rollup-plugin-remap-imports",
+    "rollup-plugin-typefiles": "file:../../../live-typescript/packages/rollup-plugin-typefiles"
+  },
+  "repository": "github:mighdoll/live-typescript",
+  "license": "ISC"
+}
