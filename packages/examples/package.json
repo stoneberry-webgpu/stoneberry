@@ -22,7 +22,7 @@
   ],
   "dependencies": {
     "stoneberry": "workspace:^",
-    "thimbleberry": "^0.1.14"
+    "thimbleberry": "^0.1.15"
   },
   "devDependencies": {
     "@webgpu/types": "^0.1.32",

@@ -1,6 +1,6 @@
 {
   "name": "stoneberry-benchmarks",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "type": "module",
   "scripts": {
     "dev": "bld/run dev",
@@ -8,7 +8,7 @@
   },
   "dependencies": {
     "stoneberry": "workspace:*",
-    "thimbleberry": "^0.1.14"
+    "thimbleberry": "^0.1.15"
   },
   "devDependencies": {
     "@webgpu/types": "^0.1.32",
