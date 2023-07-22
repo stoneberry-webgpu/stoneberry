@@ -14,14 +14,14 @@
     "react-dom": ">=17"
   },
   "type": "module",
-  "module": "dist/StoneberryExample.js",
-  "main": "dist/StoneberryExample.js",
-  "types": "dist/StoneberryExample.d.ts",
+  "module": "dist/StoneberryLive.js",
+  "main": "dist/StoneberryLive.js",
+  "types": "dist/StoneberryLive.d.ts",
   "export": {
     ".": {
-      "import": "dist/StoneberryExample.js",
-      "require": "dist/StoneberryExample.js",
-      "types": "dist/StoneberryExample.d.ts"
+      "import": "dist/StoneberryLive.js",
+      "require": "dist/StoneberryLive.js",
+      "types": "dist/StoneberryLive.d.ts"
     },
     "./style.css": {
       "import": "./dist/style.css",

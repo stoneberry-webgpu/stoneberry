@@ -9,9 +9,9 @@ export default defineConfig({
     cssCodeSplit: false,
     lib: {
       formats: ["es", "cjs"],
-      entry: "src/StoneberryExample.tsx",
-      name: "StoneberryExample",
-      fileName: "StoneberryExample",
+      entry: "src/StoneberryLive.tsx",
+      name: "StoneberryLive",
+      fileName: "StoneberryLive",
     },
     rollupOptions: {
       external: [
