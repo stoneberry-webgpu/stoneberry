@@ -53,8 +53,8 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "rimraf": "^5.0.1",
-    "rollup-plugin-remap-imports": "file:../../../live-typescript/packages/rollup-plugin-remap-imports",
-    "rollup-plugin-typefiles": "file:../../../live-typescript/packages/rollup-plugin-typefiles",
+    "rollup-plugin-remap-imports": "^0.1.0",
+    "rollup-plugin-typefiles": "^0.1.0",
     "typescript": "^5.1.6",
     "vite": "^4.4.6",
     "vite-plugin-externalize-deps": "^0.7.0"

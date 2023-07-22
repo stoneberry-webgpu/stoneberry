@@ -247,11 +247,11 @@ importers:
         specifier: ^5.0.1
         version: 5.0.1
       rollup-plugin-remap-imports:
-        specifier: file:../../../live-typescript/packages/rollup-plugin-remap-imports
-        version: file:../live-typescript/packages/rollup-plugin-remap-imports
+        specifier: ^0.1.0
+        version: 0.1.0
       rollup-plugin-typefiles:
-        specifier: file:../../../live-typescript/packages/rollup-plugin-typefiles
-        version: file:../live-typescript/packages/rollup-plugin-typefiles
+        specifier: ^0.1.0
+        version: 0.1.0
       typescript:
         specifier: ^5.1.6
         version: 5.1.6
@@ -15817,6 +15817,22 @@ packages:
       rollup-plugin-inject: 3.0.2
     dev: true
 
+  /rollup-plugin-remap-imports@0.1.0:
+    resolution: {integrity: sha512-v16SYin+SCxwrPmJmtWukUj1FR1Ja1i9679ev+Z13MR+421JcitGce0NcqYjVc6KPbOGr9UGputsciz7AZpqxg==}
+    dependencies:
+      blueimp-md5: 2.19.0
+      esbuild: 0.18.15
+      import-meta-resolve: 3.0.0
+      parse-imports: 1.1.2
+    dev: true
+
+  /rollup-plugin-typefiles@0.1.0:
+    resolution: {integrity: sha512-A5Trlzi1tcCXpgVRPF9e8N4Pywx4ABtZr3Rlz0NXVhPP0vnHZSZXEboQZyTpukwo+ZMcicDhJk/OIb8mLJON3A==}
+    dependencies:
+      glob: 10.3.3
+      import-meta-resolve: 3.0.0
+    dev: true
+
   /rollup-pluginutils@2.8.2:
     resolution: {integrity: sha512-EEp9NhnUkwY8aif6bxgovPHMoMoNr2FulJziTndpt5H9RdwC47GSGuII9XxpSdzVGM0GWrNPHV6ie1LTNJPaLQ==}
     dependencies:
@@ -18585,21 +18601,3 @@ packages:
   /zwitch@1.0.5:
     resolution: {integrity: sha512-V50KMwwzqJV0NpZIZFwfOD5/lyny3WlSzRiXgA0G7VUnRlqttta1L6UQIHzd6EuBY/cHGfwTIck7w1yH6Q5zUw==}
     dev: false
-
-  file:../live-typescript/packages/rollup-plugin-remap-imports:
-    resolution: {directory: ../live-typescript/packages/rollup-plugin-remap-imports, type: directory}
-    name: rollup-plugin-remap-imports
-    dependencies:
-      blueimp-md5: 2.19.0
-      esbuild: 0.18.15
-      import-meta-resolve: 3.0.0
-      parse-imports: 1.1.2
-    dev: true
-
-  file:../live-typescript/packages/rollup-plugin-typefiles:
-    resolution: {directory: ../live-typescript/packages/rollup-plugin-typefiles, type: directory}
-    name: rollup-plugin-typefiles
-    dependencies:
-      glob: 10.3.3
-      import-meta-resolve: 3.0.0
-    dev: true
