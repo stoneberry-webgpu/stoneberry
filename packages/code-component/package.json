@@ -6,8 +6,8 @@
     "@webgpu/types": "^0.1.34",
     "live-typescript": "file:../../../live-typescript/packages/live-typescript",
     "monaco-editor": "^0.39.0",
-    "stoneberry": "^0.1.13",
-    "stoneberry-examples": "^0.1.5",
+    "stoneberry": "workspace:^",
+    "stoneberry-examples": "workspace:*",
     "thimbleberry": "^0.1.15"
   },
   "peerDependencies": {
@@ -42,23 +42,23 @@
     "build:types": "tsc --project tsconfig.build.json"
   },
   "devDependencies": {
-    "@types/node": "^20.4.2",
-    "@types/react": "^18.2.14",
-    "@types/react-dom": "^18.2.6",
-    "@typescript-eslint/eslint-plugin": "^5.60.1",
-    "@typescript-eslint/parser": "^5.60.1",
-    "@vitejs/plugin-react": "^4.0.1",
-    "eslint": "^8.43.0",
+    "@types/node": "^20.4.3",
+    "@types/react": "^18.2.15",
+    "@types/react-dom": "^18.2.7",
+    "@typescript-eslint/eslint-plugin": "^5.62.0",
+    "@typescript-eslint/parser": "^5.62.0",
+    "@vitejs/plugin-react": "^4.0.3",
+    "eslint": "^8.45.0",
     "eslint-plugin-react-hooks": "^4.6.0",
-    "eslint-plugin-react-refresh": "^0.4.1",
+    "eslint-plugin-react-refresh": "^0.4.3",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "rimraf": "^5.0.1",
-    "typescript": "^5.1.6",
-    "vite": "^4.3.9",
-    "vite-plugin-externalize-deps": "^0.7.0",
     "rollup-plugin-remap-imports": "file:../../../live-typescript/packages/rollup-plugin-remap-imports",
-    "rollup-plugin-typefiles": "file:../../../live-typescript/packages/rollup-plugin-typefiles"
+    "rollup-plugin-typefiles": "file:../../../live-typescript/packages/rollup-plugin-typefiles",
+    "typescript": "^5.1.6",
+    "vite": "^4.4.6",
+    "vite-plugin-externalize-deps": "^0.7.0"
   },
   "repository": "github:mighdoll/live-typescript",
   "license": "ISC"
