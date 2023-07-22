@@ -1,5 +1,5 @@
 {
-  "name": "stoneberry-code-example",
+  "name": "stoneberry-live",
   "version": "0.2.0",
   "dependencies": {
     "@monaco-editor/react": "^4.5.1",

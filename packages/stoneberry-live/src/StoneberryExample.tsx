@@ -9,12 +9,12 @@ import thimbleberryTypes from "thimbleberry?typeFiles";
 import stoneberryTypes from "stoneberry?typeFiles";
 import webGpuTypes from "@webgpu/types?typeFiles";
 
-export interface StoneberryCodeExampleProps {
+export interface StoneberryLiveProps {
   code: string;
   className?: string;
 }
 
-export function StoneberryExample(props: StoneberryCodeExampleProps): JSX.Element {
+export function StoneberryLive(props: StoneberryLiveProps): JSX.Element {
   const embeddedPackages = { ...thimbleberry, ...stoneberryScan, ...examples };
   const { code, className } = props;
   const typeFiles = {

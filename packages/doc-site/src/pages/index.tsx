@@ -6,7 +6,7 @@ import Layout from "@theme/Layout";
 
 import styles from "./index.module.css";
 import simpleScan from "!!raw-loader!../../../examples/src/simpleScan.ts?raw";
-import { StoneberryExample } from "stoneberry-code-example";
+import { StoneberryExample } from "stoneberry-live";
 
 function HomepageHeader(): JSX.Element {
   const { siteConfig } = useDocusaurusContext();

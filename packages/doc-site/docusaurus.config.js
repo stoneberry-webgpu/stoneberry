@@ -65,7 +65,7 @@ const config = {
         theme: {
           customCss: [
             require.resolve("./src/css/custom.css"),
-            require.resolve("./node_modules/stoneberry-code-example/dist/style.css"),
+            require.resolve("./node_modules/stoneberry-live/dist/style.css"),
           ],
         },
       }),
