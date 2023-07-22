@@ -1,5 +1,5 @@
 import "react";
-import { CodeExample } from "live-typescript";
+import { LiveTypescript } from "live-typescript";
 import "live-typescript/style.css";
 import thimbleberry from "thimbleberry?remapImports";
 import stoneberryScan from "stoneberry/scan?remapImports";
@@ -24,6 +24,7 @@ export function StoneberryLive(props: StoneberryLiveProps): JSX.Element {
     ...webGpuTypes,
   };
   return (
-    <CodeExample {...{ embeddedPackages, typeFiles, code, className }}></CodeExample>
+    <LiveTypescript
+      {...{ embeddedPackages, typeFiles, code, className }}></LiveTypescript>
   );
 }
