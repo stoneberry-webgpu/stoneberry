@@ -15,16 +15,16 @@ export interface StoneberryLiveProps {
 }
 
 export function StoneberryLive(props: StoneberryLiveProps): JSX.Element {
-  const embeddedPackages = { ...thimbleberry, ...stoneberryScan, ...examples };
   const { code, className } = props;
-  const typeFiles = {
-    ...thimbleberryTypes,
-    ...stoneberryTypes,
-    ...examplesTypes,
-    ...webGpuTypes,
-  };
   return (
     <LiveTypescript
-      {...{ embeddedPackages, typeFiles, code, className }}></LiveTypescript>
+      embeddedPackages={{ ...thimbleberry, ...stoneberryScan, ...examples }}
+      typeFiles={{
+        ...thimbleberryTypes,
+        ...stoneberryTypes,
+        ...examplesTypes,
+        ...webGpuTypes,
+      }}
+      {...{ code, className }}></LiveTypescript>
   );
 }
