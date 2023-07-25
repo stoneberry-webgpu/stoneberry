@@ -202,8 +202,8 @@ importers:
         specifier: ^0.1.34
         version: 0.1.34
       live-typescript:
-        specifier: file:../../../live-typescript/packages/live-typescript
-        version: file:../live-typescript/packages/live-typescript(react-dom@17.0.2)(react@17.0.2)
+        specifier: ^0.2.3
+        version: 0.2.3(react-dom@17.0.2)(react@17.0.2)
       stoneberry:
         specifier: workspace:^
         version: link:../stoneberry
@@ -254,8 +254,8 @@ importers:
         specifier: ^5.0.1
         version: 5.0.1
       rollup-plugin-sourcefiles:
-        specifier: file:../../../live-typescript/packages/rollup-plugin-sourcefiles
-        version: file:../live-typescript/packages/rollup-plugin-sourcefiles
+        specifier: ^0.2.0
+        version: 0.2.0
       typescript:
         specifier: ^5.1.6
         version: 5.1.6
@@ -12108,6 +12108,19 @@ packages:
       wrap-ansi: 7.0.0
     dev: true
 
+  /live-typescript@0.2.3(react-dom@17.0.2)(react@17.0.2):
+    resolution: {integrity: sha512-zJR92gNiaOo7EqhD0mZF/NwKatyC+J7VEYpBM3ZAG8cfA4ReMTwE48kvr30bvEDK52oHfV/OggcOESzOTTeblw==}
+    peerDependencies:
+      react: '>=17'
+    dependencies:
+      '@monaco-editor/react': 4.5.1(monaco-editor@0.40.0)(react-dom@17.0.2)(react@17.0.2)
+      monaco-editor: 0.40.0
+      react: 17.0.2
+      sucrase: 3.34.0
+    transitivePeerDependencies:
+      - react-dom
+    dev: false
+
   /livereload-js@2.4.0:
     resolution: {integrity: sha512-XPQH8Z2GDP/Hwz2PCDrh2mth4yFejwA1OZ/81Ti3LgKyhDcEjsSsqFWZojHG0va/duGd+WyosY7eXLDoOyqcPw==}
     dev: true
@@ -15302,6 +15315,16 @@ packages:
       rollup-plugin-inject: 3.0.2
     dev: true
 
+  /rollup-plugin-sourcefiles@0.2.0:
+    resolution: {integrity: sha512-lltqqiC9nJo5/FgOYQjhxjr+cJCjZS83qAY440NPC7Tsne3GvseA8djit2TwapcjhlmaMyHEt5ic3Oow1Qb1Gg==}
+    dependencies:
+      blueimp-md5: 2.19.0
+      esbuild: 0.18.15
+      glob: 10.3.3
+      import-meta-resolve: 3.0.0
+      parse-imports: 1.1.2
+    dev: true
+
   /rollup-pluginutils@2.8.2:
     resolution: {integrity: sha512-EEp9NhnUkwY8aif6bxgovPHMoMoNr2FulJziTndpt5H9RdwC47GSGuII9XxpSdzVGM0GWrNPHV6ie1LTNJPaLQ==}
     dependencies:
@@ -17893,29 +17916,3 @@ packages:
   /zwitch@1.0.5:
     resolution: {integrity: sha512-V50KMwwzqJV0NpZIZFwfOD5/lyny3WlSzRiXgA0G7VUnRlqttta1L6UQIHzd6EuBY/cHGfwTIck7w1yH6Q5zUw==}
     dev: false
-
-  file:../live-typescript/packages/live-typescript(react-dom@17.0.2)(react@17.0.2):
-    resolution: {directory: ../live-typescript/packages/live-typescript, type: directory}
-    id: file:../live-typescript/packages/live-typescript
-    name: live-typescript
-    peerDependencies:
-      react: '>=17'
-    dependencies:
-      '@monaco-editor/react': 4.5.1(monaco-editor@0.40.0)(react-dom@17.0.2)(react@17.0.2)
-      monaco-editor: 0.40.0
-      react: 17.0.2
-      sucrase: 3.34.0
-    transitivePeerDependencies:
-      - react-dom
-    dev: false
-
-  file:../live-typescript/packages/rollup-plugin-sourcefiles:
-    resolution: {directory: ../live-typescript/packages/rollup-plugin-sourcefiles, type: directory}
-    name: rollup-plugin-sourcefiles
-    dependencies:
-      blueimp-md5: 2.19.0
-      esbuild: 0.18.15
-      glob: 10.3.3
-      import-meta-resolve: 3.0.0
-      parse-imports: 1.1.2
-    dev: true
