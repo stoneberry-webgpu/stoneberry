@@ -1,10 +1,9 @@
 import react from "@vitejs/plugin-react";
-import remapImports from "rollup-plugin-remap-imports";
-import typeFiles from "rollup-plugin-typefiles";
+import sourceFiles from "rollup-plugin-sourcefiles";
 import { defineConfig } from "vite";
 
 export default defineConfig({
-  plugins: [react(), remapImports(process.env.PWD), typeFiles(process.env.PWD)],
+  plugins: [react(), sourceFiles(process.env.PWD)],
   build: {
     cssCodeSplit: false,
     lib: {
