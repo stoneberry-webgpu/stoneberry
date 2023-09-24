@@ -31,6 +31,11 @@
       "import": "./dist/reduce-buffer/index.js",
       "module": "./dist/reduce-buffer/index.js",
       "types": "./dist/reduce-buffer/index.d.ts"
+    },
+    "./util": {
+      "import": "./dist/util/index.js",
+      "module": "./dist/util/index.js",
+      "types": "./dist/util/index.d.ts"
     }
   },
   "keywords": [
