@@ -1,4 +1,4 @@
-import exampleCode from "../../examples/src/simpleScan.ts?raw";
+import exampleCode from "../../examples/src/reduceBuffer.ts?raw"
 import { StoneberryLive } from "../src/StoneberryLive";
 import "live-typescript/style.css";
 
