@@ -4,7 +4,7 @@
   "dependencies": {
     "@monaco-editor/react": "^4.5.1",
     "@webgpu/types": "^0.1.34",
-    "live-typescript": "^0.2.3",
+    "live-typescript": "^0.2.4",
     "stoneberry": "workspace:^",
     "stoneberry-examples": "workspace:*",
     "sucrase": "^3.34.0",
