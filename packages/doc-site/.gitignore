@@ -20,4 +20,4 @@ yarn-debug.log*
 yarn-error.log*
 
 # generated api docs
-docs
+/docs/api
