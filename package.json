@@ -5,9 +5,10 @@
   "scripts": {
     "bench": "pnpm --filter stoneberry-benchmarks bench",
     "build:stoneberry": "pnpm --filter stoneberry prepublish",
+    "build:example-utils": "pnpm --filter stoneberry-examples build",
     "build:stoneberry-live": "pnpm --filter stoneberry-live build",
     "build:docs": "pnpm --filter doc-site build",
-    "build:site": "pnpm build:stoneberry && pnpm build:stoneberry-live && pnpm build:docs"
+    "build:site": "pnpm build:stoneberry && pnpm build:example-utils && pnpm build:stoneberry-live && pnpm build:docs"
   },
   "pnpm": {
     "overrides": {
