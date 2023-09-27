@@ -54,7 +54,7 @@
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "rimraf": "^5.0.1",
-    "rollup-plugin-sourcefiles": "^0.2.0",
+    "rollup-plugin-sourcefiles": "^0.2.5",
     "typescript": "^5.1.6",
     "vite": "^4.4.6",
     "vite-plugin-externalize-deps": "^0.7.0"
