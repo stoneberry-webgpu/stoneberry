@@ -6,7 +6,7 @@ import Layout from "@theme/Layout";
 
 import styles from "./index.module.css";
 import simpleScan from "!!raw-loader!../../../examples/src/simpleScan.ts?raw";
-import { StoneberryLive } from "stoneberry-live";
+import { StoneberryDoc } from "../components/StoneberryDoc";
 
 function HomepageHeader(): JSX.Element {
   const { siteConfig } = useDocusaurusContext();
@@ -30,7 +30,7 @@ export default function Home(): JSX.Element {
   return (
     <Layout title={`${siteConfig.title}`} description="WebGPU core shaders/>">
       <HomepageHeader />
-      <StoneberryLive className="homePage" code={simpleScan} />
+      <StoneberryDoc className="homePage" code={simpleScan} />
     </Layout>
   );
 }
