@@ -202,8 +202,8 @@ importers:
         specifier: ^0.1.34
         version: 0.1.34
       live-typescript:
-        specifier: ^0.2.4
-        version: 0.2.4(react-dom@17.0.2)(react@17.0.2)
+        specifier: ^0.2.7
+        version: 0.2.7(react-dom@17.0.2)(react@17.0.2)
       stoneberry:
         specifier: workspace:^
         version: link:../stoneberry
@@ -11822,8 +11822,8 @@ packages:
       wrap-ansi: 7.0.0
     dev: true
 
-  /live-typescript@0.2.4(react-dom@17.0.2)(react@17.0.2):
-    resolution: {integrity: sha512-f+hNkPsyd7721SNTjUbCKbbkYlaUyzWy0A6SivVa2ByaYOrydd/s3wrDIUnLrnG4tNP3k8SN3m0haNdiFgK7aQ==}
+  /live-typescript@0.2.7(react-dom@17.0.2)(react@17.0.2):
+    resolution: {integrity: sha512-O9mUtHRNmo4C42VO/WcR1JgzzlnRRH/rtwChvli7jKOuDD8g62Kzm732TJ8juykY5TTB88YSWyW2Jj9wleKVuA==}
     peerDependencies:
       react: '>=17'
     dependencies:
