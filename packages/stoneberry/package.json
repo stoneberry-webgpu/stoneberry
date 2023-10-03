@@ -8,6 +8,7 @@
     "build": "pnpm build:scan && pnpm build:bufReduce && pnpm build:util",
     "build:scan": "esbuild src/scan/index.ts               --outbase=src --external:../util/* --bundle --packages=external --format=esm --loader:.wgsl=text --sourcemap --outdir=dist",
     "build:bufReduce": "esbuild src/reduce-buffer/index.ts --outbase=src --external:../util/* --bundle --packages=external --format=esm --loader:.wgsl=text --sourcemap --outdir=dist",
+    "build:texReduce": "esbuild src/reduce-texture/index.ts --outbase=src --external:../util/* --bundle --packages=external --format=esm --loader:.wgsl=text --sourcemap --outdir=dist",
     "build:util": "esbuild src/util/*.ts                   --outbase=src                               --packages=external --format=esm                     --sourcemap --outdir=dist",
     "build:types": "tsc --project tsconfig.build.json",
     "mac-canary": "$npm_execPath open -a 'Google Chrome Canary' --args --disable-dawn-features=disallow_unsafe_apis ",
@@ -31,6 +32,11 @@
       "import": "./dist/reduce-buffer/index.js",
       "module": "./dist/reduce-buffer/index.js",
       "types": "./dist/reduce-buffer/index.d.ts"
+    },
+    "./reduce-texture": {
+      "import": "./dist/reduce-texture/index.js",
+      "module": "./dist/reduce-texture/index.js",
+      "types": "./dist/reduce-texture/index.d.ts"
     },
     "./util": {
       "import": "./dist/util/index.js",
