@@ -1,6 +1,7 @@
-import { applyTemplate, memoizeWithDevice } from "thimbleberry";
+import { Vec2, applyTemplate, memoizeWithDevice } from "thimbleberry";
 import { BinOpTemplate, maxF32 } from "../util/BinOpTemplate.js";
 import shaderWGSL from "./ReduceBuffer.wgsl?raw";
+import { LoadTemplate, loadRedComponent } from "../util/LoadTemplate.js";
 
 export interface ReduceBufferPipelineArgs {
   device: GPUDevice;
@@ -8,58 +9,82 @@ export interface ReduceBufferPipelineArgs {
   blockArea: number;
   reduceTemplate: BinOpTemplate;
 }
-export const getBufferReducePipeline = memoizeWithDevice(createBufferReducePipeline);
+export const getReduceTexturePipeline = memoizeWithDevice(createReduceTexturePipeline);
 
-function createBufferReducePipeline(
-  params: ReduceBufferPipelineArgs
+export const maxBinOp = "return max(a, b);";
+export const sumBinOp = "return a + b;";
+
+interface TextureReducePipeParams {
+  device: GPUDevice;
+  workgroupSize?: Vec2;
+  blockLength?: number;
+  reduceTemplate?: BinOpTemplate;
+  loadTemplate?: LoadTemplate;
+}
+
+export function createReduceTexturePipeline(
+  params: TextureReducePipeParams
 ): GPUComputePipeline {
-  const { device, workgroupThreads = 4, blockArea = 4 } = params;
-  const { reduceTemplate = maxF32 } = params;
+  const {
+    device,
+    workgroupSize = [4, 4],
+    blockLength = 2,
+    reduceTemplate = maxF32,
+    loadTemplate = loadRedComponent,
+  } = params;
 
   const bindGroupLayout = device.createBindGroupLayout({
-    label: "reduceBuffer",
+    label: "reduceTexture",
     entries: [
       {
-        binding: 0, // uniforms
+        binding: 0, // src density texture
         visibility: GPUShaderStage.COMPUTE,
-        buffer: { type: "uniform", hasDynamicOffset: true },
+        texture: {
+          sampleType: "unfilterable-float",
+        },
       },
       {
-        binding: 1, // reduced values input
+        binding: 1, // reduced values output (also used as input for intermediate level reductions)
         visibility: GPUShaderStage.COMPUTE,
-        buffer: { type: "read-only-storage" },
-      },
-      {
-        binding: 2, // reduced values output
-        visibility: GPUShaderStage.COMPUTE,
-        buffer: { type: "storage" },
+        buffer: {
+          type: "storage",
+        },
       },
       {
         binding: 11, // debug buffer
         visibility: GPUShaderStage.COMPUTE,
-        buffer: { type: "storage" },
+        buffer: {
+          type: "storage",
+        },
       },
     ],
   });
 
   const processedWGSL = applyTemplate(shaderWGSL, {
-    workgroupThreads,
-    blockArea,
+    workgroupSizeX: workgroupSize[0],
+    workgroupSizeY: workgroupSize[1],
+    workgroupThreads: workgroupSize[0] * workgroupSize[1],
+    blockLength,
+    blockArea: blockLength * blockLength,
     ...reduceTemplate,
+    ...loadTemplate,
   });
 
   const module = device.createShaderModule({
     code: processedWGSL,
   });
 
-  const pipeline = device.createComputePipeline({
-    label: "reduceBuffer",
+  const reduceTexture = device.createComputePipeline({
+    label: "reduceTexture pipeline",
     compute: {
       module,
-      entryPoint: "reduceFromBuffer",
+      entryPoint: "reduceFromTexture",
     },
-    layout: device.createPipelineLayout({ bindGroupLayouts: [bindGroupLayout] }),
+    layout: device.createPipelineLayout({
+      label: "reduceTexture pipeline layout",
+      bindGroupLayouts: [bindGroupLayout],
+    }),
   });
 
-  return pipeline;
+  return reduceTexture;
 }
