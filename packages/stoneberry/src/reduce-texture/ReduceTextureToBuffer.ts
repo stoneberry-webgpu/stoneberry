@@ -25,9 +25,6 @@ export interface TextureToBufferParams {
    */
   source: ValueOrFn<GPUTexture>;
 
-  /** {@inheritDoc ReduceTextureToBuffer#resultOffset} */
-  resultOffset?: number;
-
   /** {@inheritDoc ReduceTextureToBuffer#blockSize} */
   blockSize?: Vec2;
 
@@ -49,7 +46,6 @@ export interface TextureToBufferParams {
 
 const defaults: Partial<TextureToBufferParams> = {
   blockSize: [4, 4],
-  resultOffset: 0,
   reduceTemplate: maxF32,
   workgroupSize: undefined,
   pipelineCache: undefined,
@@ -68,9 +64,6 @@ export class ReduceTextureToBuffer extends HasReactive implements ComposableShad
 
   /** Debug label attached to gpu objects for error reporting */
   @reactively label?: string;
-
-  /** start emitting results at this element offset in the results. (0) */
-  @reactively resultOffset!: number;
 
   /** number of elements to reduce in each invocation (4) */
   @reactively({ equals: deepEqual }) blockSize!: Vec2;
@@ -101,6 +94,20 @@ export class ReduceTextureToBuffer extends HasReactive implements ComposableShad
   destroy(): void {
     this.usageContext.finish();
   }
+
+  /** results of the reduction from frame to service */
+  @reactively get reducedResult(): GPUBuffer {
+    const resultSize = this.resultSize;
+    const size = resultSize[0] * resultSize[1] * this.reduceTemplate.outputElementSize;
+    console.log("reducedResult size", size);
+    const buffer = this.device.createBuffer({
+      label: "texture reduce result buffer",
+      size,
+      usage: GPUBufferUsage.STORAGE | GPUBufferUsage.COPY_SRC,
+    });
+    return buffer;
+  }
+
 
   @reactively get debugBuffer(): GPUBuffer {
     const buffer = createDebugBuffer(this.device, "TextureReduce debug");
@@ -146,19 +153,6 @@ export class ReduceTextureToBuffer extends HasReactive implements ComposableShad
     } else {
       return [this.device.limits.maxComputeInvocationsPerWorkgroup, 1];
     }
-  }
-
-  /** results of the reduction from frame to service */
-  @reactively get reducedResult(): GPUBuffer {
-    const resultSize = this.resultSize;
-    const size = resultSize[0] * resultSize[1] * this.reduceTemplate.outputElementSize;
-    console.log("reducedResult size", size);
-    const buffer = this.device.createBuffer({
-      label: "texture reduce result buffer",
-      size,
-      usage: GPUBufferUsage.STORAGE | GPUBufferUsage.COPY_SRC,
-    });
-    return buffer;
   }
 
   @reactively private get resultSize(): Vec2 {
