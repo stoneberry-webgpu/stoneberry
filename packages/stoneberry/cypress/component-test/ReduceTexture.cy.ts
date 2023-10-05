@@ -1,8 +1,6 @@
 import {
   labeledGpuDevice,
   loadRedComponent,
-  printBuffer,
-  printTexture,
   ShaderGroup,
   trackRelease,
   trackUse,
@@ -63,8 +61,6 @@ it("reduce texture to buffer, workgroup size = 4", async () => {
       const shaderGroup = new ShaderGroup(device, tr);
       shaderGroup.dispatch();
 
-      // await printTexture(device, source, 0);
-      // await printBuffer(device, tr.reducedResult, "f32");
       const expectedSum = sumReds(srcData);
       await withBufferCopy(device, tr.reducedResult, "f32", data => {
         expect([...data]).deep.eq([expectedSum]);
@@ -74,7 +70,7 @@ it("reduce texture to buffer, workgroup size = 4", async () => {
   });
 });
 
-it.only("reduce texture to buffer, min/max workgroup size = 4", async () => {
+it("reduce texture to buffer, min/max workgroup size = 4", async () => {
   await withAsyncUsage(async () => {
     const device = await labeledGpuDevice();
     trackUse(device);
@@ -95,8 +91,6 @@ it.only("reduce texture to buffer, min/max workgroup size = 4", async () => {
       shaderGroup.dispatch();
 
       const expected = minMaxPositiveReds(srcData);
-      await printTexture(device, source, 0);
-      await printBuffer(device, tr.reducedResult, "f32");
       await withBufferCopy(device, tr.reducedResult, "f32", data => {
         expect([...data]).deep.eq(expected);
       });
