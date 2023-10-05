@@ -58,6 +58,7 @@ export const sumF32: BinOpCreateTemplate = {
   createOp: "return Output(a);",
 };
 
+/** min max of values greater than 0 */
 export const minMaxF32: BinOpCreateTemplate = {
   inputElementSize: 8,
   outputElementSize: 8,
