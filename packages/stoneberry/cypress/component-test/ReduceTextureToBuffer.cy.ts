@@ -10,7 +10,7 @@ import {
   withLeakTrack,
 } from "thimbleberry";
 import { minMaxPositiveF32, sumF32 } from "../../src/util/BinOpTemplate.js";
-import { ReduceTextureToBuffer } from "./../../src/reduce-texture/ReduceTextureToBuffer";
+import { ReduceTextureToBuffer } from "../../src/reduce-texture/ReduceTextureToBuffer.js";
 import { make3dSequence, makeTexture } from "./util/MakeTexture.js";
 
 it("reduce texture to buffer, workgroup size = 1", async () => {
