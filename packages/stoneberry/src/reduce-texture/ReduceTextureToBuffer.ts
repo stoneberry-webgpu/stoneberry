@@ -184,8 +184,9 @@ export class ReduceTextureToBuffer extends HasReactive implements ComposableShad
 
   @reactively private get resultSize(): Vec2 {
     const blockSize = this.blockSize;
-    const width = Math.ceil(this.source.width / blockSize[0]);
-    const height = Math.ceil(this.source.height / blockSize[1]);
+    const workSize = this.actualWorkgroupSize;
+    const width = Math.ceil(this.source.width / blockSize[0] / workSize[0]);
+    const height = Math.ceil(this.source.height / blockSize[1] / workSize[1]);
 
     console.log("resultSize", [width, height]);
     return [width, height];
