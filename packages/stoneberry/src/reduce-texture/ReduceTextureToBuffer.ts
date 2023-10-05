@@ -97,8 +97,7 @@ export class ReduceTextureToBuffer extends HasReactive implements ComposableShad
 
   /** results of the reduction from frame to service */
   @reactively get reducedResult(): GPUBuffer {
-    const resultSize = this.resultSize;
-    const size = resultSize[0] * resultSize[1] * this.reduceTemplate.outputElementSize;
+    const size = this.resultElems* this.reduceTemplate.outputElementSize;
     console.log("reducedResult size", size);
     const buffer = this.device.createBuffer({
       label: "texture reduce result buffer",
@@ -108,6 +107,11 @@ export class ReduceTextureToBuffer extends HasReactive implements ComposableShad
     return buffer;
   }
 
+  /** number of elements in the result buffer */
+  @reactively get resultElems(): number {
+    const resultSize = this.resultSize;
+    return resultSize[0] * resultSize[1];
+  }
 
   @reactively get debugBuffer(): GPUBuffer {
     const buffer = createDebugBuffer(this.device, "TextureReduce debug");
