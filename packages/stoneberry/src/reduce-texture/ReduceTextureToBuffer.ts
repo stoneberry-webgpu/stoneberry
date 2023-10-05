@@ -31,7 +31,7 @@ export interface TextureToBufferParams {
   /** {@inheritDoc ReduceTextureToBuffer#blockSize} */
   blockSize?: Vec2;
 
-  /** {@inheritDoc ReduceTextureToBuffer#workgroupLength} */
+  /** {@inheritDoc ReduceTextureToBuffer#workgroupSize} */
   workgroupSize?: Vec2;
 
   /** {@inheritDoc ReduceTextureToBuffer#reduceTemplate} */
@@ -45,9 +45,6 @@ export interface TextureToBufferParams {
 
   /** {@inheritDoc ReduceTextureToBuffer#label} */
   label?: string;
-
-  /** {@inheritDoc ReduceBuffer#maxWorkgroups} */
-  maxWorkgroups?: number | undefined;
 }
 
 const defaults: Partial<TextureToBufferParams> = {
@@ -56,7 +53,6 @@ const defaults: Partial<TextureToBufferParams> = {
   reduceTemplate: maxF32,
   workgroupSize: undefined,
   pipelineCache: undefined,
-  maxWorkgroups: undefined,
   label: "",
 };
 
@@ -79,15 +75,8 @@ export class ReduceTextureToBuffer extends HasReactive implements ComposableShad
   /** number of elements to reduce in each invocation (4) */
   @reactively({ equals: deepEqual }) blockSize!: Vec2;
 
-  /** Override to set compute workgroup size e.g. for testing. 
-    @defaultValue maxComputeInvocationsPerWorkgroup of the `GPUDevice` (256)
-    */
+  /** Override to set compute workgroup size e.g. for testing. */
   @reactively({ equals: deepEqual }) workgroupSize!: Vec2;
-
-  /** Override to set max number of workgroups for dispatch e.g. for testing. 
-    @defaultValue maxComputeWorkgroupsPerDimension from the `GPUDevice` (65535)
-    */
-  @reactively maxWorkgroups?: number;
 
   private device!: GPUDevice;
   private pipelineCache?: <T extends object>() => Cache<T>;
@@ -120,7 +109,7 @@ export class ReduceTextureToBuffer extends HasReactive implements ComposableShad
   }
 
   @reactively private pipeline(): GPUComputePipeline {
-    const p = getReduceTexturePipeline(
+    return getReduceTexturePipeline(
       {
         device: this.device,
         workgroupSize: this.workgroupSize,
@@ -130,9 +119,6 @@ export class ReduceTextureToBuffer extends HasReactive implements ComposableShad
       },
       this.pipelineCache
     );
-
-    console.log("reduceTextureToBuffer pipeline", p);
-    return p;
   }
 
   @reactively private get uniformBuffer(): GPUBuffer {
