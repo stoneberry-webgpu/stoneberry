@@ -46,9 +46,6 @@ export interface TextureToBufferParams {
   /** {@inheritDoc ReduceTextureToBuffer#label} */
   label?: string;
 
-  /** {@inheritDoc ReduceTextureToBuffer#resultElemSize} */
-  resultElemSize?: number;
-
   /** {@inheritDoc ReduceBuffer#maxWorkgroups} */
   maxWorkgroups?: number | undefined;
 }
@@ -60,7 +57,6 @@ const defaults: Partial<TextureToBufferParams> = {
   workgroupSize: undefined,
   pipelineCache: undefined,
   maxWorkgroups: undefined,
-  resultElemSize: 4,
   label: "",
 };
 
@@ -92,9 +88,6 @@ export class ReduceTextureToBuffer extends HasReactive implements ComposableShad
     @defaultValue maxComputeWorkgroupsPerDimension from the `GPUDevice` (65535)
     */
   @reactively maxWorkgroups?: number;
-
-  /** size of each element in the result buffer in bytes (e.g. 4 for f32 elements) */
-  @reactively resultElemSize!: number;
 
   private device!: GPUDevice;
   private pipelineCache?: <T extends object>() => Cache<T>;
@@ -172,7 +165,7 @@ export class ReduceTextureToBuffer extends HasReactive implements ComposableShad
   /** results of the reduction from frame to service */
   @reactively get reducedResult(): GPUBuffer {
     const resultSize = this.resultSize;
-    const size = resultSize[0] * resultSize[1] * this.resultElemSize;
+    const size = resultSize[0] * resultSize[1] * this.reduceTemplate.outputElementSize;
     console.log("reducedResult size", size);
     const buffer = this.device.createBuffer({
       label: "texture reduce result buffer",

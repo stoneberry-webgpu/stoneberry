@@ -42,7 +42,7 @@ it("reduce texture to buffer, workgroup size = 1", async () => {
   });
 });
 
-it.only("reduce texture to buffer, workgroup size = 4", async () => {
+it("reduce texture to buffer, workgroup size = 4", async () => {
   await withAsyncUsage(async () => {
     const device = await labeledGpuDevice();
     trackUse(device);
@@ -62,8 +62,8 @@ it.only("reduce texture to buffer, workgroup size = 4", async () => {
       const shaderGroup = new ShaderGroup(device, tr);
       shaderGroup.dispatch();
 
-      await printTexture(device, source, 0);
-      await printBuffer(device, tr.reducedResult, "f32");
+      // await printTexture(device, source, 0);
+      // await printBuffer(device, tr.reducedResult, "f32");
       const expectedSum = sumReds(srcData);
       await withBufferCopy(device, tr.reducedResult, "f32", data => {
         expect([...data]).deep.eq([expectedSum]);
@@ -73,31 +73,6 @@ it.only("reduce texture to buffer, workgroup size = 4", async () => {
   });
 });
 
-
-// it("texture reduce max", async () => {
-//   await withAsyncUsage(async () => {
-//     const device = await labeledGpuDevice();
-//     trackUse(device);
-
-//     const { texture: srcTexture } = sequenceTexture(device, [4, 4]);
-//     const tr = new TextureReduceShader({
-//       device,
-//       srcTexture,
-//       reducedResult: makeBuffer(device, [0], "reducedResult", Float32Array),
-//       blockLength: 4,
-//       dispatchSize: [1, 1],
-//       workgroupSize: [1, 1],
-//       reduceTemplate: maxTemplate,
-//       loadTemplate: loadRedComponent,
-//     });
-//     const shaderGroup = new ShaderGroup(device, tr);
-//     shaderGroup.dispatch();
-
-//     await withBufferCopy(device, tr.reducedResult, "f32", (data) => {
-//       expect([...data]).deep.eq([15]);
-//     });
-//   });
-// });
 
 // it("texture reduce min/max, one dispatch", async () => {
 //   await withAsyncUsage(async () => {
