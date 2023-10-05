@@ -8,7 +8,7 @@ import {
   withBufferCopy,
   withLeakTrack,
 } from "thimbleberry";
-import { maxF32, minMaxF32, sumF32, sumU32 } from "../../src/util/BinOpTemplate.js";
+import { maxF32, minMaxPositiveF32, sumF32, sumU32 } from "../../src/util/BinOpTemplate.js";
 import { makeBuffer } from "./util/MakeBuffer";
 
 it("sum, simple api", async () => {
@@ -91,7 +91,7 @@ it("buffer reduce min/max, two dispatches", async () => {
       source: makeBuffer(device, sourceData.flat(), "source buffer", Float32Array),
       blockLength: 2,
       workgroupLength: 2,
-      template: minMaxF32,
+      template: minMaxPositiveF32,
     });
 
     const shaderGroup = new ShaderGroup(device, shader);

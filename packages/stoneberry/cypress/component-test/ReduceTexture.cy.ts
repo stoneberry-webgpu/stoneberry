@@ -11,7 +11,7 @@ import {
   withBufferCopy,
   withLeakTrack,
 } from "thimbleberry";
-import { minMaxF32, sumF32 } from "../../src/util/BinOpTemplate.js";
+import { minMaxPositiveF32, sumF32 } from "../../src/util/BinOpTemplate.js";
 import { ReduceTextureToBuffer } from "./../../src/reduce-texture/ReduceTextureToBuffer";
 import { make3dSequence, makeTexture } from "./util/MakeTexture.js";
 
@@ -87,7 +87,7 @@ it.only("reduce texture to buffer, min/max workgroup size = 4", async () => {
         source,
         blockSize: [2, 2],
         workgroupSize: [2, 2],
-        reduceTemplate: minMaxF32,
+        reduceTemplate: minMaxPositiveF32,
         loadTemplate: loadRedComponent,
       });
       trackUse(tr);

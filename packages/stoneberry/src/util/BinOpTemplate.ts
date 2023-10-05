@@ -59,7 +59,7 @@ export const sumF32: BinOpCreateTemplate = {
 };
 
 /** min max of values greater than 0 */
-export const minMaxF32: BinOpCreateTemplate = {
+export const minMaxPositiveF32: BinOpCreateTemplate = {
   inputElementSize: 8,
   outputElementSize: 8,
   outputElements: "f32",
