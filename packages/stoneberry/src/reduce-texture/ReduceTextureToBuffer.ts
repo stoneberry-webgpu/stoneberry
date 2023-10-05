@@ -34,10 +34,10 @@ export interface TextureToBufferParams {
   /** {@inheritDoc ReduceTextureToBuffer#workgroupLength} */
   workgroupSize?: Vec2;
 
-  /** {@inheritDoc ReduceTextureToBuffer#template} */
+  /** {@inheritDoc ReduceTextureToBuffer#reduceTemplate} */
   reduceTemplate?: BinOpTemplate;
 
-  /** {@inheritDoc ReduceTextureToBuffer#template} */
+  /** {@inheritDoc ReduceTextureToBuffer#loadTemplate} */
   loadTemplate?: LoadTemplate;
 
   /** cache for GPUComputePipeline */
@@ -45,6 +45,9 @@ export interface TextureToBufferParams {
 
   /** {@inheritDoc ReduceTextureToBuffer#label} */
   label?: string;
+
+  /** {@inheritDoc ReduceTextureToBuffer#resultElemSize} */
+  resultElemSize?: number;
 
   /** {@inheritDoc ReduceBuffer#maxWorkgroups} */
   maxWorkgroups?: number | undefined;
@@ -56,6 +59,8 @@ const defaults: Partial<TextureToBufferParams> = {
   reduceTemplate: maxF32,
   workgroupSize: undefined,
   pipelineCache: undefined,
+  maxWorkgroups: undefined,
+  resultElemSize: 4,
   label: "",
 };
 
@@ -71,9 +76,6 @@ export class ReduceTextureToBuffer extends HasReactive implements ComposableShad
 
   /** Debug label attached to gpu objects for error reporting */
   @reactively label?: string;
-
-  /** start scan at this element offset in the source. (0) */
-  @reactively sourceOffset!: number;
 
   /** start emitting results at this element offset in the results. (0) */
   @reactively resultOffset!: number;
@@ -91,11 +93,12 @@ export class ReduceTextureToBuffer extends HasReactive implements ComposableShad
     */
   @reactively maxWorkgroups?: number;
 
+  /** size of each element in the result buffer in bytes (e.g. 4 for f32 elements) */
+  @reactively resultElemSize!: number;
+
   private device!: GPUDevice;
   private pipelineCache?: <T extends object>() => Cache<T>;
   private usageContext = trackContext();
-
-  @reactively reducedResult!: GPUBuffer;
 
   constructor(params: TextureToBufferParams) {
     super();
@@ -124,7 +127,7 @@ export class ReduceTextureToBuffer extends HasReactive implements ComposableShad
   }
 
   @reactively private pipeline(): GPUComputePipeline {
-    return getReduceTexturePipeline(
+    const p = getReduceTexturePipeline(
       {
         device: this.device,
         workgroupSize: this.workgroupSize,
@@ -134,10 +137,58 @@ export class ReduceTextureToBuffer extends HasReactive implements ComposableShad
       },
       this.pipelineCache
     );
+
+    console.log("reduceTextureToBuffer pipeline", p);
+    return p;
+  }
+
+  @reactively private get uniformBuffer(): GPUBuffer {
+    const buffer = this.device.createBuffer({
+      label: "texture reduce uniform buffer",
+      size: 4 * 4,
+      usage: GPUBufferUsage.UNIFORM,
+    });
+    reactiveTrackUse(buffer, this.usageContext); // currently unused
+    return buffer;
   }
 
   @reactively private get dispatchSize(): Vec2 {
-    return [1, 1]; // TODO
+    const resultSize = this.resultSize;
+    const workSize = this.actualWorkgroupSize;
+    const x = Math.ceil(resultSize[0] / workSize[0]);
+    const y = Math.ceil(resultSize[1] / workSize[1]);
+    console.log("dispatchSize", [x, y]);
+    return [x, y];
+  }
+
+  @reactively private get actualWorkgroupSize(): Vec2 {
+    if (this.workgroupSize) {
+      return this.workgroupSize;
+    } else {
+      return [this.device.limits.maxComputeInvocationsPerWorkgroup, 1];
+    }
+  }
+
+  /** results of the reduction from frame to service */
+  @reactively get reducedResult(): GPUBuffer {
+    const resultSize = this.resultSize;
+    const size = resultSize[0] * resultSize[1] * this.resultElemSize;
+    console.log("reducedResult size", size);
+    const buffer = this.device.createBuffer({
+      label: "texture reduce result buffer",
+      size,
+      usage: GPUBufferUsage.STORAGE | GPUBufferUsage.COPY_SRC,
+    });
+    return buffer;
+  }
+
+  @reactively private get resultSize(): Vec2 {
+    const blockSize = this.blockSize;
+    const width = Math.ceil(this.source.width / blockSize[0]);
+    const height = Math.ceil(this.source.height / blockSize[1]);
+
+    console.log("resultSize", [width, height]);
+    return [width, height];
   }
 
   @reactively private bindGroup(): GPUBindGroup {
@@ -146,8 +197,9 @@ export class ReduceTextureToBuffer extends HasReactive implements ComposableShad
       label: "textureReduce binding",
       layout: this.pipeline().getBindGroupLayout(0),
       entries: [
-        { binding: 0, resource: srcView },
-        { binding: 1, resource: { buffer: this.reducedResult } },
+        { binding: 0, resource: { buffer: this.uniformBuffer } },
+        { binding: 1, resource: srcView },
+        { binding: 2, resource: { buffer: this.reducedResult } },
         { binding: 11, resource: { buffer: this.debugBuffer } },
       ],
     });

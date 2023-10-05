@@ -1,6 +1,6 @@
 import { Vec2, applyTemplate, memoizeWithDevice } from "thimbleberry";
 import { BinOpTemplate, maxF32 } from "../util/BinOpTemplate.js";
-import shaderWGSL from "./ReduceBuffer.wgsl?raw";
+import shaderWGSL from "./ReduceTexture.wgsl?raw";
 import { LoadTemplate, loadRedComponent } from "../util/LoadTemplate.js";
 
 export interface ReduceBufferPipelineArgs {
@@ -10,9 +10,6 @@ export interface ReduceBufferPipelineArgs {
   reduceTemplate: BinOpTemplate;
 }
 export const getReduceTexturePipeline = memoizeWithDevice(createReduceTexturePipeline);
-
-export const maxBinOp = "return max(a, b);";
-export const sumBinOp = "return a + b;";
 
 interface TextureReducePipeParams {
   device: GPUDevice;
@@ -37,14 +34,21 @@ export function createReduceTexturePipeline(
     label: "reduceTexture",
     entries: [
       {
-        binding: 0, // src density texture
+        binding: 0, // uniforms
+        visibility: GPUShaderStage.COMPUTE,
+        buffer: {
+          type: "uniform",
+        },
+      },
+      {
+        binding: 1, // src density texture
         visibility: GPUShaderStage.COMPUTE,
         texture: {
           sampleType: "unfilterable-float",
         },
       },
       {
-        binding: 1, // reduced values output (also used as input for intermediate level reductions)
+        binding: 2, // reduced values output (also used as input for intermediate level reductions)
         visibility: GPUShaderStage.COMPUTE,
         buffer: {
           type: "storage",
