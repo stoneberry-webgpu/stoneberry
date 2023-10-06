@@ -12,6 +12,7 @@ import {
 import { minMaxPositiveF32, sumF32 } from "../../src/util/BinOpTemplate.js";
 import { ReduceTextureToBuffer } from "../../src/reduce-texture/ReduceTextureToBuffer.js";
 import { make3dSequence, makeTexture } from "./util/MakeTexture.js";
+import { minMaxPositiveReds, sumReds } from "./util/Reductions.js";
 
 it("reduce texture to buffer, workgroup size = 1", async () => {
   await withAsyncUsage(async () => {
@@ -98,15 +99,3 @@ it("reduce texture to buffer, min/max workgroup size = 4", async () => {
     });
   });
 });
-
-function sumReds(data: number[][][]): number {
-  const reds = data.flatMap(row => row.map(col => col[0]));
-  return reds.reduce((a, b) => a + b);
-}
-
-function minMaxPositiveReds(data: number[][][]): Vec2 {
-  const reds = data.flatMap(row => row.map(col => col[0]));
-  const min = reds.reduce((a, b) => (b <= 0 ? a : Math.min(a, b)), 1e38);
-  const max = reds.reduce((a, b) => Math.max(a, b));
-  return [min, max];
-}
