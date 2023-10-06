@@ -65,8 +65,8 @@ const defaults: Partial<ReduceTextureParams> = {
  * according to a specified binary operation (e.g. min, max, or sum).
  *
  * Two underlying shaders are used:
- *   . one to reduce the source texture to a smaller buffer
- *   . one to reduce a buffer to smaller buffer
+ *   . one to reduce the source texture to a small buffer
+ *   . one to reduce a small buffer to smaller buffer
  *
  * When executed, FrameReduceSequence will dispatch a sufficient number of times
  * to end with a single value. The final result is stored in a single element
@@ -110,6 +110,10 @@ export class ReduceTexture extends HasReactive implements ComposableShader {
     this.usageContext.finish();
   }
 
+  /** Execute the reduce immediately and copy the results back to the CPU.
+   * (results are copied from the {@link ReduceTexture.result} GPUBuffer)
+   * @returns a single reduced result value in an array
+   */
   async reduce(): Promise<number[]> {
     // TODO DRY with other shaders?
     const device = this.device;
@@ -128,12 +132,12 @@ export class ReduceTexture extends HasReactive implements ComposableShader {
         `outputElements not defined: ${JSON.stringify(reduceTemplate, null, 2)}`
       );
     }
-    const data = await withBufferCopy(device, this.reducedResult, format, d => d.slice());
+    const data = await withBufferCopy(device, this.result, format, d => d.slice());
     return [...data];
   }
 
   /** result of the final reduction pass, one element in size */
-  @reactively get reducedResult(): GPUBuffer {
+  @reactively get result(): GPUBuffer {
     if (this.reduceBufferNeeded) {
       return this.reduceBuffer.result;
     } else {
@@ -142,7 +146,7 @@ export class ReduceTexture extends HasReactive implements ComposableShader {
   }
 
   /** all shaders needed to reduce the texture to a single reduced value */
-  @reactively get shaders(): ComposableShader[] {
+  @reactively private get shaders(): ComposableShader[] {
     if (this.reduceBufferNeeded) {
       return [this.reduceTexture, this.reduceBuffer];
     } else {
@@ -150,7 +154,8 @@ export class ReduceTexture extends HasReactive implements ComposableShader {
     }
   }
 
-  @reactively get reduceTexture(): ReduceTextureToBuffer {
+  /** shader to reduce the texture to a buffer */
+  @reactively private get reduceTexture(): ReduceTextureToBuffer {
     const shader = new ReduceTextureToBuffer({
       device: this.device,
       source: () => this.source,
@@ -165,11 +170,7 @@ export class ReduceTexture extends HasReactive implements ComposableShader {
     return shader;
   }
 
-  @reactively private get reduceBufferNeeded(): boolean {
-    return this.reduceTexture.resultElems > 1;
-  }
-
-  /** created if necessary, a shader to reduce the buffer to a single element */
+  /** created only if necessary, a shader to reduce the buffer to a single element */
   @reactively private get reduceBuffer(): ReduceBuffer {
     const ws = this.forceWorkgroupSize;
     const workgroupLength = ws ? ws[0] * ws[1] : undefined;
@@ -185,6 +186,10 @@ export class ReduceTexture extends HasReactive implements ComposableShader {
     reactiveTrackUse(shader, this.usageContext);
 
     return shader;
+  }
+
+  @reactively private get reduceBufferNeeded(): boolean {
+    return this.reduceTexture.resultElems > 1;
   }
 
   /** reduction template for loading src data from the texture */
