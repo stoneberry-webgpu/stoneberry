@@ -176,7 +176,7 @@ export class ReduceTexture extends HasReactive implements ComposableShader {
     const shader = new ReduceBuffer({
       device: this.device,
       source: () => this.reduceTexture.reducedResult,
-      workgroupLength,
+      forceWorkgroupLength: workgroupLength,
       label: this.label,
       blockLength: this.bufferBlockLength,
       pipelineCache: this.pipelineCache,

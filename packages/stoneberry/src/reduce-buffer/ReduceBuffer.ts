@@ -34,10 +34,10 @@ export interface BufferReduceParams {
   blockLength?: number;
 
   /** {@inheritDoc ReduceBuffer#workgroupLength} */
-  workgroupLength?: number;
+  forceWorkgroupLength?: number;
 
   /** {@inheritDoc ReduceBuffer#maxWorkgroups} */
-  maxWorkgroups?: number | undefined;
+  forceMaxWorkgroups?: number | undefined;
 
   /** {@inheritDoc ReduceBuffer#template} */
   template: BinOpTemplate;
@@ -53,8 +53,8 @@ const defaults: Partial<BufferReduceParams> = {
   blockLength: 4,
   sourceOffset: 0,
   resultOffset: 0,
-  workgroupLength: undefined,
-  maxWorkgroups: undefined,
+  forceWorkgroupLength: undefined,
+  forceMaxWorkgroups: undefined,
   label: "",
 };
 
@@ -87,12 +87,12 @@ export class ReduceBuffer extends HasReactive implements ComposableShader {
   /** Override to set compute workgroup size e.g. for testing. 
     @defaultValue maxComputeInvocationsPerWorkgroup of the `GPUDevice` (256)
     */
-  @reactively workgroupLength?: number;
+  @reactively forceWorkgroupLength?: number;
 
   /** Override to set max number of workgroups for dispatch e.g. for testing. 
     @defaultValue maxComputeWorkgroupsPerDimension from the `GPUDevice` (65535)
     */
-  @reactively maxWorkgroups?: number;
+  @reactively forceMaxWorkgroups?: number;
 
   private device!: GPUDevice;
   private pipelineCache?: <T extends object>() => Cache<T>;
@@ -184,8 +184,8 @@ export class ReduceBuffer extends HasReactive implements ComposableShader {
   @reactively private get inputSlicing(): SlicingResults {
     return inputSlicing({
       elems: this.sourceElems,
-      elemsPerDispatch: this.actualWorkgroupLength * this.blockLength,
-      maxDispatches: this.actualMaxWorkgroups,
+      elemsPerDispatch: this.workgroupLength * this.blockLength,
+      maxDispatches: this.maxWorkgroups,
       uniformAlignSize: this.device.limits.minUniformBufferOffsetAlignment,
       baseUniformSize: 8,
     });
@@ -198,7 +198,7 @@ export class ReduceBuffer extends HasReactive implements ComposableShader {
 
   /** dispatches to cover the internal layers after the source layer is reduced */
   @reactively private get layerReductions(): number[] {
-    const reductionFactor = this.blockLength * this.actualWorkgroupLength;
+    const reductionFactor = this.blockLength * this.workgroupLength;
     let reducedSize = Math.ceil(this.sourceElems / reductionFactor);
     const dispatches = [];
     while (reducedSize > 1) {
@@ -241,7 +241,7 @@ export class ReduceBuffer extends HasReactive implements ComposableShader {
     return getBufferReducePipeline(
       {
         device: this.device,
-        workgroupThreads: this.actualWorkgroupLength,
+        workgroupThreads: this.workgroupLength,
         blockArea: this.blockLength,
         reduceTemplate: this.template,
       },
@@ -319,9 +319,9 @@ export class ReduceBuffer extends HasReactive implements ComposableShader {
     });
   }
 
-  @reactively private get actualWorkgroupLength(): number {
+  @reactively private get workgroupLength(): number {
     const { device } = this;
-    const workgroupLength = this.workgroupLength;
+    const workgroupLength = this.forceWorkgroupLength;
     const maxThreads = device.limits.maxComputeInvocationsPerWorkgroup;
     if (!workgroupLength || workgroupLength > maxThreads) {
       return maxThreads;
@@ -334,7 +334,7 @@ export class ReduceBuffer extends HasReactive implements ComposableShader {
     return this.source.size / this.template.inputElementSize - this.sourceOffset;
   }
 
-  @reactively private get actualMaxWorkgroups(): number {
-    return this.maxWorkgroups ?? this.device.limits.maxComputeWorkgroupsPerDimension;
+  @reactively private get maxWorkgroups(): number {
+    return this.forceMaxWorkgroups ?? this.device.limits.maxComputeWorkgroupsPerDimension;
   }
 }

@@ -36,7 +36,7 @@ it("buffer reduce sum, two dispatches", async () => {
         device,
         source: makeBuffer(device, sourceData, "source buffer", Float32Array),
         blockLength: 2,
-        workgroupLength: 2,
+        forceWorkgroupLength: 2,
         template: sumF32,
       });
       trackUse(shader);
@@ -58,7 +58,7 @@ it("buffer reduce max, two dispatches", async () => {
       device,
       source: makeBuffer(device, sourceData, "source buffer", Float32Array),
       blockLength: 2,
-      workgroupLength: 2,
+      forceWorkgroupLength: 2,
       template: maxF32,
     });
     const shaderGroup = new ShaderGroup(device, shader);
@@ -90,7 +90,7 @@ it("buffer reduce min/max, two dispatches", async () => {
       device,
       source: makeBuffer(device, sourceData.flat(), "source buffer", Float32Array),
       blockLength: 2,
-      workgroupLength: 2,
+      forceWorkgroupLength: 2,
       template: minMaxPositiveF32,
     });
 
@@ -135,9 +135,9 @@ it("2 workgroups > max (1)", async () => {
       device,
       source,
       template: sumU32,
-      workgroupLength: 2,
+      forceWorkgroupLength: 2,
       blockLength: 2,
-      maxWorkgroups: 1,
+      forceMaxWorkgroups: 1,
     });
     trackUse(shader);
 
@@ -158,9 +158,9 @@ it("4 dispatched workgroups > max (2), 2 threads/workgroup ", async () => {
       device,
       source,
       template: sumU32,
-      workgroupLength: 2,
+      forceWorkgroupLength: 2,
       blockLength: 2,
-      maxWorkgroups: 2,
+      forceMaxWorkgroups: 2,
     });
     trackUse(shader);
 
