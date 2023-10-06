@@ -83,10 +83,13 @@ export class ReduceTexture extends HasReactive implements ComposableShader {
   /** length of block to read when reducing from buffer to buffer */
   @reactively bufferBlockLength!: number | undefined;
 
+  /** number and arrangement of threads in each dispatched workgroup */
   @reactively workgroupSize!: Vec2 | undefined;
+
+  /** wgsl macros for a binary operation to reduce two elements to one */
   @reactively reduceTemplate!: BinOpTemplate;
 
-  /** macros to select component from vec4 */
+  /** macros to select or synthesize a component from the source texture */
   @reactively loadComponent!: LoadableComponent | LoadTemplate;
 
   /** Debug label attached to gpu objects for error reporting */
@@ -183,42 +186,6 @@ export class ReduceTexture extends HasReactive implements ComposableShader {
     return shader;
   }
 
-  // /** number of threads in each workgroup for the texture reduce phase */
-  // @reactively({ equals: deepEqual }) private textureWorkSize(): Vec2 {
-  //   const maxThreads = this.device.limits.maxComputeInvocationsPerWorkgroup;
-  //   const {
-  //     workThreads = maxThreads,
-  //     source: srcTexture,
-  //     blockSize: blockLength,
-  //     device,
-  //   } = this;
-  //   const fbSize: Vec2 = [srcTexture.width, srcTexture.height];
-
-  //   const w = Math.floor(Math.sqrt(workThreads));
-  //   const proposedSize = [w, w] as Vec2;
-
-  //   const offeredSize = proposedSize || proposeTextureGroupSize(fbSize, blockLength);
-  //   return limitWorkgroupSize(device, offeredSize);
-  // }
-
-  // /** @return the number of workgroups dispatched for the texture reduce phase */
-  // @reactively({ equals: deepEqual }) private textureDispatch(): Vec2 {
-  //   const { source: srcTexture, blockSize: blockLength } = this;
-  //   const fbSize: Vec2 = [srcTexture.width, srcTexture.height];
-  //   const workSize = this.textureWorkSize();
-  //   const dispatch = [0, 1].map(i =>
-  //     Math.ceil(fbSize[i] / (workSize[i] * blockLength))
-  //   ) as Vec2;
-  //   return dispatch;
-  // }
-
-  // /** number of threads per workgroup for the buffer reduce phases */
-  // @reactively private bufWorkLength(): number {
-  //   const { device, workThreads: suggestWorkThreads } = this;
-  //   const maxThreads = device.limits.maxComputeInvocationsPerWorkgroup;
-  //   return suggestWorkThreads ? Math.min(suggestWorkThreads, maxThreads) : maxThreads;
-  // }
-
   /** reduction template for loading src data from the texture */
   @reactively private get loadTemplate(): LoadTemplate {
     if (typeof this.loadComponent === "string") {
@@ -227,29 +194,4 @@ export class ReduceTexture extends HasReactive implements ComposableShader {
       return this.loadComponent;
     }
   }
-}
-// TODO mv this this size adjustmetn ReduceTextureToBuffer
-
-/** @return ideal size of the workgroups for the reduction from the source texture */
-function proposeTextureGroupSize(fbSize: Vec2, blockLength: number): Vec2 {
-  // try for a workgroup big enough to to cover the framebuffer
-  return fbSize.map(size => Math.ceil(size / blockLength)) as Vec2;
-}
-
-/** modify a workgroupSize to stay within device limits */
-function limitWorkgroupSize(device: GPUDevice, proposed: Vec2): Vec2 {
-  const { limits } = device;
-  const threads = proposed[0] * proposed[1];
-
-  // shrink if too many total threads
-  const maxThreads = limits.maxComputeInvocationsPerWorkgroup;
-  const shinkFactor = threads > maxThreads ? threads / maxThreads : 1;
-  const shrunk = proposed.map(size => Math.floor(size / shinkFactor)) as Vec2;
-
-  // shrink further if workgroup axis is too big
-  const maxX = limits.maxComputeWorkgroupSizeX;
-  const maxY = limits.maxComputeWorkgroupSizeY;
-  const size = [maxX, maxY].map((max, i) => Math.min(shrunk[i], max)) as Vec2;
-
-  return size;
 }
