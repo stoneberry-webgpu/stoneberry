@@ -5,12 +5,12 @@ import {
   reactiveTrackUse,
   trackContext,
   trackUse,
-  withBufferCopy,
 } from "thimbleberry";
-import { ApplyScanBlocks } from "./ApplyScanBlocks.js";
-import { Cache, ComposableShader, ValueOrFn } from "../util/Util.js";
-import { WorkgroupScan } from "./WorkgroupScan.js";
 import { BinOpTemplate, sumU32 } from "../util/BinOpTemplate.js";
+import { runAndFetchResult } from "../util/RunAndFetch.js";
+import { Cache, ComposableShader, ValueOrFn } from "../util/Util.js";
+import { ApplyScanBlocks } from "./ApplyScanBlocks.js";
+import { WorkgroupScan } from "./WorkgroupScan.js";
 
 /** Parameters to construct a {@link PrefixScan} instance.  */
 export interface PrefixScanArgs {
@@ -117,7 +117,7 @@ export class PrefixScan<T = number> extends HasReactive implements ComposableSha
   /** end index (exclusive) in src buffer (src.length if undefined) */
   // end?: ValueOrFn<number>; // NYI
 
-  private device!: GPUDevice;
+  device!: GPUDevice;
   private usageContext = trackContext();
 
   /** cache for GPUComputePipeline or GPURenderPipeline */
@@ -145,21 +145,7 @@ export class PrefixScan<T = number> extends HasReactive implements ComposableSha
    * @returns the scanned result in an array
    */
   async scan(): Promise<number[]> {
-    const commands = this.device.createCommandEncoder({
-      label: `${this.label} prefixScan`,
-    });
-    this.commands(commands);
-    this.device.queue.submit([commands.finish()]);
-    await this.device.queue.onSubmittedWorkDone();
-
-    const format = this.template.outputElements;
-    if (!format) {
-      throw new Error(
-        `outputElement format not defined: ${JSON.stringify(this.template, null, 2)}`
-      );
-    }
-    const data = await withBufferCopy(this.device, this.result, format, d => d.slice());
-    return [...data];
+    return runAndFetchResult(this, this.template, `${this.label} prefixScan`);
   }
 
   /** Buffer containing results of the scan after the shader has run. */

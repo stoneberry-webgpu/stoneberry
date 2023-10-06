@@ -1,7 +1,7 @@
 import { GPUElementFormat } from "thimbleberry";
 
 /** Snippets of wgsl text to substitue in the wgsl shader for given scan type */
-export interface BinOpTemplate {
+export interface BinOpTemplate extends OutputTemplate {
   /** combine two elements, e.g. sum. aka flatMap, join */
   binaryOp: string;
 
@@ -17,14 +17,16 @@ export interface BinOpTemplate {
   /** define format of elements in the result buffer */
   outputStruct: string;
 
-  /** format of output elements, required for copying results back to cpu */
-  outputElements?: GPUElementFormat;
-
   /** size of output structure in bytes */
   outputElementSize: number; 
 
   /** size of input structure in bytes */
   inputElementSize: number; 
+}
+
+export interface OutputTemplate {
+  /** format of output elements, required for copying results back to cpu */
+  outputElements?: GPUElementFormat;
 }
 
 /** extended wgsl substitutions that also support creation from internal elements */

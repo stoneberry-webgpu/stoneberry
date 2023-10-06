@@ -8,10 +8,10 @@ import {
   gpuTiming,
   reactiveTrackUse,
   trackContext,
-  withBufferCopy,
 } from "thimbleberry";
 import { BinOpTemplate } from "../util/BinOpTemplate.js";
 import { SlicingResults, inputSlicing } from "../util/InputSlicing.js";
+import { runAndFetchResult } from "../util/RunAndFetch.js";
 import { getBufferReducePipeline } from "./ReduceBufferPipeline.js";
 
 export interface BufferReduceParams {
@@ -94,7 +94,7 @@ export class ReduceBuffer extends HasReactive implements ComposableShader {
     */
   @reactively forceMaxWorkgroups?: number;
 
-  private device!: GPUDevice;
+  device!: GPUDevice;
   private pipelineCache?: <T extends object>() => Cache<T>;
   private usageContext = trackContext();
 
@@ -148,23 +148,7 @@ export class ReduceBuffer extends HasReactive implements ComposableShader {
    * @returns a single reduced result value in an array
    */
   async reduce(): Promise<number[]> {
-    // TODO DRY with other shaders
-    const commands = this.device.createCommandEncoder({
-      label: `${this.label} reduceBuffer`,
-    });
-    this.commands(commands);
-    this.device.queue.submit([commands.finish()]);
-    await this.device.queue.onSubmittedWorkDone();
-
-    const format = this.template.outputElements;
-    if (!format) {
-      throw new Error(
-        `outputElement format not defined: ${JSON.stringify(this.template, null, 2)}`
-      );
-    }
-    const data = await withBufferCopy(this.device, this.result, format, d => d.slice());
-    this.template.outputElementSize;
-    return [...data];
+    return runAndFetchResult(this, this.template, `${this.label} reduceBuffer`);
   }
 
   /** Buffer containing results of the reduce after the shader has run. */

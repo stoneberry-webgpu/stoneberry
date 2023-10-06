@@ -7,7 +7,6 @@ import {
   assignParams,
   reactiveTrackUse,
   trackContext,
-  withBufferCopy,
 } from "thimbleberry";
 import { ReduceBuffer } from "../reduce-buffer/ReduceBuffer.js";
 import { BinOpTemplate } from "../util/BinOpTemplate.js";
@@ -16,6 +15,7 @@ import {
   LoadableComponent,
   loaderForComponent,
 } from "../util/LoadTemplate.js";
+import { runAndFetchResult } from "../util/RunAndFetch.js";
 import { ReduceTextureToBuffer } from "./ReduceTextureToBuffer.js";
 
 export interface ReduceTextureParams {
@@ -93,7 +93,7 @@ export class ReduceTexture extends HasReactive implements ComposableShader {
   /** Debug label attached to gpu objects for error reporting */
   @reactively label?: string;
 
-  private device!: GPUDevice;
+  device!: GPUDevice;
   private usageContext = trackContext();
   private pipelineCache?: <T extends object>() => Cache<T>;
 
@@ -115,25 +115,7 @@ export class ReduceTexture extends HasReactive implements ComposableShader {
    * @returns a single reduced result value in an array
    */
   async reduce(): Promise<number[]> {
-    // TODO DRY with other shaders?
-    const device = this.device;
-    const reduceTemplate = this.reduceTemplate;
-
-    const commands = device.createCommandEncoder({
-      label: `${this.label} reduceTexture`,
-    });
-    this.commands(commands);
-    device.queue.submit([commands.finish()]);
-    await device.queue.onSubmittedWorkDone();
-
-    const format = reduceTemplate.outputElements;
-    if (!format) {
-      throw new Error(
-        `outputElements not defined: ${JSON.stringify(reduceTemplate, null, 2)}`
-      );
-    }
-    const data = await withBufferCopy(device, this.result, format, d => d.slice());
-    return [...data];
+    return runAndFetchResult(this, this.reduceTemplate, `${this.label} reduceTexture`);
   }
 
   /** result of the final reduction pass, one element in size */
