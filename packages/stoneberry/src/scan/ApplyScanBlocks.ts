@@ -18,7 +18,7 @@ export interface ApplyScanBlocksArgs {
   partialScan: GPUBuffer;
   blockSums: GPUBuffer;
   forceWorkgroupLength?: number;
-  maxWorkgroups?: number | undefined;
+  forceMaxWorkgroups?: number | undefined;
   label?: string;
   template?: BinOpTemplate;
   exclusiveLarge?: boolean;
@@ -34,7 +34,7 @@ const defaults: Partial<ApplyScanBlocksArgs> = {
   label: "",
   exclusiveLarge: false,
   initialValue: undefined,
-  maxWorkgroups: undefined,
+  forceMaxWorkgroups: undefined,
   partialScanOffset: 0,
   blockSumsOffset: 0,
   scanOffset: 0,
@@ -54,7 +54,7 @@ export class ApplyScanBlocks extends HasReactive implements ComposableShader {
   @reactively partialScanOffset!: number;
   @reactively blockSumsOffset!: number;
   @reactively scanOffset!: number;
-  maxWorkgroups?: number;
+  private forceMaxWorkgroups?: number;
 
   private device!: GPUDevice;
   private usageContext = trackContext();
@@ -91,12 +91,12 @@ export class ApplyScanBlocks extends HasReactive implements ComposableShader {
    * `(multiple dispatches are needed for large sources) */
   @reactively private get dispatchSizes(): number[] {
     const sourceElems = this.partialScanSize / Uint32Array.BYTES_PER_ELEMENT;
-    const maxWorkgroups = this.actualMaxWorkgroups;
+    const maxWorkgroups = this.maxWorkgroups;
     return calcDispatchSizes(sourceElems, this.workgroupLength, maxWorkgroups);
   }
 
-  @reactively private get actualMaxWorkgroups(): number {
-    return this.maxWorkgroups ?? this.device.limits.maxComputeWorkgroupsPerDimension;
+  @reactively private get maxWorkgroups(): number {
+    return this.forceMaxWorkgroups ?? this.device.limits.maxComputeWorkgroupsPerDimension;
   }
 
   @reactively private get pipeline(): GPUComputePipeline {

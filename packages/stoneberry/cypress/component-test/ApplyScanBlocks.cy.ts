@@ -132,7 +132,7 @@ it("generated offsets for workgroups > max", async () => {
       partialScan,
       blockSums,
       forceWorkgroupLength: workgroupLength,
-      maxWorkgroups: 1,
+      forceMaxWorkgroups: 1,
     });
     const shaderGroup = new ShaderGroup(device, applyBlocks);
     shaderGroup.dispatch();

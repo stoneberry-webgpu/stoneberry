@@ -265,7 +265,7 @@ export class PrefixScan<T = number> extends HasReactive implements ComposableSha
         exclusiveLarge,
         initialValue: this.initialValue,
         forceWorkgroupLength: this.forceWorkgroupLength,
-        maxWorkgroups: this.maxWorkgroups,
+        forceMaxWorkgroups: this.maxWorkgroups,
         label: `${this.label} applyBlock`,
         pipelineCache: this.pipelineCache,
       });
