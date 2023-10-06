@@ -173,13 +173,16 @@ export class ReduceTexture extends HasReactive implements ComposableShader {
 
   /** created if necessary, a shader to reduce the buffer to a single element */
   @reactively private get reduceBuffer(): ReduceBuffer {
+    const ws = this.workgroupSize;
+    const workgroupLength = ws ? ws[0] * ws[1] : undefined;
     const shader = new ReduceBuffer({
       device: this.device,
       source: () => this.reduceTexture.reducedResult,
-      workgroupLength: this.workgroupSize?.[0],
+      workgroupLength,
       label: this.label,
       blockLength: this.bufferBlockLength,
       pipelineCache: this.pipelineCache,
+      template: this.reduceTemplate,
     });
     reactiveTrackUse(shader, this.usageContext);
 
