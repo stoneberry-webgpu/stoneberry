@@ -36,8 +36,8 @@ export interface PrefixScanArgs {
   /** {@inheritDoc PrefixScan#label} */
   label?: string;
 
-  /** {@inheritDoc PrefixScan#workgroupLength} */
-  workgroupLength?: number;
+  /** {@inheritDoc PrefixScan#forceWorkgroupLength} */
+  forceWorkgroupLength?: number;
 
   /** {@inheritDoc PrefixScan#maxWorkgroups} */
   maxWorkgroups?: number;
@@ -47,7 +47,7 @@ export interface PrefixScanArgs {
 }
 
 const defaults: Partial<PrefixScanArgs> = {
-  workgroupLength: undefined,
+  forceWorkgroupLength: undefined,
   maxWorkgroups: undefined,
   template: sumU32,
   pipelineCache: undefined,
@@ -92,7 +92,7 @@ export class PrefixScan<T = number> extends HasReactive implements ComposableSha
   /** Override to set compute workgroup size e.g. for testing. 
     @defaultValue max workgroup size of the `GPUDevice`
     */
-  @reactively workgroupLength?: number;
+  @reactively forceWorkgroupLength?: number;
 
   /** Override to set max number of workgroups for dispatch e.g. for testing. 
     @defaultValue maxComputeWorkgroupsPerDimension from the `GPUDevice`
@@ -185,7 +185,7 @@ export class PrefixScan<T = number> extends HasReactive implements ComposableSha
       exclusiveSmall,
       initialValue: this.initialValue,
       template: this.template,
-      workgroupLength: this.workgroupLength,
+      workgroupLength: this.forceWorkgroupLength,
       maxWorkgroups: this.maxWorkgroups,
       label: `${this.label} sourceScan`,
       pipelineCache: this.pipelineCache,
@@ -201,7 +201,7 @@ export class PrefixScan<T = number> extends HasReactive implements ComposableSha
    */
   @reactively get _blockScans(): WorkgroupScan[] {
     const sourceElements = this.sourceSize / Uint32Array.BYTES_PER_ELEMENT;
-    const wl = this.actualWorkgroupLength;
+    const wl = this.workgroupLength;
     const shaders: WorkgroupScan[] = [];
 
     // stitch a chain: blockSums as sources for scans
@@ -213,7 +213,7 @@ export class PrefixScan<T = number> extends HasReactive implements ComposableSha
         source,
         emitBlockSums: !last,
         template: this.template,
-        workgroupLength: this.workgroupLength,
+        workgroupLength: this.forceWorkgroupLength,
         maxWorkgroups: this.maxWorkgroups,
         label: `${this.label} blockScan`,
         pipelineCache: this.pipelineCache,
@@ -232,11 +232,11 @@ export class PrefixScan<T = number> extends HasReactive implements ComposableSha
 
   @reactively private get fitsInWorkGroup(): boolean {
     const sourceElems = this.sourceSize / Uint32Array.BYTES_PER_ELEMENT;
-    return sourceElems <= this.actualWorkgroupLength;
+    return sourceElems <= this.workgroupLength;
   }
 
-  @reactively private get actualWorkgroupLength(): number {
-    return limitWorkgroupLength(this.device, this.workgroupLength);
+  @reactively private get workgroupLength(): number {
+    return limitWorkgroupLength(this.device, this.forceWorkgroupLength);
   }
 
   /** shader passes to apply block level sums to prefixes within the block */
@@ -264,7 +264,7 @@ export class PrefixScan<T = number> extends HasReactive implements ComposableSha
         template: this.template,
         exclusiveLarge,
         initialValue: this.initialValue,
-        forceWorkgroupLength: this.actualWorkgroupLength,
+        forceWorkgroupLength: this.forceWorkgroupLength,
         maxWorkgroups: this.maxWorkgroups,
         label: `${this.label} applyBlock`,
         pipelineCache: this.pipelineCache,

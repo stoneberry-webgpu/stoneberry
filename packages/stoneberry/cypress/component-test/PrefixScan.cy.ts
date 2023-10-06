@@ -37,7 +37,7 @@ it("scan sequence: unevenly sized buffer, two workgroups, one level block scanni
       device,
       source: makeBuffer(device, srcData, "source", Uint32Array),
       template: sumU32,
-      workgroupLength: 4,
+      forceWorkgroupLength: 4,
     });
     const shaderGroup = new ShaderGroup(device, scan);
     shaderGroup.dispatch();
@@ -68,7 +68,7 @@ it("scan sequence: large buffer, two levels of block scanning", async () => {
       device,
       source: makeBuffer(device, srcData, "source", Uint32Array),
       template: sumU32,
-      workgroupLength: 4,
+      forceWorkgroupLength: 4,
     });
     const shaderGroup = new ShaderGroup(device, scan);
     shaderGroup.dispatch();
@@ -93,7 +93,7 @@ it("scan sequence: large buffer, three levels of block scanning", async () => {
         device,
         source: makeBuffer(device, srcData, "source", Uint32Array),
         template: sumU32,
-        workgroupLength: 4,
+        forceWorkgroupLength: 4,
       });
       trackUse(scan);
       const shaderGroup = new ShaderGroup(device, scan);
@@ -117,7 +117,7 @@ it("exclusive scan small", async () => {
     const scan = new PrefixScan({
       device,
       source: makeBuffer(device, srcData, "source", Uint32Array),
-      workgroupLength: 4,
+      forceWorkgroupLength: 4,
       exclusive: true,
       initialValue,
     });
@@ -137,7 +137,7 @@ it("exclusive scan large", async () => {
     const scan = new PrefixScan({
       device,
       source: makeBuffer(device, srcData, "source", Uint32Array),
-      workgroupLength: 4,
+      forceWorkgroupLength: 4,
       exclusive: true,
       initialValue,
     });
@@ -168,7 +168,7 @@ it("multi dispatch for large source", async () => {
     const expected = inclusiveSum(srcData);
     const source = makeBuffer(device, srcData, "source", Uint32Array);
 
-    const scan = new PrefixScan({ device, source, maxWorkgroups: 1, workgroupLength: 4 });
+    const scan = new PrefixScan({ device, source, maxWorkgroups: 1, forceWorkgroupLength: 4 });
     const result = await scan.scan();
 
     expect(result).deep.equals(expected);
