@@ -29,7 +29,7 @@ it("apply scan blocks to partial prefix scan", async () => {
         device,
         partialScan,
         blockSums,
-        workgroupLength: 4,
+        forceWorkgroupLength: 4,
       });
       trackUse(applyBlocks);
       const shaderGroup = new ShaderGroup(device, applyBlocks);
@@ -62,7 +62,7 @@ it("largeExclusive", async () => {
         device,
         partialScan,
         blockSums,
-        workgroupLength: 4,
+        forceWorkgroupLength: 4,
         exclusiveLarge: true,
         initialValue,
       });
@@ -96,7 +96,7 @@ it("apply scan blocks with offsets", async () => {
       device,
       partialScan,
       blockSums,
-      workgroupLength,
+      forceWorkgroupLength: workgroupLength,
       partialScanOffset: 4,
       scanOffset: 4,
       blockSumsOffset: 2,
@@ -131,7 +131,7 @@ it("generated offsets for workgroups > max", async () => {
       device,
       partialScan,
       blockSums,
-      workgroupLength,
+      forceWorkgroupLength: workgroupLength,
       maxWorkgroups: 1,
     });
     const shaderGroup = new ShaderGroup(device, applyBlocks);

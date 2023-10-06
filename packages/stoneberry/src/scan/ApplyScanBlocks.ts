@@ -17,7 +17,7 @@ export interface ApplyScanBlocksArgs {
   device: GPUDevice;
   partialScan: GPUBuffer;
   blockSums: GPUBuffer;
-  workgroupLength?: number;
+  forceWorkgroupLength?: number;
   maxWorkgroups?: number | undefined;
   label?: string;
   template?: BinOpTemplate;
@@ -46,7 +46,7 @@ const defaults: Partial<ApplyScanBlocksArgs> = {
 export class ApplyScanBlocks extends HasReactive implements ComposableShader {
   @reactively partialScan!: GPUBuffer;
   @reactively blockSums!: GPUBuffer;
-  @reactively workgroupLength?: number;
+  @reactively forceWorkgroupLength?: number;
   @reactively template!: BinOpTemplate;
   @reactively label!: string;
   @reactively exclusiveLarge!: boolean;
@@ -92,8 +92,7 @@ export class ApplyScanBlocks extends HasReactive implements ComposableShader {
   @reactively private get dispatchSizes(): number[] {
     const sourceElems = this.partialScanSize / Uint32Array.BYTES_PER_ELEMENT;
     const maxWorkgroups = this.actualMaxWorkgroups;
-    const actualWorkgroupLength = this.actualWorkgroupLength;
-    return calcDispatchSizes(sourceElems, actualWorkgroupLength, maxWorkgroups);
+    return calcDispatchSizes(sourceElems, this.workgroupLength, maxWorkgroups);
   }
 
   @reactively private get actualMaxWorkgroups(): number {
@@ -104,7 +103,7 @@ export class ApplyScanBlocks extends HasReactive implements ComposableShader {
     return getApplyBlocksPipeline(
       {
         device: this.device,
-        workgroupLength: this.actualWorkgroupLength,
+        workgroupLength: this.workgroupLength,
         template: this.template,
       },
       this.pipelineCache
@@ -139,8 +138,8 @@ export class ApplyScanBlocks extends HasReactive implements ComposableShader {
     return buffer;
   }
 
-  @reactively private get actualWorkgroupLength(): number {
-    return limitWorkgroupLength(this.device, this.workgroupLength);
+  @reactively private get workgroupLength(): number {
+    return limitWorkgroupLength(this.device, this.forceWorkgroupLength);
   }
 
   @reactively get debugBuffer(): GPUBuffer {
@@ -172,8 +171,8 @@ export class ApplyScanBlocks extends HasReactive implements ComposableShader {
 
     this.dispatchSizes.map((dispatchSize, i) => {
       this.writeUniforms(uniforms[i], partialScanOffset, scanOffset, blockSumsOffset);
-      partialScanOffset += dispatchSize * this.actualWorkgroupLength;
-      scanOffset += dispatchSize * this.actualWorkgroupLength;
+      partialScanOffset += dispatchSize * this.workgroupLength;
+      scanOffset += dispatchSize * this.workgroupLength;
       blockSumsOffset += dispatchSize;
     });
   }
