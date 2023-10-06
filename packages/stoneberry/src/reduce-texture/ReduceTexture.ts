@@ -36,7 +36,7 @@ export interface ReduceTextureParams {
   bufferBlockLength?: number;
 
   /** {@inheritDoc ReduceTexture#workgroupSize} */
-  workgroupSize?: Vec2;
+  forceWorkgroupSize?: Vec2;
 
   /** {@inheritDoc ReduceTexture#reduceTemplate} */
   reduceTemplate: BinOpTemplate;
@@ -55,7 +55,7 @@ const defaults: Partial<ReduceTextureParams> = {
   blockSize: [4, 4],
   bufferBlockLength: undefined,
   loadComponent: "r",
-  workgroupSize: undefined,
+  forceWorkgroupSize: undefined,
   pipelineCache: undefined,
   label: "",
 };
@@ -82,7 +82,7 @@ export class ReduceTexture extends HasReactive implements ComposableShader {
   @reactively bufferBlockLength!: number | undefined;
 
   /** number and arrangement of threads in each dispatched workgroup */
-  @reactively workgroupSize!: Vec2 | undefined;
+  @reactively forceWorkgroupSize!: Vec2 | undefined;
 
   /** wgsl macros for a binary operation to reduce two elements to one */
   @reactively reduceTemplate!: BinOpTemplate;
@@ -155,7 +155,7 @@ export class ReduceTexture extends HasReactive implements ComposableShader {
       device: this.device,
       source: () => this.source,
       blockSize: this.blockSize,
-      workgroupSize: this.workgroupSize,
+      forceWorkgroupSize: this.forceWorkgroupSize,
       reduceTemplate: this.reduceTemplate,
       loadTemplate: this.loadTemplate,
       pipelineCache: this.pipelineCache,
@@ -171,7 +171,7 @@ export class ReduceTexture extends HasReactive implements ComposableShader {
 
   /** created if necessary, a shader to reduce the buffer to a single element */
   @reactively private get reduceBuffer(): ReduceBuffer {
-    const ws = this.workgroupSize;
+    const ws = this.forceWorkgroupSize;
     const workgroupLength = ws ? ws[0] * ws[1] : undefined;
     const shader = new ReduceBuffer({
       device: this.device,

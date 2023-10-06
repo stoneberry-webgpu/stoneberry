@@ -48,7 +48,7 @@ it("reduce texture, with buffer reduction", async () => {
         source,
         blockSize: [2, 2],
         bufferBlockLength: 4,
-        workgroupSize: [2, 2],
+        forceWorkgroupSize: [2, 2],
         reduceTemplate: sumF32,
         loadComponent: "r",
       });

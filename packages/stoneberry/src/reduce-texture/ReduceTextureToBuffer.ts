@@ -32,8 +32,8 @@ export interface TextureToBufferParams {
   /** {@inheritDoc ReduceTextureToBuffer#blockSize} */
   blockSize?: Vec2;
 
-  /** {@inheritDoc ReduceTextureToBuffer#workgroupSize} */
-  workgroupSize?: Vec2;
+  /** {@inheritDoc ReduceTextureToBuffer#forceWorkgroupSize} */
+  forceWorkgroupSize?: Vec2;
 
   /** {@inheritDoc ReduceTextureToBuffer#loadTemplate} */
   loadTemplate?: LoadTemplate;
@@ -47,7 +47,7 @@ export interface TextureToBufferParams {
 
 const defaults: Partial<TextureToBufferParams> = {
   blockSize: [4, 4],
-  workgroupSize: undefined,
+  forceWorkgroupSize: undefined,
   pipelineCache: undefined,
   label: "",
 };
@@ -73,7 +73,7 @@ export class ReduceTextureToBuffer extends HasReactive implements ComposableShad
   @reactively({ equals: deepEqual }) blockSize!: Vec2;
 
   /** Override to set compute workgroup size e.g. for testing. */
-  @reactively({ equals: deepEqual }) workgroupSize!: Vec2;
+  @reactively({ equals: deepEqual }) forceWorkgroupSize!: Vec2;
 
   private device!: GPUDevice;
   private pipelineCache?: <T extends object>() => Cache<T>;
@@ -126,7 +126,7 @@ export class ReduceTextureToBuffer extends HasReactive implements ComposableShad
     return getReduceTexturePipeline(
       {
         device: this.device,
-        workgroupSize: this.workgroupSize,
+        workgroupSize: this.actualWorkgroupSize,
         blockLength: this.blockSize[0], // TODO blockSize
         reduceTemplate: this.reduceTemplate,
         loadTemplate: this.loadTemplate,
@@ -158,8 +158,8 @@ export class ReduceTextureToBuffer extends HasReactive implements ComposableShad
 
   @reactively private get actualWorkgroupSize(): Vec2 {
     const limits = this.device.limits;
-    if (this.workgroupSize) {
-      return this.workgroupSize;
+    if (this.forceWorkgroupSize) {
+      return this.forceWorkgroupSize;
     } else {
       return maxWorkgroupSize(limits);
     }

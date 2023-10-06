@@ -25,7 +25,7 @@ it("reduce texture to buffer, workgroup size = 1", async () => {
         device,
         source,
         blockSize: [2, 2],
-        workgroupSize: [1, 1],
+        forceWorkgroupSize: [1, 1],
         reduceTemplate: sumF32,
         loadTemplate: loadRedComponent,
       });
@@ -53,7 +53,7 @@ it("reduce texture to buffer, workgroup size = 4", async () => {
         device,
         source,
         blockSize: [2, 2],
-        workgroupSize: [2, 2], // shader will need reduce buffer to out buffer
+        forceWorkgroupSize: [2, 2], // shader will need reduce buffer to out buffer
         reduceTemplate: sumF32,
         loadTemplate: loadRedComponent,
       });
@@ -82,7 +82,7 @@ it("reduce texture to buffer, min/max workgroup size = 4", async () => {
         device,
         source,
         blockSize: [2, 2],
-        workgroupSize: [2, 2],
+        forceWorkgroupSize: [2, 2],
         reduceTemplate: minMaxPositiveF32,
         loadTemplate: loadRedComponent,
       });
