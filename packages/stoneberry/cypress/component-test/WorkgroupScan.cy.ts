@@ -21,7 +21,7 @@ it("workgroup scan one evenly sized buffer, with middle layers", async () => {
         device,
         source: makeBuffer(device, srcData, "source", Uint32Array),
         emitBlockSums: true,
-        workgroupLength: 8,
+        forceWorkgroupLength: 8,
       });
       trackUse(scan);
       const shaderGroup = new ShaderGroup(device, scan);
@@ -46,7 +46,7 @@ it("workgroup scan one evenly sized buffer, two workgroups", async () => {
       device,
       source: makeBuffer(device, srcData, "source", Uint32Array),
       emitBlockSums: true,
-      workgroupLength: 4,
+      forceWorkgroupLength: 4,
     });
     const shaderGroup = new ShaderGroup(device, scan);
     shaderGroup.dispatch();
@@ -67,7 +67,7 @@ it("workgroup scan one unevenly sized buffer", async () => {
       device,
       source: makeBuffer(device, srcData, "source", Uint32Array),
       emitBlockSums: true,
-      workgroupLength: 8,
+      forceWorkgroupLength: 8,
     });
     const shaderGroup = new ShaderGroup(device, scan);
     shaderGroup.dispatch();
@@ -88,7 +88,7 @@ it("workgroup scan one unevenly sized buffer, two workgroups", async () => {
       device,
       source: makeBuffer(device, srcData, "source", Uint32Array),
       emitBlockSums: true,
-      workgroupLength: 4,
+      forceWorkgroupLength: 4,
     });
     const shaderGroup = new ShaderGroup(device, scan);
     shaderGroup.dispatch();
@@ -109,7 +109,7 @@ it("workgroup exlusive scan, src smaller than workgroup", async () => {
       device,
       source: makeBuffer(device, srcData, "source", Uint32Array),
       emitBlockSums: false,
-      workgroupLength: 4,
+      forceWorkgroupLength: 4,
       exclusiveSmall: true,
       initialValue,
     });
@@ -131,7 +131,7 @@ it("workgroup exclusive scan, with middle layers", async () => {
       device,
       source: makeBuffer(device, srcData, "source", Uint32Array),
       emitBlockSums: false,
-      workgroupLength: 8,
+      forceWorkgroupLength: 8,
       exclusiveSmall: true,
       initialValue,
     });
@@ -151,7 +151,7 @@ it("workgroup with offsets", async () => {
       device,
       source: makeBuffer(device, srcData, "source", Uint32Array),
       emitBlockSums: true,
-      workgroupLength: 4,
+      forceWorkgroupLength: 4,
       maxWorkgroups: 1,
       sourceOffset: 4,
       scanOffset: 4,
@@ -176,7 +176,7 @@ it("workgroup with generated offsets for workgroups > max", async () => {
       device,
       source: makeBuffer(device, srcData, "source", Uint32Array),
       emitBlockSums: true,
-      workgroupLength: 4,
+      forceWorkgroupLength: 4,
       maxWorkgroups: 1,
     });
     const shaderGroup = new ShaderGroup(device, scan);

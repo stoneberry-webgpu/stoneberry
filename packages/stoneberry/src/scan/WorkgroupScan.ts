@@ -17,7 +17,7 @@ export interface WorkgroupScanArgs {
   device: GPUDevice;
   source: ValueOrFn<GPUBuffer>;
   emitBlockSums?: ValueOrFn<boolean>;
-  workgroupLength?: ValueOrFn<number>;
+  forceWorkgroupLength?: ValueOrFn<number>;
   maxWorkgroups?: ValueOrFn<number | undefined>;
   label?: ValueOrFn<string>;
   template?: ValueOrFn<BinOpTemplate>;
@@ -40,7 +40,7 @@ const defaults: Partial<WorkgroupScanArgs> = {
   sourceOffset: 0,
   scanOffset: 0,
   blockSumsOffset: 0,
-  workgroupLength: undefined,
+  forceWorkgroupLength: undefined,
 };
 
 /**
@@ -85,7 +85,7 @@ export class WorkgroupScan extends HasReactive implements ComposableShader {
   /** Override to set compute workgroup size e.g. for testing. 
     @defaultValue maxComputeInvocationsPerWorkgroup of the `GPUDevice`
     */
-  @reactively workgroupLength?: number;
+  @reactively forceWorkgroupLength?: number;
 
   /** Override to set max number of workgroups for dispatch e.g. for testing. 
     @defaultValue maxComputeWorkgroupsPerDimension from the `GPUDevice`
@@ -122,7 +122,7 @@ export class WorkgroupScan extends HasReactive implements ComposableShader {
   /** Buffer combining the last element from each workgroups partial scan
    * For use in combining scans that are larger than one workgroup. */
   @reactively get blockSums(): GPUBuffer {
-    const proposedSize = this.sourceSize / this.actualWorkgroupLength;
+    const proposedSize = this.sourceSize / this.workgroupLength;
     const size = Math.ceil(proposedSize / 4) * 4; // ensure size is a multiple of 4
     const buffer = this.device.createBuffer({
       label: `${this.label} workgroup scan block sums`,
@@ -145,7 +145,7 @@ export class WorkgroupScan extends HasReactive implements ComposableShader {
     const sourceElems =
       this.sourceSize / Uint32Array.BYTES_PER_ELEMENT - this.sourceOffset; // TODO support other src element sizes, via template
     const max = this.actualMaxWorkgroups;
-    return calcDispatchSizes(sourceElems, this.actualWorkgroupLength, max);
+    return calcDispatchSizes(sourceElems, this.workgroupLength, max);
   }
 
   @reactively private get actualMaxWorkgroups(): number {
@@ -156,7 +156,7 @@ export class WorkgroupScan extends HasReactive implements ComposableShader {
     return getWorkgroupScanPipeline(
       {
         device: this.device,
-        workgroupSize: this.actualWorkgroupLength,
+        workgroupSize: this.workgroupLength,
         blockSums: this.emitBlockSums,
         template: this.template,
       },
@@ -225,8 +225,8 @@ export class WorkgroupScan extends HasReactive implements ComposableShader {
     const uniforms = this.uniforms;
     this.dispatchSizes.map((dispatchSize, i) => {
       this.writeUniforms(uniforms[i], sourceOffset, scanOffset, blockSumsOffset);
-      sourceOffset += dispatchSize * this.actualWorkgroupLength;
-      scanOffset += dispatchSize * this.actualWorkgroupLength;
+      sourceOffset += dispatchSize * this.workgroupLength;
+      scanOffset += dispatchSize * this.workgroupLength;
       blockSumsOffset += dispatchSize;
     });
   }
@@ -247,7 +247,7 @@ export class WorkgroupScan extends HasReactive implements ComposableShader {
     this.device.queue.writeBuffer(uniforms, 0, array);
   }
 
-  @reactively private get actualWorkgroupLength(): number {
-    return limitWorkgroupLength(this.device, this.workgroupLength);
+  @reactively private get workgroupLength(): number {
+    return limitWorkgroupLength(this.device, this.forceWorkgroupLength);
   }
 }
