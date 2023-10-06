@@ -33,10 +33,10 @@ export interface BufferReduceParams {
   /** {@inheritDoc ReduceBuffer#blockLength} */
   blockLength?: number;
 
-  /** {@inheritDoc ReduceBuffer#workgroupLength} */
+  /** {@inheritDoc ReduceBuffer#forceWorkgroupLength} */
   forceWorkgroupLength?: number;
 
-  /** {@inheritDoc ReduceBuffer#maxWorkgroups} */
+  /** {@inheritDoc ReduceBuffer#forceMaxWorkgroups} */
   forceMaxWorkgroups?: number | undefined;
 
   /** {@inheritDoc ReduceBuffer#template} */
