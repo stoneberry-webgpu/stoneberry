@@ -11,7 +11,7 @@
     "build:texReduce": "esbuild src/reduce-texture/index.ts --outbase=src --external:../util/* --bundle --packages=external --format=esm --loader:.wgsl=text --sourcemap --outdir=dist",
     "build:util": "esbuild src/util/*.ts                   --outbase=src                               --packages=external --format=esm                     --sourcemap --outdir=dist",
     "build:types": "tsc --project tsconfig.build.json",
-    "mac-canary": "$npm_execPath open -a 'Google Chrome Canary' --args --disable-dawn-features=disallow_unsafe_apis ",
+    "mac-canary": "$npm_execPath open -a 'Google Chrome Canary' --args --enable-dawn-features=allow_unsafe_apis",
     "cypress-component": "cypress open --component --browser chrome:canary",
     "organize": "organize-imports-cli tsconfig.json",
     "format": "prettier-eslint \"src/**/*.ts\" --write",

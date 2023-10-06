@@ -24,7 +24,7 @@ export async function reduceBufferBench(
     device,
     source,
     template: sumU32,
-    workgroupLength: 256,
+    forceWorkgroupLength: 256,
     blockLength: 4,
   });
 

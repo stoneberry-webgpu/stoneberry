@@ -19,6 +19,6 @@ export async function prefixScanBench(
     srcData[i] = i & 0x111111 ? 0 : 1;
   }
   source.unmap();
-  const scan = new PrefixScan({ device, source, workgroupLength: 256 });
+  const scan = new PrefixScan({ device, source, forceWorkgroupLength: 256 });
   return benchShader({ device, runs }, scan);
 }
