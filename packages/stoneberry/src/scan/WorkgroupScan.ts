@@ -18,7 +18,7 @@ export interface WorkgroupScanArgs {
   source: ValueOrFn<GPUBuffer>;
   emitBlockSums?: ValueOrFn<boolean>;
   forceWorkgroupLength?: ValueOrFn<number>;
-  maxWorkgroups?: ValueOrFn<number | undefined>;
+  forceMaxWorkgroups?: ValueOrFn<number | undefined>;
   label?: ValueOrFn<string>;
   template?: ValueOrFn<BinOpTemplate>;
   exclusiveSmall?: boolean;
@@ -36,7 +36,7 @@ const defaults: Partial<WorkgroupScanArgs> = {
   template: sumU32,
   exclusiveSmall: false,
   initialValue: 0,
-  maxWorkgroups: undefined,
+  forceMaxWorkgroups: undefined,
   sourceOffset: 0,
   scanOffset: 0,
   blockSumsOffset: 0,
@@ -90,7 +90,7 @@ export class WorkgroupScan extends HasReactive implements ComposableShader {
   /** Override to set max number of workgroups for dispatch e.g. for testing. 
     @defaultValue maxComputeWorkgroupsPerDimension from the `GPUDevice`
     */
-  @reactively maxWorkgroups?: number;
+  @reactively forceMaxWorkgroups?: number;
 
   private device!: GPUDevice;
   private pipelineCache?: <T extends object>() => Cache<T>;
@@ -144,12 +144,12 @@ export class WorkgroupScan extends HasReactive implements ComposableShader {
   @reactively private get dispatchSizes(): number[] {
     const sourceElems =
       this.sourceSize / Uint32Array.BYTES_PER_ELEMENT - this.sourceOffset; // TODO support other src element sizes, via template
-    const max = this.actualMaxWorkgroups;
+    const max = this.maxWorkgroups;
     return calcDispatchSizes(sourceElems, this.workgroupLength, max);
   }
 
-  @reactively private get actualMaxWorkgroups(): number {
-    return this.maxWorkgroups ?? this.device.limits.maxComputeWorkgroupsPerDimension;
+  @reactively private get maxWorkgroups(): number {
+    return this.forceMaxWorkgroups ?? this.device.limits.maxComputeWorkgroupsPerDimension;
   }
 
   @reactively private get pipeline(): GPUComputePipeline {

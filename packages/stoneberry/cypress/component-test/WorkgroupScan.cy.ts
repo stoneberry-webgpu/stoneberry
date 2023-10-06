@@ -152,7 +152,7 @@ it("workgroup with offsets", async () => {
       source: makeBuffer(device, srcData, "source", Uint32Array),
       emitBlockSums: true,
       forceWorkgroupLength: 4,
-      maxWorkgroups: 1,
+      forceMaxWorkgroups: 1,
       sourceOffset: 4,
       scanOffset: 4,
       blockSumsOffset: 1,
@@ -177,7 +177,7 @@ it("workgroup with generated offsets for workgroups > max", async () => {
       source: makeBuffer(device, srcData, "source", Uint32Array),
       emitBlockSums: true,
       forceWorkgroupLength: 4,
-      maxWorkgroups: 1,
+      forceMaxWorkgroups: 1,
     });
     const shaderGroup = new ShaderGroup(device, scan);
     shaderGroup.dispatch();

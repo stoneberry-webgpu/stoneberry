@@ -186,7 +186,7 @@ export class PrefixScan<T = number> extends HasReactive implements ComposableSha
       initialValue: this.initialValue,
       template: this.template,
       forceWorkgroupLength: this.forceWorkgroupLength,
-      maxWorkgroups: this.maxWorkgroups,
+      forceMaxWorkgroups: this.maxWorkgroups,
       label: `${this.label} sourceScan`,
       pipelineCache: this.pipelineCache,
     });
@@ -214,7 +214,7 @@ export class PrefixScan<T = number> extends HasReactive implements ComposableSha
         emitBlockSums: !last,
         template: this.template,
         forceWorkgroupLength: this.forceWorkgroupLength,
-        maxWorkgroups: this.maxWorkgroups,
+        forceMaxWorkgroups: this.maxWorkgroups,
         label: `${this.label} blockScan`,
         pipelineCache: this.pipelineCache,
       });
