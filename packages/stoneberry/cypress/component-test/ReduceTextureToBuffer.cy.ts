@@ -18,7 +18,7 @@ it("reduce texture to buffer, workgroup size = 1", async () => {
     const device = await labeledGpuDevice();
     trackUse(device);
 
-    const srcData = make3dSequence([4, 4], 4);
+    const srcData = make3dSequence([4, 4]);
     const source = makeTexture(device, srcData, "rgba32float");
     await withLeakTrack(async () => {
       const tr = new ReduceTextureToBuffer({
@@ -46,7 +46,7 @@ it("reduce texture to buffer, workgroup size = 4", async () => {
     const device = await labeledGpuDevice();
     trackUse(device);
 
-    const srcData = make3dSequence([4, 4], 4);
+    const srcData = make3dSequence([4, 4]);
     const source = makeTexture(device, srcData, "rgba32float");
     await withLeakTrack(async () => {
       const tr = new ReduceTextureToBuffer({
@@ -75,7 +75,7 @@ it("reduce texture to buffer, min/max workgroup size = 4", async () => {
     const device = await labeledGpuDevice();
     trackUse(device);
 
-    const srcData = make3dSequence([4, 4], 4);
+    const srcData = make3dSequence([4, 4]);
     const source = makeTexture(device, srcData, "rgba32float");
     await withLeakTrack(async () => {
       const tr = new ReduceTextureToBuffer({

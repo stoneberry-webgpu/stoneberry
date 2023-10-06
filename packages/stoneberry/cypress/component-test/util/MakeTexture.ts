@@ -72,7 +72,7 @@ export function make2dSequence(size: Vec2): number[][] {
   return data;
 }
 
-export function make3dSequence(size: Vec2, numComponents = 1): number[][][] {
+export function make3dSequence(size: Vec2, numComponents = 4): number[][][] {
   let i = 0;
   return mapN(size[0], () =>
     mapN(size[1], () => {
