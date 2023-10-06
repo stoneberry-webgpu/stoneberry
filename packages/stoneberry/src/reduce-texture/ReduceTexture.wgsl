@@ -44,7 +44,7 @@ fn reduceSrcToWork(grid: vec2<u32>, localIndex: u32) {
 // LATER try striping/striding to reduce memory bank conflicts
 // LATER try blocks that are e.g. 4x1
 fn fetchSrc(grid: vec2<u32>) -> array<Output, 4> { //! 4=blockArea
-    var i = 0u;
+    var i = 0u; // output index
     var result = array<Output, 4>(); //! 4=blockArea
     let srcWidth = textureDimensions(srcTexture).x;
     let srcHeight = textureDimensions(srcTexture).y; 

@@ -4,13 +4,12 @@ import {
   ShaderGroup,
   trackRelease,
   trackUse,
-  Vec2,
   withAsyncUsage,
   withBufferCopy,
   withLeakTrack,
 } from "thimbleberry";
-import { minMaxPositiveF32, sumF32 } from "../../src/util/BinOpTemplate.js";
 import { ReduceTextureToBuffer } from "../../src/reduce-texture/ReduceTextureToBuffer.js";
+import { minMaxPositiveF32, sumF32 } from "../../src/util/BinOpTemplate.js";
 import { make3dSequence, makeTexture } from "./util/MakeTexture.js";
 import { minMaxPositiveReds, sumReds } from "./util/Reductions.js";
 
@@ -54,7 +53,7 @@ it("reduce texture to buffer, workgroup size = 4", async () => {
         device,
         source,
         blockSize: [2, 2],
-        workgroupSize: [2, 2], // larger workgroup size, so reduce work buffer to out buffer
+        workgroupSize: [2, 2], // shader will need reduce buffer to out buffer
         reduceTemplate: sumF32,
         loadTemplate: loadRedComponent,
       });

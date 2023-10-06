@@ -1,5 +1,5 @@
-import deepEqual from "fast-deep-equal";
 import { HasReactive, reactively } from "@reactively/decorate";
+import deepEqual from "fast-deep-equal";
 import {
   Cache,
   ComposableShader,
@@ -12,6 +12,7 @@ import {
   trackContext,
 } from "thimbleberry";
 import { BinOpTemplate, maxF32 } from "../util/BinOpTemplate.js";
+import { maxWorkgroupSize } from "../util/LimitWorkgroupSize.js";
 import { LoadTemplate } from "../util/LoadTemplate.js";
 import { getReduceTexturePipeline } from "./ReduceTexturePipeline.js";
 
@@ -52,6 +53,10 @@ const defaults: Partial<TextureToBufferParams> = {
   label: "",
 };
 
+/** reduce a gpu texture to a buffer by running binary operations over elements.
+ * Each workgroup thread reduces a blockSize group of elements to one element,
+ * and each dispatch reduces the workgroup elements to one element.
+ */
 export class ReduceTextureToBuffer extends HasReactive implements ComposableShader {
   /** Source texture to be reduced */
   @reactively source!: GPUTexture;
@@ -97,8 +102,7 @@ export class ReduceTextureToBuffer extends HasReactive implements ComposableShad
 
   /** results of the reduction from frame to service */
   @reactively get reducedResult(): GPUBuffer {
-    const size = this.resultElems* this.reduceTemplate.outputElementSize;
-    console.log("reducedResult size", size);
+    const size = this.resultElems * this.reduceTemplate.outputElementSize;
     const buffer = this.device.createBuffer({
       label: "texture reduce result buffer",
       size,
@@ -109,8 +113,8 @@ export class ReduceTextureToBuffer extends HasReactive implements ComposableShad
 
   /** number of elements in the result buffer */
   @reactively get resultElems(): number {
-    const resultSize = this.resultSize;
-    return resultSize[0] * resultSize[1];
+    const [x, y] = this.dispatchSize;
+    return x * y;
   }
 
   @reactively get debugBuffer(): GPUBuffer {
@@ -143,30 +147,23 @@ export class ReduceTextureToBuffer extends HasReactive implements ComposableShad
   }
 
   @reactively private get dispatchSize(): Vec2 {
-    const resultSize = this.resultSize;
     const workSize = this.actualWorkgroupSize;
-    const x = Math.ceil(resultSize[0] / workSize[0]);
-    const y = Math.ceil(resultSize[1] / workSize[1]);
-    console.log("dispatchSize", [x, y]);
-    return [x, y];
+    const srcSize = [this.source.width, this.source.height];
+    const blockSize = this.blockSize;
+
+    const d = srcSize.map((s, i) => Math.ceil(s / (blockSize[i] * workSize[i]))) as Vec2;
+    console.log("workSize", workSize);
+    console.log("dispatchSize", d);
+    return d;
   }
 
   @reactively private get actualWorkgroupSize(): Vec2 {
+    const limits = this.device.limits;
     if (this.workgroupSize) {
       return this.workgroupSize;
     } else {
-      return [this.device.limits.maxComputeInvocationsPerWorkgroup, 1];
+      return maxWorkgroupSize(limits);
     }
-  }
-
-  @reactively private get resultSize(): Vec2 {
-    const blockSize = this.blockSize;
-    const workSize = this.actualWorkgroupSize;
-    const width = Math.ceil(this.source.width / blockSize[0] / workSize[0]);
-    const height = Math.ceil(this.source.height / blockSize[1] / workSize[1]);
-
-    console.log("resultSize", [width, height]);
-    return [width, height];
   }
 
   @reactively private bindGroup(): GPUBindGroup {
