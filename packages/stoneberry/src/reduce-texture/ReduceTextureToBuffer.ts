@@ -126,7 +126,7 @@ export class ReduceTextureToBuffer extends HasReactive implements ComposableShad
     return getReduceTexturePipeline(
       {
         device: this.device,
-        workgroupSize: this.actualWorkgroupSize,
+        workgroupSize: this.workgroupSize,
         blockLength: this.blockSize[0], // TODO blockSize
         reduceTemplate: this.reduceTemplate,
         loadTemplate: this.loadTemplate,
@@ -146,7 +146,7 @@ export class ReduceTextureToBuffer extends HasReactive implements ComposableShad
   }
 
   @reactively private get dispatchSize(): Vec2 {
-    const workSize = this.actualWorkgroupSize;
+    const workSize = this.workgroupSize;
     const srcSize = [this.source.width, this.source.height];
     const blockSize = this.blockSize;
 
@@ -156,7 +156,7 @@ export class ReduceTextureToBuffer extends HasReactive implements ComposableShad
     return d;
   }
 
-  @reactively private get actualWorkgroupSize(): Vec2 {
+  @reactively private get workgroupSize(): Vec2 {
     const limits = this.device.limits;
     if (this.forceWorkgroupSize) {
       return this.forceWorkgroupSize;
