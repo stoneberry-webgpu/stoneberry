@@ -10,7 +10,7 @@ import {
   trackContext,
   withBufferCopy,
 } from "thimbleberry";
-import { BinOpTemplate, maxF32 } from "../util/BinOpTemplate.js";
+import { BinOpTemplate } from "../util/BinOpTemplate.js";
 import { SlicingResults, inputSlicing } from "../util/InputSlicing.js";
 import { getBufferReducePipeline } from "./ReduceBufferPipeline.js";
 
@@ -40,7 +40,7 @@ export interface BufferReduceParams {
   maxWorkgroups?: number | undefined;
 
   /** {@inheritDoc ReduceBuffer#template} */
-  template?: BinOpTemplate;
+  template: BinOpTemplate;
 
   /** cache for GPUComputePipeline */
   pipelineCache?: <T extends object>() => Cache<T>;
@@ -53,7 +53,6 @@ const defaults: Partial<BufferReduceParams> = {
   blockLength: 4,
   sourceOffset: 0,
   resultOffset: 0,
-  template: maxF32,
   workgroupLength: undefined,
   maxWorkgroups: undefined,
   label: "",

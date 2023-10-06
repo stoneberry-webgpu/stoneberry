@@ -11,7 +11,7 @@ import {
   reactiveTrackUse,
   trackContext,
 } from "thimbleberry";
-import { BinOpTemplate, maxF32 } from "../util/BinOpTemplate.js";
+import { BinOpTemplate } from "../util/BinOpTemplate.js";
 import { maxWorkgroupSize } from "../util/LimitWorkgroupSize.js";
 import { LoadTemplate } from "../util/LoadTemplate.js";
 import { getReduceTexturePipeline } from "./ReduceTexturePipeline.js";
@@ -26,14 +26,14 @@ export interface TextureToBufferParams {
    */
   source: ValueOrFn<GPUTexture>;
 
+  /** {@inheritDoc ReduceTextureToBuffer#reduceTemplate} */
+  reduceTemplate: BinOpTemplate;
+
   /** {@inheritDoc ReduceTextureToBuffer#blockSize} */
   blockSize?: Vec2;
 
   /** {@inheritDoc ReduceTextureToBuffer#workgroupSize} */
   workgroupSize?: Vec2;
-
-  /** {@inheritDoc ReduceTextureToBuffer#reduceTemplate} */
-  reduceTemplate?: BinOpTemplate;
 
   /** {@inheritDoc ReduceTextureToBuffer#loadTemplate} */
   loadTemplate?: LoadTemplate;
@@ -47,7 +47,6 @@ export interface TextureToBufferParams {
 
 const defaults: Partial<TextureToBufferParams> = {
   blockSize: [4, 4],
-  reduceTemplate: maxF32,
   workgroupSize: undefined,
   pipelineCache: undefined,
   label: "",

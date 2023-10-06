@@ -1,5 +1,4 @@
 import { HasReactive, reactively } from "@reactively/decorate";
-import deepEqual from "fast-deep-equal";
 import {
   Cache,
   ComposableShader,
@@ -10,14 +9,14 @@ import {
   trackContext,
   withBufferCopy,
 } from "thimbleberry";
-import { BinOpTemplate, maxF32 } from "../util/BinOpTemplate.js";
+import { ReduceBuffer } from "../reduce-buffer/ReduceBuffer.js";
+import { BinOpTemplate } from "../util/BinOpTemplate.js";
 import {
   LoadTemplate,
   LoadableComponent,
   loaderForComponent,
 } from "../util/LoadTemplate.js";
 import { ReduceTextureToBuffer } from "./ReduceTextureToBuffer.js";
-import { ReduceBuffer } from "../reduce-buffer/ReduceBuffer.js";
 
 export interface ReduceTextureParams {
   device: GPUDevice;
@@ -40,7 +39,7 @@ export interface ReduceTextureParams {
   workgroupSize?: Vec2;
 
   /** {@inheritDoc ReduceTexture#reduceTemplate} */
-  reduceTemplate?: BinOpTemplate;
+  reduceTemplate: BinOpTemplate;
 
   /** load r, g, b, or a, or custom function */
   loadComponent?: LoadableComponent | LoadTemplate;
@@ -55,7 +54,6 @@ export interface ReduceTextureParams {
 const defaults: Partial<ReduceTextureParams> = {
   blockSize: [4, 4],
   bufferBlockLength: undefined,
-  reduceTemplate: maxF32,
   loadComponent: "r",
   workgroupSize: undefined,
   pipelineCache: undefined,
