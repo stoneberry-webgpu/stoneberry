@@ -4,6 +4,7 @@ import "live-typescript/style.css";
 import thimbleberry from "thimbleberry?sourceFiles";
 import stoneberryScan from "stoneberry/scan?sourceFiles";
 import stoneberryReduceBuffer from "stoneberry/reduce-buffer?sourceFiles";
+import stoneberryReduceTexture from "stoneberry/reduce-texture?sourceFiles";
 import exampleUtils from "stoneberry-examples?sourceFiles";
 import webGPU from "@webgpu/types?sourceFiles";
 
@@ -23,6 +24,7 @@ export function StoneberryLive(props: StoneberryLiveProps): JSX.Element {
           thimbleberry,
           stoneberryScan,
           stoneberryReduceBuffer,
+          stoneberryReduceTexture,
           exampleUtils,
           webGPU,
         ],

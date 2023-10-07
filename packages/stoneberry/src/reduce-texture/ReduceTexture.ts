@@ -35,7 +35,7 @@ export interface ReduceTextureParams {
   /** {@inheritDoc ReduceTexture#bufferBlockLength} */
   bufferBlockLength?: number;
 
-  /** {@inheritDoc ReduceTexture#workgroupSize} */
+  /** {@inheritDoc ReduceTexture#forceWorkgroupSize} */
   forceWorkgroupSize?: Vec2;
 
   /** {@inheritDoc ReduceTexture#reduceTemplate} */

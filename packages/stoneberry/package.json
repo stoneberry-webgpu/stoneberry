@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "prepublish": "rimraf dist && pnpm run build && pnpm run build:types",
-    "build": "pnpm build:scan && pnpm build:bufReduce && pnpm build:util",
+    "build": "pnpm build:scan && pnpm build:bufReduce && pnpm build:texReduce && pnpm build:util",
     "build:scan": "esbuild src/scan/index.ts               --outbase=src --external:../util/* --bundle --packages=external --format=esm --loader:.wgsl=text --sourcemap --outdir=dist",
     "build:bufReduce": "esbuild src/reduce-buffer/index.ts --outbase=src --external:../util/* --bundle --packages=external --format=esm --loader:.wgsl=text --sourcemap --outdir=dist",
     "build:texReduce": "esbuild src/reduce-texture/index.ts --outbase=src --external:../util/* --bundle --packages=external --format=esm --loader:.wgsl=text --sourcemap --outdir=dist",
