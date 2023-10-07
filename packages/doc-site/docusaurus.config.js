@@ -45,6 +45,7 @@ const config = {
         tsconfig: "../stoneberry/tsconfig.json",
         excludePrivate: true,
         excludeInternal: true,
+        readme: "none",
         excludeNotDocumented: true,
         excludeNotDocumentedKinds: ["Module", "Namespace"],
       },
