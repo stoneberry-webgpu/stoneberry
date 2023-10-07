@@ -8,7 +8,7 @@
   },
   "dependencies": {
     "stoneberry": "workspace:*",
-    "thimbleberry": "^0.1.15"
+    "thimbleberry": "^0.1.16"
   },
   "devDependencies": {
     "@webgpu/types": "^0.1.32",
