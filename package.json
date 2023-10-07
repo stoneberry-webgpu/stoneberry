@@ -8,7 +8,9 @@
     "build:example-utils": "pnpm --filter stoneberry-examples prepublish",
     "build:stoneberry-live": "pnpm --filter stoneberry-live build",
     "build:docs": "pnpm --filter doc-site build",
-    "build:site": "pnpm build:stoneberry && pnpm build:example-utils && pnpm build:stoneberry-live && pnpm build:docs"
+    "build:site": "pnpm build:stoneberry && pnpm build:example-utils && pnpm build:stoneberry-live && pnpm build:docs",
+    "site:serve": "pnpm --filter doc-site serve",
+    "site:deploy": "pnpm --filter doc-site pages:deploy"
   },
   "pnpm": {
     "overrides": {
