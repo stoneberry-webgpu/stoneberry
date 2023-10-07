@@ -1,25 +1,19 @@
-import "react";
-import { LiveTypescript } from "live-typescript";
+import webGPU from "@webgpu/types?sourceFiles";
+import { LiveTypescript, LiveTypescriptProps } from "live-typescript";
 import "live-typescript/style.css";
-import thimbleberry from "thimbleberry?sourceFiles";
-import stoneberryScan from "stoneberry/scan?sourceFiles";
+import "react";
+import exampleUtils from "stoneberry-examples?sourceFiles";
 import stoneberryReduceBuffer from "stoneberry/reduce-buffer?sourceFiles";
 import stoneberryReduceTexture from "stoneberry/reduce-texture?sourceFiles";
-import exampleUtils from "stoneberry-examples?sourceFiles";
-import webGPU from "@webgpu/types?sourceFiles";
+import stoneberryScan from "stoneberry/scan?sourceFiles";
+import thimbleberry from "thimbleberry?sourceFiles";
 
-export interface StoneberryLiveProps {
-  code: string;
-  className?: string;
-}
-
-export function StoneberryLive(props: StoneberryLiveProps): JSX.Element {
-  const { code, className } = props;
+export function StoneberryLive(props: LiveTypescriptProps): JSX.Element {
   return (
     <LiveTypescript
       {...{
-        code,
-        className,
+        height: "400px",
+        ...props,
         embeddedPackages: [
           thimbleberry,
           stoneberryScan,
@@ -28,7 +22,6 @@ export function StoneberryLive(props: StoneberryLiveProps): JSX.Element {
           exampleUtils,
           webGPU,
         ],
-
         visibleTypes: ["@webgpu/types"],
       }}></LiveTypescript>
   );
