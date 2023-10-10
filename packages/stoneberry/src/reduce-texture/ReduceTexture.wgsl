@@ -7,7 +7,7 @@ struct Uniforms {
 }
 
 @group(0) @binding(0) var<uniform> u: Uniforms;                     // uniforms
-@group(0) @binding(1) var srcTexture: texture_2d<f32>; // source data
+@group(0) @binding(1) var srcTexture: texture_2d<f32>; //! f32=texelType // source data 
 @group(0) @binding(2) var<storage, read_write> out: array<Output>;  
 @group(0) @binding(11) var<storage, read_write> debug: array<f32>; // buffer to hold debug values
 
@@ -83,11 +83,11 @@ fn reduceBlock(a: array<Output, 4>) -> Output { //! 4=blockArea
     return v;
 }
 
-fn createOp(a: f32) -> Output {
+fn createOp(a: f32) -> Output { //! f32=texelType
     return Output(a); //! "return Output(a);"=createOp
 }
 
-fn loadOp(a: vec4<f32>) -> f32 {
+fn loadOp(a: vec4<f32>) -> f32 { //! f32=texelType f32=texelType
     return a.r; //! "return a.r;"=loadOp
 }
 

@@ -130,6 +130,7 @@ export class ReduceTextureToBuffer extends HasReactive implements ComposableShad
         blockLength: this.blockSize[0], // TODO blockSize
         reduceTemplate: this.reduceTemplate,
         loadTemplate: this.loadTemplate,
+        textureFormat: this.source.format,
       },
       this.pipelineCache
     );

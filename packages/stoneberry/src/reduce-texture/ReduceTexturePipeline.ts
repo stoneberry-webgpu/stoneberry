@@ -1,7 +1,7 @@
-import { Vec2, applyTemplate, memoizeWithDevice } from "thimbleberry";
-import { BinOpTemplate, maxF32 } from "../util/BinOpTemplate.js";
-import shaderWGSL from "./ReduceTexture.wgsl?raw";
+import { Vec2, applyTemplate, memoizeWithDevice, nativeSampleType } from "thimbleberry";
+import { BinOpTemplate } from "../util/BinOpTemplate.js";
 import { LoadTemplate, loadRedComponent } from "../util/LoadTemplate.js";
+import shaderWGSL from "./ReduceTexture.wgsl?raw";
 
 export interface ReduceBufferPipelineArgs {
   device: GPUDevice;
@@ -13,9 +13,10 @@ export const getReduceTexturePipeline = memoizeWithDevice(createReduceTexturePip
 
 interface TextureReducePipeParams {
   device: GPUDevice;
+  reduceTemplate: BinOpTemplate;
+  textureFormat: GPUTextureFormat;
   workgroupSize?: Vec2;
   blockLength?: number;
-  reduceTemplate?: BinOpTemplate;
   loadTemplate?: LoadTemplate;
 }
 
@@ -26,10 +27,12 @@ export function createReduceTexturePipeline(
     device,
     workgroupSize = [4, 4],
     blockLength = 2,
-    reduceTemplate = maxF32,
     loadTemplate = loadRedComponent,
+    textureFormat,
+    reduceTemplate,
   } = params;
 
+  const sampleType = nativeSampleType(textureFormat);
   const bindGroupLayout = device.createBindGroupLayout({
     label: "reduceTexture",
     entries: [
@@ -44,7 +47,7 @@ export function createReduceTexturePipeline(
         binding: 1, // src density texture
         visibility: GPUShaderStage.COMPUTE,
         texture: {
-          sampleType: "unfilterable-float",
+          sampleType,
         },
       },
       {
@@ -63,12 +66,14 @@ export function createReduceTexturePipeline(
       },
     ],
   });
+  const texelType = texelLoadType(textureFormat);
 
   const processedWGSL = applyTemplate(shaderWGSL, {
     workgroupSizeX: workgroupSize[0],
     workgroupSizeY: workgroupSize[1],
     workgroupThreads: workgroupSize[0] * workgroupSize[1],
     blockLength,
+    texelType,
     blockArea: blockLength * blockLength,
     ...reduceTemplate,
     ...loadTemplate,
@@ -91,4 +96,13 @@ export function createReduceTexturePipeline(
   });
 
   return reduceTexture;
+}
+
+// TODO mv to thimbleberry
+function texelLoadType(format: GPUTextureFormat): "f32" | "u32" | "i32" {
+  if (format.includes("float")) return "f32";
+  if (format.includes("unorm")) return "f32";
+  if (format.includes("uint")) return "u32";
+  if (format.includes("sint")) return "i32";
+  throw new Error(`unknown format ${format}`);
 }

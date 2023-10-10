@@ -1,6 +1,7 @@
 import {
   labeledGpuDevice,
   loadRedComponent,
+  make2dSequence,
   ShaderGroup,
   trackRelease,
   trackUse,
@@ -9,7 +10,7 @@ import {
   withLeakTrack,
 } from "thimbleberry";
 import { ReduceTextureToBuffer } from "../../src/reduce-texture/ReduceTextureToBuffer.js";
-import { minMaxPositiveF32, sumF32 } from "../../src/util/BinOpTemplate.js";
+import { minMaxPositiveF32, sumF32, sumU32 } from "../../src/util/BinOpTemplate.js";
 import { make3dSequence, makeTexture } from "./util/MakeTexture.js";
 import { minMaxPositiveReds, sumReds } from "./util/Reductions.js";
 
@@ -93,6 +94,35 @@ it("reduce texture to buffer, min/max workgroup size = 4", async () => {
       const expected = minMaxPositiveReds(srcData);
       await withBufferCopy(device, tr.reducedResult, "f32", data => {
         expect([...data]).deep.eq(expected);
+      });
+      trackRelease(tr);
+    });
+  });
+});
+
+it("reduce texture to buffer, r32uint", async () => {
+  await withAsyncUsage(async () => {
+    const device = await labeledGpuDevice();
+    trackUse(device);
+
+    const srcData = make2dSequence([4, 4]);
+    const source = makeTexture(device, srcData, "r32uint");
+    await withLeakTrack(async () => {
+      const tr = new ReduceTextureToBuffer({
+        device,
+        source,
+        blockSize: [2, 2],
+        forceWorkgroupSize: [2, 2],
+        reduceTemplate: sumU32,
+        loadTemplate: loadRedComponent,
+      });
+      trackUse(tr);
+      const shaderGroup = new ShaderGroup(device, tr);
+      shaderGroup.dispatch();
+
+      const expected = srcData.flat(2).reduce((a, b) => a + b);
+      await withBufferCopy(device, tr.reducedResult, "u32", data => {
+        expect([...data]).deep.eq([expected]);
       });
       trackRelease(tr);
     });
