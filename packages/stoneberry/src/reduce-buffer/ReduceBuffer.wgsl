@@ -39,12 +39,12 @@ fn reduceFromBuffer(
     @builtin(global_invocation_id) grid: vec3<u32>,    // coords in the global compute grid
     @builtin(local_invocation_id) workGrid: vec3<u32>, // coords inside the this workgroup
     @builtin(num_workgroups) numWorkgroups: vec3<u32>, // number of workgroups in this dispatch
-    @builtin(workgroup_id) workgroupId: vec3<u32>     // workgroup id in the dispatch
+    @builtin(workgroup_id) workgroupId: vec3<u32>      // workgroup id in the dispatch
 ) {
     reduceBufferToWork(grid.xy, workGrid.xy);
     workgroupBarrier();
     if workGrid.x == 0u && workGrid.y == 0u {
-        let workIndex = workgroupId.x + workgroupId.y * numWorkgroups.x; // TODO just use local_invocation_index?
+        let workIndex = workgroupId.x + workgroupId.y * numWorkgroups.x;
         reduceWorkgroupToOut(grid.xy, workIndex + u.resultOffset);
     }
 }
