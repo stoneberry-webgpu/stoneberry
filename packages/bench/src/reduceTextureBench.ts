@@ -42,7 +42,7 @@ export async function reduceTextureBench(
     loadComponent: "r",
     forceWorkgroupSize: [8,8],
     blockSize: [2,2],
-    bufferBlockLength: 4,
+    bufferBlockLength: 8,
   });
 
   // verify correctness
