@@ -32,7 +32,7 @@ async function benchReduceBuffer(device: GPUDevice, time:string):Promise<void> {
 }
 
 async function benchReduceTexture(device: GPUDevice, time:string):Promise<void> {
-  const size = [2**10, 2**10] as Vec2;
+  const size = [2 ** 13, 2 ** 13] as Vec2;
   const linearSize = size[0] * size[1];
   const { averageClockTime, fastest } = await reduceTextureBench(device, size, 50);
 
