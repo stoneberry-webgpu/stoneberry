@@ -18,17 +18,20 @@ export interface BenchResult {
 export interface BenchConfig {
   device: GPUDevice;
   runs: number;
+  runsPerBatch?: number;
   warmup?: boolean;
 }
+
+// TODO mv to thimbleberry
 
 /** run the shader multiple times and report the fastest iteration */
 export async function benchShader(
   config: BenchConfig,
   ...shaders: ComposableShader[]
 ): Promise<BenchResult> {
-  const { device, runs, warmup = true } = config;
+  const { device, runs, warmup = true, runsPerBatch = 10 } = config;
   const frameSpans: CompletedSpan[] = [];
-  const clockTimes: number[] = [];
+  const batchAverages: number[] = [];
   const shaderGroup = new ShaderGroup(device, ...shaders);
 
   /* warmup run */
@@ -38,29 +41,57 @@ export async function benchShader(
   }
 
   /* run the shader multiple times */
-  const start = performance.now();
-  for (let i = 0; i < runs; i++) {
-    const frameLabel = `frame-${i}`;
-    performance.mark(frameLabel);
-    const frameStart = performance.now();
-    const { span } = withTimestampGroup(frameLabel, () => {
-      shaderGroup.dispatch();
-    });
-    if (span) {
-      frameSpans.push(span);
-      clockTimes.push(performance.now() - frameStart);
-    } else {
-      console.error("no span from withTimestampGroup. gpuTiming not initialized?");
-    }
+  for (let i = 0; i < runs; ) {
+    const runsThisBatch = Math.min(runsPerBatch, runs - i);
+    const result = await runBatch(device, i, runsPerBatch, shaderGroup);
+    const { averageClockTime, spans } = result;
+    frameSpans.push(...spans);
+    batchAverages.push(averageClockTime);
+    i += runsThisBatch;
   }
-  await device.queue.onSubmittedWorkDone();
-  const clockTime = performance.now() - start;
-
 
   /* report results */
-  const averageClockTime = clockTime / runs;
+  const averageClockTime = batchAverages.reduce((a, b) => a + b) / batchAverages.length;
   const { reports, fastest } = await collateGpuResults(frameSpans);
   return { reports, fastest, averageClockTime };
+}
+
+interface BatchResult {
+  averageClockTime: number;
+  spans: CompletedSpan[];
+}
+
+async function runBatch(
+  device: GPUDevice,
+  run: number,
+  batchSize: number,
+  shaderGroup: ShaderGroup
+): Promise<BatchResult> {
+  const spans: CompletedSpan[] = [];
+  /* run the shader multiple times */
+  const batchStart = performance.now();
+  for (let i = run, batchNum = 0; batchNum < batchSize; i++, batchNum++) {
+    const span = runOnce(i, shaderGroup);
+    span && spans.push(span);
+  }
+
+  await device.queue.onSubmittedWorkDone();
+  const clockTime = performance.now() - batchStart;
+  const averageClockTime = clockTime / batchSize;
+  return { averageClockTime, spans };
+}
+
+function runOnce(id: number, shaderGroup: ShaderGroup): CompletedSpan | undefined {
+  const frameLabel = `frame-${id}`;
+  performance.mark(frameLabel);
+  const { span } = withTimestampGroup(frameLabel, () => {
+    shaderGroup.dispatch();
+  });
+  if (span) {
+    return span;
+  } else {
+    console.error("no span from withTimestampGroup. gpuTiming not initialized?");
+  }
 }
 
 interface GpuReports {

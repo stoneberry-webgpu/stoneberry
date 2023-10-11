@@ -12,8 +12,8 @@ async function main(): Promise<void> {
   const device = await benchDevice();
 
   initGpuTiming(device);
-  await benchScan(device, testUtc);
-  await benchReduceBuffer(device, testUtc);
+  // await benchScan(device, testUtc);
+  // await benchReduceBuffer(device, testUtc);
   await benchReduceTexture(device, testUtc);
 }
 
