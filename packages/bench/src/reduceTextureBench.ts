@@ -1,6 +1,6 @@
 import { sumU32 } from "stoneberry/reduce-buffer";
 import { Vec2 } from "thimbleberry";
-import { ReduceTexture } from './../../stoneberry/src/reduce-texture/ReduceTexture';
+import { ReduceTexture } from "./../../stoneberry/src/reduce-texture/ReduceTexture";
 import { BenchResult, benchShader } from "./benchShader.js";
 
 export async function reduceTextureBench(
@@ -8,12 +8,14 @@ export async function reduceTextureBench(
   size: Vec2,
   runs = 1
 ): Promise<BenchResult> {
-
   const texture = device.createTexture({
     label: "source",
-    usage: GPUTextureUsage.COPY_DST | GPUTextureUsage.STORAGE_BINDING | GPUTextureUsage.TEXTURE_BINDING,
+    usage:
+      GPUTextureUsage.COPY_DST |
+      GPUTextureUsage.STORAGE_BINDING |
+      GPUTextureUsage.TEXTURE_BINDING,
     size,
-    format: "r32uint"
+    format: "r32uint",
   });
 
   const srcData = new Uint32Array(size[0] * size[1]);
@@ -39,8 +41,8 @@ export async function reduceTextureBench(
     source: texture,
     reduceTemplate: sumU32,
     loadComponent: "r",
-    forceWorkgroupSize: [8,8],
-    blockSize: [2,2],
+    forceWorkgroupSize: [8, 8],
+    blockSize: [2, 2],
     bufferBlockLength: 8,
   });
 
