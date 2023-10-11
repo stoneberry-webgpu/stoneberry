@@ -75,9 +75,6 @@ export function createReduceTexturePipeline(
   const texelType = texelLoadType(textureFormat);
 
   const processedWGSL = applyTemplate(shaderWGSL, {
-    workgroupSizeX: workgroupSize[0],
-    workgroupSizeY: workgroupSize[1],
-    workgroupThreads: workgroupSize[0] * workgroupSize[1],
     blockLength,
     texelType,
     blockArea: blockLength * blockLength,
@@ -94,6 +91,11 @@ export function createReduceTexturePipeline(
     compute: {
       module,
       entryPoint: "reduceFromTexture",
+      constants: {
+        workgroupThreads: workgroupSize[0] * workgroupSize[1],
+        workgroupSizeX: workgroupSize[0],
+        workgroupSizeY: workgroupSize[1],
+      }
     },
     layout: device.createPipelineLayout({
       label: "reduceTexture pipeline layout",

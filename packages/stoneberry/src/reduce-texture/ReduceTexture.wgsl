@@ -11,9 +11,9 @@ struct Uniforms {
 @group(0) @binding(2) var<storage, read_write> out: array<Output>;  
 @group(0) @binding(11) var<storage, read_write> debug: array<f32>; // buffer to hold debug values
 
-const workgroupThreads= 4; //! 4=workgroupThreads
-const workgroupSizeX = 2; //!  2=workgroupSizeX
-const workgroupSizeY = 2; //!  2=workgroupSizeY
+override workgroupThreads = 4; 
+override workgroupSizeX = 2; 
+override workgroupSizeY = 2; 
 
 var <workgroup> work:array<Output, workgroupThreads>; 
 
@@ -23,10 +23,9 @@ var <workgroup> work:array<Output, workgroupThreads>;
 @workgroup_size(workgroupSizeX, workgroupSizeY, 1) 
 fn reduceFromTexture(
     @builtin(global_invocation_id) grid: vec3<u32>,    // coords in the global compute grid, one per block
-    // @builtin(local_invocation_id) localGrid: vec3<u32>, // coords inside the this workgroup, one per block
     @builtin(num_workgroups) numWorkgroups: vec3<u32>, // number of workgroups in this dispatch
     @builtin(workgroup_id) workgroupId: vec3<u32>,     // workgroup id in the dispatch
-    @builtin(local_invocation_index) localIndex: u32 // index of this thread in the workgroup
+    @builtin(local_invocation_index) localIndex: u32   // index of this thread in the workgroup
 ) {
     reduceSrcToWork(grid.xy, localIndex);
     workgroupBarrier();
@@ -68,7 +67,7 @@ fn fetchSrc(grid: vec2<u32>) -> array<Output, 4> { //! 4=blockArea
 
 fn reduceWorkgroupToOut(grid: vec2<u32>, workIndex: u32) {
     var v = work[0];
-    for (var i = 1u; i < 4u; i = i + 1u) { //! 4=workgroupThreads
+    for (var i = 1u; i < u32(workgroupThreads); i = i + 1u) {
         v = binaryOp(v, work[i]);
     }
     out[workIndex] = v;
