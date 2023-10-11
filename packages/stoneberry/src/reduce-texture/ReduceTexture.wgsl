@@ -41,25 +41,28 @@ fn reduceSrcToWork(grid: vec2<u32>, localIndex: u32) {
 }
 
 // LATER try striping/striding to reduce memory bank conflicts
-// LATER try blocks that are e.g. 4x1
 fn fetchSrc(grid: vec2<u32>) -> array<Output, 4> { //! 4=blockArea
-    var i = 0u; // output index
+    var outDex = 0u; // output index
     var result = array<Output, 4>(); //! 4=blockArea
-    let srcWidth = textureDimensions(srcTexture).x;
-    let srcHeight = textureDimensions(srcTexture).y; 
-    // the compute grid is half the size of the src image in both dimensions if blockWidth/blockHeight=2
-    for (var x = 0u; x < 2u; x = x + 1u) { //! 2=blockWidth
-        var u = i32(grid.x * 2u + x); //! i32="u32" 2=blockWidth
-        for (var y = 0u; y < 2u; y = y + 1u) {//! 2=blockHeight
-            var v = i32(grid.y * 2u + y); //! i32="u32" 2=blockHeight
-            if u >= srcWidth || v >= srcHeight {
-                result[i] = identityOp();
+    let srcWidth = u32(textureDimensions(srcTexture).x);
+    let srcHeight = u32(textureDimensions(srcTexture).y);
+
+    let rowStart = grid.x * 2u; //! 2=blockWidth
+    let rowEnd = rowStart + 2u; //! 2=blockWidth
+    let colStart = grid.y * 2u; //! 2=blockHeight
+    let colEnd = colStart + 2u; //! 2=blockHeight
+
+    for (var x = rowStart; x < rowEnd; x = x + 1u) {
+        for (var y = colStart; y < colEnd; y = y + 1u) {
+            if x >= srcWidth || y >= srcHeight {
+                result[outDex] = identityOp();
             } else {
-                let texel = textureLoad(srcTexture, vec2<i32>(u, v), 0); //! i32="u32"
+                let srcSpot = vec2<i32>(i32(x), i32(y));
+                let texel = textureLoad(srcTexture, srcSpot, 0);
                 let loaded = loadOp(texel);
-                result[i] = createOp(loaded);
+                result[outDex] = createOp(loaded);
             }
-            i = i + 1u;
+            outDex = outDex + 1u;
         }
     }
     return result;
