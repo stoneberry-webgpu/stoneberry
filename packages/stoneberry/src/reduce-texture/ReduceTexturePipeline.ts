@@ -9,20 +9,14 @@ import { BinOpTemplate } from "../util/BinOpTemplate.js";
 import { LoadTemplate, loadRedComponent } from "../util/LoadTemplate.js";
 import shaderWGSL from "./ReduceTexture.wgsl?raw";
 
-export interface ReduceBufferPipelineArgs {
-  device: GPUDevice;
-  workgroupThreads: number;
-  blockArea: number;
-  reduceTemplate: BinOpTemplate;
-}
 export const getReduceTexturePipeline = memoizeWithDevice(createReduceTexturePipeline);
 
-interface TextureReducePipeParams {
+export interface TextureReducePipeParams {
   device: GPUDevice;
   reduceTemplate: BinOpTemplate;
   textureFormat: GPUTextureFormat;
   workgroupSize?: Vec2;
-  blockLength?: number;
+  blockSize?: Vec2;
   loadTemplate?: LoadTemplate;
 }
 
@@ -32,7 +26,7 @@ export function createReduceTexturePipeline(
   const {
     device,
     workgroupSize = [4, 4],
-    blockLength = 2,
+    blockSize = [2,2],
     loadTemplate = loadRedComponent,
     textureFormat,
     reduceTemplate,
@@ -75,9 +69,10 @@ export function createReduceTexturePipeline(
   const texelType = texelLoadType(textureFormat);
 
   const processedWGSL = applyTemplate(shaderWGSL, {
-    blockLength,
     texelType,
-    blockArea: blockLength * blockLength,
+    blockWidth: blockSize[0],
+    blockHeight: blockSize[1],
+    blockArea: blockSize[0] * blockSize[1],
     ...reduceTemplate,
     ...loadTemplate,
   });
