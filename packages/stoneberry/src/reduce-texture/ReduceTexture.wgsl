@@ -11,9 +11,9 @@ struct Uniforms {
 @group(0) @binding(2) var<storage, read_write> out: array<Output>;  
 @group(0) @binding(11) var<storage, read_write> debug: array<f32>; // buffer to hold debug values
 
-let workgroupThreads= 4; //! let="const" 4=workgroupThreads
-let workgroupSizeX = 2; //! let="const" 2=workgroupSizeX
-let workgroupSizeY = 2; //! let="const" 2=workgroupSizeY
+const workgroupThreads= 4; //! 4=workgroupThreads
+const workgroupSizeX = 2; //!  2=workgroupSizeX
+const workgroupSizeY = 2; //!  2=workgroupSizeY
 
 var <workgroup> work:array<Output, workgroupThreads>; 
 
