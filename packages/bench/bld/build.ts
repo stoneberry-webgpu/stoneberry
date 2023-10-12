@@ -13,6 +13,7 @@ const taskMap = new Map<string, any>([
   ["version", version],
   ["dev", dev],
   ["bench", bench],
+  ["bench-dev", benchDev],
   ["bench-browser", benchBrowser],
 ]);
 
@@ -26,20 +27,25 @@ export async function dev(): Promise<void> {
   await benchBrowser();
 }
 
-export async function bench(): Promise<void> {
+export async function bench(outfile="benchmarks.csv", gitCheck=true): Promise<void> {
   const rev = await version();
   const server = await createViteServer();
   await server.listen(benchWebPort);
 
-  if (rev.endsWith("*")) {
+  if (gitCheck && rev.endsWith("*")) {
     // uncommitted changes, don't save reports
     console.warn("uncommitted changes, not saving benchmarks");
     await benchBrowser();
   } else {
     // record benchmark results from the browser via websocket
-    stdExec(`websocat -s ${benchResultsPort} --no-line >> benchmarks.csv`);
+    stdExec(`websocat -s ${benchResultsPort} --no-line >> ${outfile}`);
     await benchBrowser({ reportPort: benchResultsPort.toString() });
   }
+}
+
+/** run the benchmarks out to temp file */
+export async function benchDev():Promise<void> {
+  return bench("benchmarks-dev.csv", false);
 }
 
 export async function benchBrowser(searchParams?: Record<string, string>): Promise<void> {

@@ -4,7 +4,8 @@
   "type": "module",
   "scripts": {
     "dev": "bld/run dev",
-    "bench": "bld/run bench"
+    "bench": "bld/run bench",
+    "bench:dev": "bld/run bench-dev"
   },
   "dependencies": {
     "stoneberry": "workspace:*",
