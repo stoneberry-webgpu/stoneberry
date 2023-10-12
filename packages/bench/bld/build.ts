@@ -33,6 +33,7 @@ export async function bench(): Promise<void> {
 
   if (rev.endsWith("*")) {
     // uncommitted changes, don't save reports
+    console.warn("uncommitted changes, not saving benchmarks");
     await benchBrowser();
   } else {
     // record benchmark results from the browser via websocket
