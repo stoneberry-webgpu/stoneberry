@@ -1,14 +1,14 @@
 import { csvReport, FormattedCsv, GpuPerfReport } from "thimbleberry";
 import { gitVersion } from "../version/gitVersion.js";
 
-
 /** log a csv formatted version of the report to a localhost websocket, and the debug console */
 export function logCsvReport(
   reports: GpuPerfReport[],
   averageTime: number,
   srcSize: number,
   label: string,
-  utc = Date.now().toString()
+  utc = Date.now().toString(),
+  summaryOnly = false
 ): void {
   const averageTimeMs = averageTime.toFixed(2);
   const seconds = averageTime / 1000;
@@ -27,7 +27,12 @@ export function logCsvReport(
   const summaryText = summaryReport([[`${label} gb/sec`, gbSec]], utc, gitVersion);
 
   const allReports = reportTexts.join("");
-  const msg = allReports + "\n\n" + summaryText + "\n\n";
+  let msg: string;
+  if (summaryOnly) {
+    msg = summaryText + "\n\n";
+  } else {
+    msg = allReports + "\n\n" + summaryText + "\n\n";
+  }
   console.log(msg);
   logWebSocket(msg);
 }
