@@ -12,29 +12,29 @@ async function main(): Promise<void> {
   const device = await benchDevice();
 
   initGpuTiming(device);
-  // await benchScan(device, testUtc);
-  // await benchReduceBuffer(device, testUtc);
+  await benchScan(device, testUtc);
+  await benchReduceBuffer(device, testUtc);
   await benchReduceTexture(device, testUtc);
 }
 
 async function benchScan(device: GPUDevice, time: string): Promise<void> {
   const size = 2 ** 27;
-  const { averageClockTime, fastest } = await prefixScanBench(device, size, 50);
+  const { averageClockTime, fastest } = await prefixScanBench(device, size, 100);
 
-  logCsvReport([fastest], averageClockTime, size, "scan:", time);
+  logCsvReport([fastest], averageClockTime, size, "scan:", time, true);
 }
 
 async function benchReduceBuffer(device: GPUDevice, time: string): Promise<void> {
   const size = 2 ** 27;
-  const { averageClockTime, fastest } = await reduceBufferBench(device, size, 50);
+  const { averageClockTime, fastest } = await reduceBufferBench(device, size, 700);
 
-  logCsvReport([fastest], averageClockTime, size, "reduceBuf:", time);
+  logCsvReport([fastest], averageClockTime, size, "reduceBuf:", time, true);
 }
 
 async function benchReduceTexture(device: GPUDevice, time: string): Promise<void> {
   const size = [2 ** 13, 2 ** 13] as Vec2;
   const linearSize = size[0] * size[1];
-  const { averageClockTime, fastest } = await reduceTextureBench(device, size, 50);
+  const { averageClockTime, fastest } = await reduceTextureBench(device, size, 500);
 
-  logCsvReport([fastest], averageClockTime, linearSize, "reduceTex:", time);
+  logCsvReport([fastest], averageClockTime, linearSize, "reduceTex:", time, true);
 }
