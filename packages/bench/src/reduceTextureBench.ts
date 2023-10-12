@@ -41,9 +41,9 @@ export async function reduceTextureBench(
     source: texture,
     reduceTemplate: sumU32,
     loadComponent: "r",
-    forceWorkgroupSize: [8, 8],
+    forceWorkgroupSize: [32, 8],
     blockSize: [2, 2],
-    bufferBlockLength: 8,
+    bufferBlockLength: 4,
   });
 
   // verify correctness
