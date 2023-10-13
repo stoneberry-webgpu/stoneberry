@@ -44,20 +44,17 @@ fn reduceSrcToWork(grid: vec2<u32>, localIndex: u32) {
 fn fetchSrc(grid: vec2<u32>) -> array<Output, 4> { //! 4=blockArea
     var outDex = 0u; // output index
     var result = array<Output, 4>(); //! 4=blockArea
-    let srcWidth = u32(textureDimensions(srcTexture).x);
-    let srcHeight = u32(textureDimensions(srcTexture).y);
+    let srcWidth = textureDimensions(srcTexture).x;
+    let srcHeight = textureDimensions(srcTexture).y;
 
-    let rowStart = grid.x * 2u; //! 2=blockWidth
-    let rowEnd = rowStart + 2u; //! 2=blockWidth
-    let colStart = grid.y * 2u; //! 2=blockHeight
-    let colEnd = colStart + 2u; //! 2=blockHeight
-
-    for (var x = rowStart; x < rowEnd; x = x + 1u) {
-        for (var y = colStart; y < colEnd; y = y + 1u) {
+    for (var ix = 0u; ix < 2u; ix = ix + 1u) { //! 2=blockWidth
+        var x = i32(grid.x * 2u + ix); //! i32="u32" 2=blockWidth
+        for (var iy = 0u; iy < 2u; iy = iy + 1u) { //! 2=blockHeight
+            var y = i32(grid.y * 2u + iy); //! i32="u32" 2=blockHeight
             if x >= srcWidth || y >= srcHeight {
                 result[outDex] = identityOp();
             } else {
-                let srcSpot = vec2<i32>(i32(x), i32(y));
+                let srcSpot = vec2<i32>(x, y); //! i32="u32"
                 let texel = textureLoad(srcTexture, srcSpot, 0);
                 let loaded = loadOp(texel);
                 result[outDex] = createOp(loaded);
