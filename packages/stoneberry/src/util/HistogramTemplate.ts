@@ -10,16 +10,10 @@ export function histogramTemplate(
     outputElements: elemType,
     inputStruct: `histogram: array<${elemType}, ${size}>,`,
     outputStruct: `histogram: array<${elemType}, ${size}>,`,
-    binaryOp: "return Output(min(a.min, b.min), max(a.max, b.max));",
-    identityOp: "return Output(1e38, -1e38);",
-    loadOp: "return Output(a.min, a.max);",
-    createOp: `
-    if (a > 0.0) {
-        return Output(a, a);
-    } else {
-        return identityOp();
-    }
-    `,
+    binaryOp: "tbd",
+    identityOp: "tbd",
+    loadOp: "tbd",
+    createOp: "tbd",
   };
 }
 
