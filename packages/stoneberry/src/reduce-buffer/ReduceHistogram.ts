@@ -47,6 +47,9 @@ export interface HistogramParams {
 
   /** {@inheritDoc ReduceBuffer#label} */
   label?: string;
+
+  /** */
+  histogramSize?:number;
 }
 
 const defaults: Partial<HistogramParams> = {
@@ -56,6 +59,7 @@ const defaults: Partial<HistogramParams> = {
   forceWorkgroupLength: undefined,
   forceMaxWorkgroups: undefined,
   label: "",
+  histogramSize: 128,
 };
 
 /**
@@ -93,6 +97,8 @@ export class ReduceHistogram extends HasReactive implements ComposableShader {
     @defaultValue maxComputeWorkgroupsPerDimension from the `GPUDevice` (65535)
     */
   @reactively forceMaxWorkgroups?: number;
+
+  @reactively histogramSize!: number;
 
   device!: GPUDevice;
   private pipelineCache?: <T extends object>() => Cache<T>;
@@ -168,7 +174,7 @@ export class ReduceHistogram extends HasReactive implements ComposableShader {
   @reactively private get inputSlicing(): SlicingResults {
     return inputSlicing({
       elems: this.sourceElems,
-      elemsPerDispatch: this.workgroupLength * this.blockLength,
+      elemsPerDispatch: this.workgroupLength * this.blockLength * this.template.inputElementSize,
       maxDispatches: this.maxWorkgroups,
       uniformAlignSize: this.device.limits.minUniformBufferOffsetAlignment,
       baseUniformSize: 8,
@@ -199,13 +205,13 @@ export class ReduceHistogram extends HasReactive implements ComposableShader {
 
   @reactively private get sourceReductionBuffer(): GPUBuffer {
     const sourceDispatches = this.sourceReductions.reduce((a, b) => a + b, 0);
-    const sourceSize = sourceDispatches * 8 * 4; // output element size
+    const sourceSize = sourceDispatches * this.template.inputElementSize; 
     return this.createBuffer(sourceSize, `S${sourceDispatches}`);
   }
 
   @reactively private get layerReductionBuffers(): GPUBuffer[] {
     return this.layerReductions.map(dispatchSize => {
-      const size = dispatchSize * 32; // this.template.outputElementSize
+      const size = dispatchSize * this.template.outputElementSize; 
       return this.createBuffer(size, `L${dispatchSize}`);
     });
   }
@@ -228,6 +234,7 @@ export class ReduceHistogram extends HasReactive implements ComposableShader {
         workgroupThreads: this.workgroupLength,
         blockArea: this.blockLength,
         reduceTemplate: this.template,
+        histogramSize: this.histogramSize
       },
       this.pipelineCache
     );
@@ -315,7 +322,7 @@ export class ReduceHistogram extends HasReactive implements ComposableShader {
   }
 
   @reactively private get sourceElems(): number {
-    return this.source.size / 32 - this.sourceOffset; // input element size
+    return this.source.size / this.template.inputElementSize - this.sourceOffset; 
   }
 
   @reactively private get maxWorkgroups(): number {

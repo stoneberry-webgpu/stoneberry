@@ -1,10 +1,10 @@
 
 struct Input { 
-   histogram: array<u32, 8>, 
+   histogram: array<u32, 8>,  //! 8=histogramSize
 }
 
 struct Output { 
-   histogram: array<u32, 8>, 
+   histogram: array<u32, 8>, //! 8=histogramSize
 }
 
 
@@ -90,8 +90,8 @@ fn reduceBlock(a: array<Output, 4>) -> Output {
 }
 
 fn binaryOp(a: Output, b: Output) -> Output {
-    var result: array<u32,8>;
-    for (var i = 0u; i < 8u; i = i + 1u) {
+    var result: array<u32,8>; //! 8=histogramSize
+    for (var i = 0u; i < 8u; i = i + 1u) { //! 8=histogramSize
         result[i] = a.histogram[i] + b.histogram[i];
     }
     return Output(result);
@@ -102,5 +102,5 @@ fn loadOp(a: Input) -> Output {
 }
 
 fn identityOp() -> Output {
-    return Output(array<u32,8>());
+    return Output(array<u32,8>()); //! 8=histogramSize
 }

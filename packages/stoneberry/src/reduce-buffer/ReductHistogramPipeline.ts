@@ -1,5 +1,5 @@
 import { applyTemplate, memoizeWithDevice } from "thimbleberry";
-import { BinOpTemplate, maxF32 } from "../util/BinOpTemplate.js";
+import { BinOpTemplate } from "../util/BinOpTemplate.js";
 import shaderWGSL from "./ReduceHistogram.wgsl?raw";
 
 export interface HistogramPipelineArgs {
@@ -7,14 +7,13 @@ export interface HistogramPipelineArgs {
   workgroupThreads: number;
   blockArea: number;
   reduceTemplate: BinOpTemplate;
+  histogramSize: number;
 }
 export const getHistogramPipeline = memoizeWithDevice(createHistogramPipeline);
 
-function createHistogramPipeline(
-  params: HistogramPipelineArgs
-): GPUComputePipeline {
-  const { device, workgroupThreads = 4, blockArea = 4 } = params;
-  const { reduceTemplate = maxF32 } = params;
+function createHistogramPipeline(params: HistogramPipelineArgs): GPUComputePipeline {
+  const { device, workgroupThreads, blockArea = 4 } = params;
+  const { reduceTemplate, histogramSize } = params;
 
   const bindGroupLayout = device.createBindGroupLayout({
     label: "histogram",
@@ -45,6 +44,7 @@ function createHistogramPipeline(
   const processedWGSL = applyTemplate(shaderWGSL, {
     workgroupThreads,
     blockArea,
+    histogramSize,
     ...reduceTemplate,
   });
 

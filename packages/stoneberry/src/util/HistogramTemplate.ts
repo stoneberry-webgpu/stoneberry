@@ -5,8 +5,8 @@ export function histogramTemplate(
   elemType: "f32" | "u32"
 ): BinOpCreateTemplate {
   return {
-    inputElementSize: 8 * 4,
-    outputElementSize: 8 * 4,
+    inputElementSize: size * 4,
+    outputElementSize: size * 4,
     outputElements: elemType,
     inputStruct: `histogram: array<${elemType}, ${size}>,`,
     outputStruct: `histogram: array<${elemType}, ${size}>,`,
