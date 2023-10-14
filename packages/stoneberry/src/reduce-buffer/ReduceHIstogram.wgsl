@@ -57,11 +57,12 @@ fn reduceBufferToWork(grid: vec2<u32>, workGrid: vec2<u32>) {
     work[workGrid.x] = v;
 }
 
-fn fetchSrcBuffer(gridX: u32) -> array<Output, 4> {
-    let start = (gridX * 4u);
+// LATER benchmark striping/striding should reduce memory bank conflict
+fn fetchSrcBuffer(gridX: u32) -> array<Output, 4> {  //! 4=blockArea
+    let start = u.sourceOffset + (gridX * 4u); //! 4=blockArea
     let end = arrayLength(&src);
-    var a = array<Output,4>();
-    for (var i = 0u; i < 4u; i = i + 1u) {
+    var a = array<Output,4>(); //! 4=blockArea
+    for (var i = 0u; i < 4u; i = i + 1u) { //! 4=blockArea
         var idx = i + start;
         if idx < end {
             a[i] = loadOp(src[idx]);
@@ -75,15 +76,15 @@ fn fetchSrcBuffer(gridX: u32) -> array<Output, 4> {
 
 fn reduceWorkgroupToOut(grid: vec2<u32>, workIndex: u32) {
     var v = work[0];
-    for (var i = 1u; i < 4u; i = i + 1u) {
+    for (var i = 1u; i < 4u; i = i + 1u) { //! 4=workgroupThreads
         v = binaryOp(v, work[i]);
     }
     out[workIndex] = v;
 }
 
-fn reduceBlock(a: array<Output, 4>) -> Output {
+fn reduceBlock(a: array<Output, 4>) -> Output { //! 4=blockArea
     var v = a[0];
-    for (var i = 1u; i < 4u; i = i + 1u) {
+    for (var i = 1u; i < 4u; i = i + 1u) { //! 4=blockArea
         v = binaryOp(v, a[i]);
     }
     return v;

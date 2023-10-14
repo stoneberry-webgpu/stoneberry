@@ -159,7 +159,7 @@ export class ReduceHistogram extends HasReactive implements ComposableShader {
 
   /** Buffer containing results of the reduce after the shader has run. */
   @reactively get result(): GPUBuffer {
-    return this.resultBuffers().slice(-1)[0];
+    return this.resultBuffers.slice(-1)[0];
   }
 
   /** @internal */
@@ -174,7 +174,7 @@ export class ReduceHistogram extends HasReactive implements ComposableShader {
   @reactively private get inputSlicing(): SlicingResults {
     return inputSlicing({
       elems: this.sourceElems,
-      elemsPerDispatch: this.workgroupLength * this.blockLength * this.template.inputElementSize,
+      elemsPerDispatch: this.workgroupLength * this.blockLength,
       maxDispatches: this.maxWorkgroups,
       uniformAlignSize: this.device.limits.minUniformBufferOffsetAlignment,
       baseUniformSize: 8,
@@ -199,7 +199,7 @@ export class ReduceHistogram extends HasReactive implements ComposableShader {
   }
 
   /** buffers for both source and layer reductions */
-  @reactively private resultBuffers(): GPUBuffer[] {
+  @reactively private get resultBuffers(): GPUBuffer[] {
     return [this.sourceReductionBuffer, ...this.layerReductionBuffers];
   }
 
@@ -254,7 +254,7 @@ export class ReduceHistogram extends HasReactive implements ComposableShader {
     const uniforms = this.uniforms;
     // chain source -> result1 -> result2 -> ...
     return this.layerReductionBuffers.map(resultBuf => {
-      const resultElems = resultBuf.size / 32; // outputElementSize;
+      const resultElems = resultBuf.size / this.template.outputElementSize; 
       const bindLabel = `${srcElems}`;
       const bindGroup = this.createBindGroup(uniforms, srcBuf, resultBuf, bindLabel);
       srcElems = resultElems;
