@@ -10,9 +10,19 @@ export function histogramTemplate(
     outputElements: elemType,
     inputStruct: `histogram: array<${elemType}, ${size}>,`,
     outputStruct: `histogram: array<${elemType}, ${size}>,`,
-    binaryOp: "tbd",
-    identityOp: "tbd",
-    loadOp: "tbd",
+    binaryOp: `
+        var result: array<u32,${size}>; 
+        for (var i = 0u; i < ${size}u; i = i + 1u) { 
+            result[i] = a.histogram[i] + b.histogram[i];
+        }
+        return Output(result);
+    `,
+    identityOp: `
+        return Output(array<u32,${size}>()); 
+    `,
+    loadOp: `
+        return Output(a.histogram);
+    `,
     createOp: "tbd",
   };
 }

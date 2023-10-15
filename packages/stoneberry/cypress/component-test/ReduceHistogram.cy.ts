@@ -1,12 +1,11 @@
 import {
   labeledGpuDevice,
   mapN,
-  printBuffer,
   trackRelease,
   trackUse,
-  withAsyncUsage,
+  withAsyncUsage
 } from "thimbleberry";
-import { ReduceHistogram } from "../../src/reduce-buffer/ReduceHistogram.js";
+import { ReduceBuffer } from "../../src/reduce-buffer/ReduceBuffer.js";
 import { histogramTemplate } from "../../src/util/HistogramTemplate.js";
 import { makeBuffer } from "./util/MakeBuffer";
 
@@ -19,7 +18,7 @@ it("reduce 2 histograms within one src block", async () => {
     const source = makeBuffer(device, sourceData, "source buffer", Uint32Array);
     const histogramSize = 4;
     const template = histogramTemplate(histogramSize, "u32");
-    const shader = new ReduceHistogram({ device, source, template, histogramSize });
+    const shader = new ReduceBuffer({ device, source, template });
     trackUse(shader);
 
     const result = await shader.reduce();
@@ -37,12 +36,11 @@ it("reduce histograms across workgroup threads", async () => {
     const source = makeBuffer(device, sourceData, "source buffer", Uint32Array);
     const histogramSize = 4;
     const template = histogramTemplate(histogramSize, "u32");
-    const shader = new ReduceHistogram({
+    const shader = new ReduceBuffer({
       device,
       source,
       template,
       blockLength: 2,
-      histogramSize,
     });
     trackUse(shader);
 
@@ -61,11 +59,10 @@ it("reduce histograms across workgroups (2nd layer)", async () => {
     const source = makeBuffer(device, sourceData, "source buffer", Uint32Array);
     const histogramSize = 4;
     const template = histogramTemplate(histogramSize, "u32");
-    const shader = new ReduceHistogram({
+    const shader = new ReduceBuffer({
       device,
       source,
       template,
-      histogramSize,
       forceWorkgroupLength: 2,
       blockLength: 2,
     });
