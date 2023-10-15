@@ -153,7 +153,7 @@ export class ReduceBuffer extends HasReactive implements ComposableShader {
 
   /** Buffer containing results of the reduce after the shader has run. */
   @reactively get result(): GPUBuffer {
-    return this.resultBuffers().slice(-1)[0];
+    return this.resultBuffers.slice(-1)[0];
   }
 
   /** @internal */
@@ -193,7 +193,7 @@ export class ReduceBuffer extends HasReactive implements ComposableShader {
   }
 
   /** buffers for both source and layer reductions */
-  @reactively private resultBuffers(): GPUBuffer[] {
+  @reactively private get resultBuffers(): GPUBuffer[] {
     return [this.sourceReductionBuffer, ...this.layerReductionBuffers];
   }
 
