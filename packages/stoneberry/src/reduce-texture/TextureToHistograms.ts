@@ -13,7 +13,7 @@ import {
 } from "thimbleberry";
 import { BinOpTemplate } from "../util/BinOpTemplate.js";
 import { maxWorkgroupSize } from "../util/LimitWorkgroupSize.js";
-import { LoadTemplate } from "../util/LoadTemplate.js";
+import { LoadTemplate, loadRedComponent } from "../util/LoadTemplate.js";
 import { getTextureToHistogramsPipeline } from "./TextureToHistogramsPipeline.js";
 
 export interface TextureToHistogramsParams {
@@ -33,6 +33,8 @@ export interface TextureToHistogramsParams {
    * and reexecuted if the function's `@reactively` source values change.
    */
   minMaxBuffer: ValueOrFn<GPUBuffer>;
+
+  numBuckets?: number;
 
   /** {@inheritDoc TextureToHistograms#reduceTemplate} */
   reduceTemplate: BinOpTemplate;
@@ -57,12 +59,16 @@ const defaults: Partial<TextureToHistogramsParams> = {
   blockSize: [4, 4],
   forceWorkgroupSize: undefined,
   pipelineCache: undefined,
+  loadTemplate: loadRedComponent,
   label: "",
+  numBuckets: 256
 };
 
-/** reduce a gpu texture to a buffer by running binary operations over elements.
- * Each workgroup thread reduces a blockSize group of elements to one element,
- * and each dispatch reduces the workgroup elements to one element.
+/** calc histograms from gpu texture 
+ * Each workgroup thread reads a blockSize group of elements to one histogram,
+ * and each dispatch reduces the workgroup histograms to one histogram.
+ * The result is a buffer of histograms, one per dispatched workgroup.
+ * (The resulting histogram buffer should be reduced to one histogram via ReduceBuffer)
  */
 export class TextureToHistograms extends HasReactive implements ComposableShader {
   /** Source texture to be counted in a histogram */
@@ -76,6 +82,9 @@ export class TextureToHistograms extends HasReactive implements ComposableShader
 
   /** macros to select component from vec4 */
   @reactively loadTemplate!: LoadTemplate;
+
+  /** number of histogram buckets */
+  @reactively numBuckets!: number;
 
   /** Debug label attached to gpu objects for error reporting */
   @reactively label?: string;
@@ -153,6 +162,7 @@ export class TextureToHistograms extends HasReactive implements ComposableShader
         reduceTemplate: this.reduceTemplate,
         loadTemplate: this.loadTemplate,
         textureFormat: this.source.format,
+        numBuckets: this.numBuckets
       },
       this.pipelineCache
     );

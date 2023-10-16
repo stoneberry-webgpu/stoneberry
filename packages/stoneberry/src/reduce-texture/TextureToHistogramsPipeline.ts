@@ -9,7 +9,9 @@ import { BinOpTemplate } from "../util/BinOpTemplate.js";
 import { LoadTemplate, loadRedComponent } from "../util/LoadTemplate.js";
 import shaderWGSL from "./TextureToHistograms.wgsl?raw";
 
-export const getTextureToHistogramsPipeline = memoizeWithDevice(createTextureToHistogramsPipeline);
+export const getTextureToHistogramsPipeline = memoizeWithDevice(
+  createTextureToHistogramsPipeline
+);
 
 export interface TextureHistogramsPipelineArgs {
   device: GPUDevice;
@@ -18,6 +20,7 @@ export interface TextureHistogramsPipelineArgs {
   workgroupSize?: Vec2;
   blockSize?: Vec2;
   loadTemplate?: LoadTemplate;
+  numBuckets: number;
 }
 
 export function createTextureToHistogramsPipeline(
@@ -26,10 +29,11 @@ export function createTextureToHistogramsPipeline(
   const {
     device,
     workgroupSize = [4, 4],
-    blockSize = [2,2],
+    blockSize = [2, 2],
     loadTemplate = loadRedComponent,
     textureFormat,
     reduceTemplate,
+    numBuckets = 256,
   } = params;
 
   const sampleType = textureSampleType(textureFormat);
@@ -49,10 +53,11 @@ export function createTextureToHistogramsPipeline(
         texture: {
           sampleType,
         },
-      },      {
+      },
+      {
         binding: 2, // min/max buffer (produced from earlier frame reduce)
         visibility: GPUShaderStage.COMPUTE,
-        buffer: { type: "read-only-storage" }
+        buffer: { type: "read-only-storage" },
       },
       {
         binding: 3, // histograms bucket counts output
@@ -62,7 +67,7 @@ export function createTextureToHistogramsPipeline(
         },
       },
       {
-        binding: 4, // bucket sums output 
+        binding: 4, // bucket sums output
         visibility: GPUShaderStage.COMPUTE,
         buffer: {
           type: "storage",
@@ -84,8 +89,10 @@ export function createTextureToHistogramsPipeline(
     blockWidth: blockSize[0],
     blockHeight: blockSize[1],
     blockArea: blockSize[0] * blockSize[1],
+    numBuckets,
     ...reduceTemplate,
     ...loadTemplate,
+    inputElements: reduceTemplate.outputElements
   });
 
   const module = device.createShaderModule({
@@ -98,10 +105,10 @@ export function createTextureToHistogramsPipeline(
       module,
       entryPoint: "textureToHistograms",
       constants: {
-        workgroupThreads: workgroupSize[0] * workgroupSize[1],
         workgroupSizeX: workgroupSize[0],
         workgroupSizeY: workgroupSize[1],
-      }
+        numBuckets,
+      },
     },
     layout: device.createPipelineLayout({
       label: "textureToHistograms pipeline layout",
