@@ -19,8 +19,8 @@ struct Range {
 @group(0) @binding(0) var<uniform> u: Uniforms;
 @group(0) @binding(1) var srcTexture: texture_2d<u32>; // source data //! u32=inputElements
 @group(0) @binding(2) var<storage, read> maxBuffer: array<Range>; 
-@group(0) @binding(3) var<storage, read_write> histogramOut: array<u32>; 
-@group(0) @binding(4) var<storage, read_write> sumOut: array<u32>;
+@group(0) @binding(3) var<storage, read_write> histogramOut: array<u32>; //! u32=inputElements
+@group(0) @binding(4) var<storage, read_write> sumOut: array<u32>; //! u32=inputElements
 @group(0) @binding(11) var<storage, read_write> debug: array<f32>; // buffer to hold debug values
 
 override workgroupSizeX = 4;      

@@ -36,8 +36,8 @@ it("texture to histogram", async () => {
     const group = new ShaderGroup(device, shader);
     group.dispatch();
 
-    await printBuffer(device, shader.histogramsResult);
-    await printBuffer(device, shader.sumsResult);
+    await printBuffer(device, shader.histogramsResult, "u32");
+    await printBuffer(device, shader.sumsResult, "u32");
 
     trackRelease(shader);
   });
