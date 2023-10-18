@@ -113,7 +113,7 @@ it("histogram texture, with reduction, r8uint", async () => {
         source,
         blockSize: [2, 2],
         forceWorkgroupSize: [1, 1],
-        histogramTemplate: histogramTemplate(4, "f32"),
+        histogramTemplate: histogramTemplate(4, "u32"),
         loadComponent: "r",
         range: [1, 10],
       });
