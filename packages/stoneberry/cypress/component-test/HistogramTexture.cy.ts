@@ -1,11 +1,9 @@
 import {
-  copyBuffer,
   labeledGpuDevice,
-  printTexture,
   trackRelease,
   trackUse,
   withAsyncUsage,
-  withLeakTrack,
+  withLeakTrack
 } from "thimbleberry";
 import { histogramTemplate } from "../../src/util/HistogramTemplate.js";
 import { HistogramTexture } from "./../../src/histogram-texture/HistogramTexture";
@@ -126,5 +124,31 @@ it("histogram texture, with reduction, r8uint", async () => {
   });
 });
 
-// TODO test sint texture
-// TODO test 8bit texture
+it("histogram texture, with reduction, r32sint", async () => {
+  await withAsyncUsage(async () => {
+    const device = await labeledGpuDevice();
+    trackUse(device);
+
+    const sourceData = [
+      [-8, -3, 3, 5],
+      [2, 3, 8, 9],
+    ];
+    const source = makeTexture(device, sourceData, "r32sint");
+    await withLeakTrack(async () => {
+      const shader = new HistogramTexture({
+        device,
+        source,
+        blockSize: [2, 2],
+        forceWorkgroupSize: [1, 1],
+        histogramTemplate: histogramTemplate(4, "i32"),
+        loadComponent: "r",
+        range: [-10, 10],
+      });
+      trackUse(shader);
+      const result = await shader.histogram();
+      expect(result).deep.equals([1, 1, 3, 3]);
+
+      trackRelease(shader);
+    });
+  });
+});

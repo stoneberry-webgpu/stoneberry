@@ -6,7 +6,7 @@ export interface HistogramTemplate extends BinOpCreateTemplate {
 
 export function histogramTemplate(
   buckets: number,
-  elemType: "f32" | "u32"
+  elemType: "f32" | "u32" | "i32"
 ): HistogramTemplate {
   return {
     inputElementSize: buckets * 4,
