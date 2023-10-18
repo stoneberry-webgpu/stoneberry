@@ -55,9 +55,6 @@ fn textureToHistograms(
 
     if workGrid.x == 0u && workGrid.y == 0u {
         let workIndex = workgroupId.x + workgroupId.y * numWorkgroups.x;
-        if grid.x == 1u {
-            debug[0] = 11.0;
-        }
         copyToOuput(toUIntRange, workIndex);
     }
 }
