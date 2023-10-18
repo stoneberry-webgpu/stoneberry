@@ -29,10 +29,11 @@ override numBuckets = 10u;
 const numBucketsFloat= f32(100);  //! 100=buckets 
 const maxBucket = i32(100u - 1u);  //! 100=buckets
 
+var <private>valueRange: f32;
+
 // we accumulate bucket totals in workgroup memory and then copy the local buckets to global memory
 var<workgroup> localHistogram: array<atomic<u32>, numBuckets>;
 var<workgroup> localSum: array<atomic<u32>, numBuckets>;
-
 
 @compute 
 @workgroup_size(workgroupSizeX, workgroupSizeY, 1) 
@@ -45,6 +46,7 @@ fn textureToHistograms(
     let minMax = maxBuffer[arrayLength(&maxBuffer) - 1u];
     let minValue = u32(minMax.min); //! u32=inputElements
     let maxValue = u32(minMax.max); //! u32=inputElements
+    valueRange = f32(maxValue) - f32(minValue);
     let largeU32 = 1000.0 * 1000.0 * 1000.0; // near to max u32 (4 billion), with some room for overflow
     let toUIntRange: f32 = largeU32 / f32(maxValue);    // conversion factor to convert a density value to a u32 
 
@@ -53,7 +55,7 @@ fn textureToHistograms(
 
     if workGrid.x == 0u && workGrid.y == 0u {
         let workIndex = workgroupId.x + workgroupId.y * numWorkgroups.x;
-        if (grid.x == 1u) {
+        if grid.x == 1u {
             debug[0] = 11.0;
         }
         copyToOuput(toUIntRange, workIndex);
@@ -109,7 +111,7 @@ fn toBucket(p: u32,  //! u32=inputElements
     if p >= max {
         bucket = maxBucket; // TODO do we really want to count values > max?
     } else {
-        let i = f32(p - min) / f32(max - min); // TODO precalc max-min 
+        let i = f32(p - min) / valueRange;
         bucket = i32(floor(i * numBucketsFloat));
     }
     return bucket;
