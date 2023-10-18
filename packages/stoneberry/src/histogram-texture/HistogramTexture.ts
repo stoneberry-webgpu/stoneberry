@@ -6,7 +6,7 @@ import {
   Vec2,
   assignParams,
   reactiveTrackUse,
-  trackContext,
+  trackContext
 } from "thimbleberry";
 import { ReduceBuffer } from "../reduce-buffer/ReduceBuffer.js";
 import {
@@ -59,7 +59,7 @@ export interface HistogramTextureParams {
 
 const defaults: Partial<HistogramTextureParams> = {
   blockSize: [4, 4],
-  bufferBlockLength: undefined,
+  bufferBlockLength: 8,
   loadComponent: "r",
   forceWorkgroupSize: undefined,
   pipelineCache: undefined,
@@ -133,12 +133,14 @@ export class HistogramTexture extends HasReactive implements ComposableShader {
     if (this.minMaxBuffer) {
       return this.minMaxBuffer;
     } else if (this.range) {
+      // if now minMax buffer is provided, make our own
       const buffer = this.device.createBuffer({
         label: "histogram range buffer",
         size: Uint32Array.BYTES_PER_ELEMENT * 2,
         usage: GPUBufferUsage.STORAGE | GPUBufferUsage.COPY_DST,
         mappedAtCreation: true,
       });
+      reactiveTrackUse(buffer, this.usageContext);
 
       let data: Uint32Array | Float32Array;
       if (this.histogramTemplate.outputElements === "f32") {

@@ -53,7 +53,7 @@ export interface ReduceTextureParams {
 
 const defaults: Partial<ReduceTextureParams> = {
   blockSize: [4, 4],
-  bufferBlockLength: undefined,
+  bufferBlockLength: 16,
   loadComponent: "r",
   forceWorkgroupSize: undefined,
   pipelineCache: undefined,
