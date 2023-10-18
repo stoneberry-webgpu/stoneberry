@@ -34,7 +34,8 @@ export interface TextureToHistogramsParams {
    */
   minMaxBuffer: ValueOrFn<GPUBuffer>;
 
-  numBuckets?: number;
+  /** {@inheritDoc TextureToHistograms#buckets} */
+  buckets?: number;
 
   /** {@inheritDoc TextureToHistograms#reduceTemplate} */
   reduceTemplate: BinOpTemplate;
@@ -61,7 +62,7 @@ const defaults: Partial<TextureToHistogramsParams> = {
   pipelineCache: undefined,
   loadTemplate: loadRedComponent,
   label: "",
-  numBuckets: 256
+  buckets: 256
 };
 
 /** calc histograms from gpu texture 
@@ -84,7 +85,7 @@ export class TextureToHistograms extends HasReactive implements ComposableShader
   @reactively loadTemplate!: LoadTemplate;
 
   /** number of histogram buckets */
-  @reactively numBuckets!: number;
+  @reactively buckets!: number;
 
   /** Debug label attached to gpu objects for error reporting */
   @reactively label?: string;
@@ -163,7 +164,7 @@ export class TextureToHistograms extends HasReactive implements ComposableShader
         reduceTemplate: this.reduceTemplate,
         loadTemplate: this.loadTemplate,
         textureFormat: this.source.format,
-        numBuckets: this.numBuckets
+        buckets: this.buckets
       },
       this.pipelineCache
     );

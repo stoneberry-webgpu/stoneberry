@@ -19,17 +19,15 @@ struct Range {
 @group(0) @binding(0) var<uniform> u: Uniforms;
 @group(0) @binding(1) var srcTexture: texture_2d<u32>; // source data //! u32=inputElements
 @group(0) @binding(2) var<storage, read> maxBuffer: array<Range>; 
-@group(0) @binding(3) var<storage, read_write> histogramOut: array<array<u32, numBuckets>>; //! u32=inputElements numBuckets=numBuckets
-@group(0) @binding(4) var<storage, read_write> sumOut: array<array<u32, numBuckets>>; //! u32=inputElements numBuckets=numBuckets
+@group(0) @binding(3) var<storage, read_write> histogramOut: array<array<u32, 128>>; //! u32=inputElements 128=buckets
+@group(0) @binding(4) var<storage, read_write> sumOut: array<array<u32, 128>>; //! u32=inputElements 128=buckets
 @group(0) @binding(11) var<storage, read_write> debug: array<f32>; // buffer to hold debug values
 
 override workgroupSizeX = 4;      
 override workgroupSizeY = 4;      
 override numBuckets = 10u;      
-
-// TODO rename numBuckets macro replacement to buckets
-const numBucketsFloat= f32(100);  //! 100=numBuckets 
-const maxBucket = i32(100u - 1u);  //! 100=numBuckets
+const numBucketsFloat= f32(100);  //! 100=buckets 
+const maxBucket = i32(100u - 1u);  //! 100=buckets
 
 // we accumulate bucket totals in workgroup memory and then copy the local buckets to global memory
 var<workgroup> localHistogram: array<atomic<u32>, numBuckets>;
@@ -129,5 +127,3 @@ fn copyToOuput(toUIntRange: f32, workIndex: u32) {
 fn loadOp(a: vec4<u32>) -> u32 { //! u32=inputElements u32=inputElements 
     return a.r; //! "return a.r;"=loadOp
 }
-
-// LATER consider multilevel reduction of histograms

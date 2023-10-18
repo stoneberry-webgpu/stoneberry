@@ -20,7 +20,7 @@ export interface TextureHistogramsPipelineArgs {
   workgroupSize?: Vec2;
   blockSize?: Vec2;
   loadTemplate?: LoadTemplate;
-  numBuckets: number;
+  buckets: number;
 }
 
 export function createTextureToHistogramsPipeline(
@@ -33,7 +33,7 @@ export function createTextureToHistogramsPipeline(
     loadTemplate = loadRedComponent,
     textureFormat,
     reduceTemplate,
-    numBuckets = 256,
+    buckets = 256,
   } = params;
 
   const sampleType = textureSampleType(textureFormat);
@@ -89,7 +89,7 @@ export function createTextureToHistogramsPipeline(
     blockWidth: blockSize[0],
     blockHeight: blockSize[1],
     blockArea: blockSize[0] * blockSize[1],
-    numBuckets,
+    buckets,
     ...reduceTemplate,
     ...loadTemplate,
     inputElements: reduceTemplate.outputElements
@@ -107,7 +107,7 @@ export function createTextureToHistogramsPipeline(
       constants: {
         workgroupSizeX: workgroupSize[0],
         workgroupSizeY: workgroupSize[1],
-        numBuckets,
+        numBuckets: buckets,
       },
     },
     layout: device.createPipelineLayout({

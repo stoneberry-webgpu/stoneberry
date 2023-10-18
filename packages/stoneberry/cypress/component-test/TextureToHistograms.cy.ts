@@ -29,7 +29,7 @@ it("texture to one histogram, one thread", async () => {
       source,
       minMaxBuffer,
       reduceTemplate,
-      numBuckets: histogramSize,
+      buckets: histogramSize,
     });
     trackUse(shader);
 
@@ -61,7 +61,7 @@ it("texture to one histograms, two threads", async () => {
       source,
       minMaxBuffer,
       reduceTemplate,
-      numBuckets: histogramSize,
+      buckets: histogramSize,
       blockSize: [2, 2],
       forceWorkgroupSize: [2, 2],
     });
@@ -95,7 +95,7 @@ it("texture to two histograms, two dispatches", async () => {
       source,
       minMaxBuffer,
       reduceTemplate,
-      numBuckets: histogramSize,
+      buckets: histogramSize,
       blockSize: [2, 2],
       forceWorkgroupSize: [1, 1],
     });
