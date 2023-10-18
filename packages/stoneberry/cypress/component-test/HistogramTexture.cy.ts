@@ -21,7 +21,6 @@ it("histogram texture, no internal reduction", async () => {
       [2, 9],
     ];
     const source = makeTexture(device, sourceData, "r32uint");
-    await printTexture(device, source, 0);
     await withLeakTrack(async () => {
       const shader = new HistogramTexture({
         device,
@@ -50,7 +49,6 @@ it("histogram texture, with reduction", async () => {
       [2, 3, 8, 9],
     ];
     const source = makeTexture(device, sourceData, "r32uint");
-    await printTexture(device, source, 0);
     await withLeakTrack(async () => {
       const shader = new HistogramTexture({
         device,
@@ -70,7 +68,35 @@ it("histogram texture, with reduction", async () => {
   });
 });
 
-// TODO test various sizes
+it("histogram texture, with reduction, float", async () => {
+  await withAsyncUsage(async () => {
+    const device = await labeledGpuDevice();
+    trackUse(device);
+
+    const sourceData = [
+      [1, 1, 3, 5],
+      [2, 3, 8, 9],
+    ];
+    const source = makeTexture(device, sourceData, "r32float");
+    await withLeakTrack(async () => {
+      const shader = new HistogramTexture({
+        device,
+        source,
+        blockSize: [2, 2],
+        forceWorkgroupSize: [1, 1],
+        histogramTemplate: histogramTemplate(4, "f32"),
+        loadComponent: "r",
+        range: [1, 10],
+      });
+      trackUse(shader);
+      const result = await shader.histogram();
+      expect(result).deep.equals([5, 1, 0, 2]);
+
+      trackRelease(shader);
+    });
+  });
+});
+
 // TODO test sint texture
 // TODO test uint texture
 // TODO test 8bit texture
