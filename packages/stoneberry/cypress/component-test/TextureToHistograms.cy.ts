@@ -90,7 +90,6 @@ it("texture to two histograms, two dispatches", async () => {
       [2, 3, 4, 4],
     ];
     const source = makeTexture(device, sourceData, "r32uint");
-    await printTexture(device, source);
     const shader = new TextureToHistograms({
       device,
       source,
@@ -109,10 +108,6 @@ it("texture to two histograms, two dispatches", async () => {
     const sums = await copyBuffer(device, shader.sumsResult, "u32");
     expect(counts).deep.equals([2, 1, 1, 0, 0, 0, 1, 3]);
     expect(sums).deep.equals([2, 2, 3, 0, 0, 0, 3, 12]);
-
-    await printBuffer(device, shader.histogramsResult, "u32");
-    await printBuffer(device, shader.sumsResult, "u32");
-    await printBuffer(device, shader.debugBuffer);
 
     trackRelease(shader);
   });
