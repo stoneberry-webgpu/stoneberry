@@ -115,7 +115,8 @@ export class ReduceTexture extends HasReactive implements ComposableShader {
    * @returns a single reduced result value in an array
    */
   async reduce(): Promise<number[]> {
-    return runAndFetchResult(this, this.reduceTemplate, `${this.label} reduceTexture`);
+    const label = `${this.label} reduceTexture`;
+    return runAndFetchResult(this, this.reduceTemplate.outputElements!, label);
   }
 
   /** result of the final reduction pass, one element in size */

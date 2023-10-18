@@ -145,7 +145,8 @@ export class PrefixScan<T = number> extends HasReactive implements ComposableSha
    * @returns the scanned result in an array
    */
   async scan(): Promise<number[]> {
-    return runAndFetchResult(this, this.template, `${this.label} prefixScan`);
+    const label = `${this.label} prefixScan`;
+    return runAndFetchResult(this, this.template.outputElements!, label);
   }
 
   /** Buffer containing results of the scan after the shader has run. */

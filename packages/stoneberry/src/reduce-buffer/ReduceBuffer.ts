@@ -148,7 +148,8 @@ export class ReduceBuffer extends HasReactive implements ComposableShader {
    * @returns a single reduced result value in an array
    */
   async reduce(): Promise<number[]> {
-    return runAndFetchResult(this, this.template, `${this.label} reduceBuffer`);
+    const format = this.template.outputElements!;
+    return runAndFetchResult(this, format, `${this.label} reduceBuffer`);
   }
 
   /** Buffer containing results of the reduce after the shader has run. */

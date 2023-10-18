@@ -117,7 +117,7 @@ export class HistogramTexture extends HasReactive implements ComposableShader {
    * @returns a single reduced result value in an array
    */
   @reactively async histogram(): Promise<number[]> {
-    return runAndFetchResult(this, this.histogramTemplate, "u32");
+    return runAndFetchResult(this, "u32", `${this.label} histogram`);
   }
 
   /** result of the final reduction pass, one element in size */
