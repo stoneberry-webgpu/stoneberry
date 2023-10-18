@@ -1,4 +1,4 @@
-import { ComposableShader, withBufferCopy } from "thimbleberry";
+import { ComposableShader, GPUElementFormat, withBufferCopy } from "thimbleberry";
 import { OutputTemplate } from "./BinOpTemplate.js";
 
 interface ResultComponent extends ComposableShader {
@@ -8,7 +8,8 @@ interface ResultComponent extends ComposableShader {
 
 export async function runAndFetchResult(
   component: ResultComponent,
-  template: OutputTemplate,
+  template?: OutputTemplate,
+  format?: GPUElementFormat,
   label?: string
 ): Promise<number[]> {
   const device = component.device;
@@ -19,12 +20,12 @@ export async function runAndFetchResult(
   device.queue.submit([commands.finish()]);
   await device.queue.onSubmittedWorkDone();
 
-  const format = template.outputElements;
-  if (!format) {
+  const elemFormat = format || template?.outputElements;
+  if (!elemFormat) {
     throw new Error(
       `outputElement format not defined: ${JSON.stringify(template, null, 2)}`
     );
   }
-  const data = await withBufferCopy(device, component.result, format, d => d.slice());
+  const data = await withBufferCopy(device, component.result, elemFormat, d => d.slice());
   return [...data];
 }
