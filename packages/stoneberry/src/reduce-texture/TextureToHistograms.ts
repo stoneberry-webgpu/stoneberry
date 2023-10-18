@@ -106,12 +106,14 @@ export class TextureToHistograms extends HasReactive implements ComposableShader
   }
 
   commands(commandEncoder: GPUCommandEncoder): void {
+    const dispatchSize = this.dispatchSize;
+    console.log("dispatchSize", dispatchSize);
     const timestampWrites = gpuTiming?.timestampWrites("TextureToHistograms");
     const passEncoder = commandEncoder.beginComputePass({ timestampWrites });
     passEncoder.label = "histogram pass";
     passEncoder.setPipeline(this.pipeline());
     passEncoder.setBindGroup(0, this.bindGroup());
-    passEncoder.dispatchWorkgroups(this.dispatchSize[0], this.dispatchSize[1]);
+    passEncoder.dispatchWorkgroups(dispatchSize[0], dispatchSize[1]);
     passEncoder.end();
   }
 

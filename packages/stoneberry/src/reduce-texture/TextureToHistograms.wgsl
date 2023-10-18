@@ -19,13 +19,15 @@ struct Range {
 @group(0) @binding(0) var<uniform> u: Uniforms;
 @group(0) @binding(1) var srcTexture: texture_2d<u32>; // source data //! u32=inputElements
 @group(0) @binding(2) var<storage, read> maxBuffer: array<Range>; 
-@group(0) @binding(3) var<storage, read_write> histogramOut: array<u32>; //! u32=inputElements
-@group(0) @binding(4) var<storage, read_write> sumOut: array<u32>; //! u32=inputElements
+@group(0) @binding(3) var<storage, read_write> histogramOut: array<array<u32, numBuckets>>; //! u32=inputElements numBuckets=numBuckets
+@group(0) @binding(4) var<storage, read_write> sumOut: array<array<u32, numBuckets>>; //! u32=inputElements numBuckets=numBuckets
 @group(0) @binding(11) var<storage, read_write> debug: array<f32>; // buffer to hold debug values
 
 override workgroupSizeX = 4;      
 override workgroupSizeY = 4;      
 override numBuckets = 10u;      
+
+// TODO rename numBuckets macro replacement to buckets
 const numBucketsFloat= f32(100);  //! 100=numBuckets 
 const maxBucket = i32(100u - 1u);  //! 100=numBuckets
 
@@ -50,8 +52,13 @@ fn textureToHistograms(
 
     collectBlock(grid.xy, minValue, maxValue, toUIntRange);
     workgroupBarrier();
-    if grid.x == 0u && grid.y == 0u {
-        copyToOuput(toUIntRange);
+
+    if workGrid.x == 0u && workGrid.y == 0u {
+        let workIndex = workgroupId.x + workgroupId.y * numWorkgroups.x;
+        if (grid.x == 1u) {
+            debug[0] = 11.0;
+        }
+        copyToOuput(toUIntRange, workIndex);
     }
 }
 
@@ -104,22 +111,22 @@ fn toBucket(p: u32,  //! u32=inputElements
     if p >= max {
         bucket = maxBucket; // TODO do we really want to count values > max?
     } else {
-        let i = f32(p - min) / f32(max - min);
+        let i = f32(p - min) / f32(max - min); // TODO precalc max-min 
         bucket = i32(floor(i * numBucketsFloat));
     }
     return bucket;
 }
 
 // copy the workgroup local histogram array to the output buffer
-fn copyToOuput(toUIntRange: f32) {
+fn copyToOuput(toUIntRange: f32, workIndex: u32) {
     for (var i = 0u; i < numBuckets; i++) {
-        histogramOut[i] = atomicLoad(&localHistogram[i]);
+        histogramOut[workIndex][i] = atomicLoad(&localHistogram[i]);
         let sum = f32(atomicLoad(&localSum[i])) / toUIntRange;
-        sumOut[i] = u32(sum); //! u32=inputElements
+        sumOut[workIndex][i] = u32(sum); //! u32=inputElements
     }
 }
 
-fn loadOp(a: vec4<u32>) -> u32 { //! u32=inputElements u32=inputElements
+fn loadOp(a: vec4<u32>) -> u32 { //! u32=inputElements u32=inputElements 
     return a.r; //! "return a.r;"=loadOp
 }
 
