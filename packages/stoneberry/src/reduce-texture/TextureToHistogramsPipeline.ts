@@ -5,7 +5,7 @@ import {
   texelLoadType,
   textureSampleType,
 } from "thimbleberry";
-import { BinOpTemplate } from "../util/BinOpTemplate.js";
+import { HistogramTemplate } from "../util/HistogramTemplate.js";
 import { LoadTemplate, loadRedComponent } from "../util/LoadTemplate.js";
 import shaderWGSL from "./TextureToHistograms.wgsl?raw";
 
@@ -15,12 +15,11 @@ export const getTextureToHistogramsPipeline = memoizeWithDevice(
 
 export interface TextureHistogramsPipelineArgs {
   device: GPUDevice;
-  reduceTemplate: BinOpTemplate;
+  histogramTemplate: HistogramTemplate;
   textureFormat: GPUTextureFormat;
   workgroupSize?: Vec2;
   blockSize?: Vec2;
   loadTemplate?: LoadTemplate;
-  buckets: number;
 }
 
 export function createTextureToHistogramsPipeline(
@@ -32,8 +31,7 @@ export function createTextureToHistogramsPipeline(
     blockSize = [2, 2],
     loadTemplate = loadRedComponent,
     textureFormat,
-    reduceTemplate,
-    buckets = 256,
+    histogramTemplate,
   } = params;
 
   const sampleType = textureSampleType(textureFormat);
@@ -89,10 +87,9 @@ export function createTextureToHistogramsPipeline(
     blockWidth: blockSize[0],
     blockHeight: blockSize[1],
     blockArea: blockSize[0] * blockSize[1],
-    buckets,
-    ...reduceTemplate,
+    ...histogramTemplate,
     ...loadTemplate,
-    inputElements: reduceTemplate.outputElements
+    inputElements: histogramTemplate.outputElements,
   });
 
   const module = device.createShaderModule({
@@ -107,7 +104,7 @@ export function createTextureToHistogramsPipeline(
       constants: {
         workgroupSizeX: workgroupSize[0],
         workgroupSizeY: workgroupSize[1],
-        numBuckets: buckets,
+        numBuckets: histogramTemplate.buckets,
       },
     },
     layout: device.createPipelineLayout({

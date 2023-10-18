@@ -1,13 +1,18 @@
 import { BinOpCreateTemplate } from "./BinOpTemplate.js";
 
+export interface HistogramTemplate extends BinOpCreateTemplate {
+  buckets: number;
+}
+
 export function histogramTemplate(
   buckets: number,
   elemType: "f32" | "u32"
-): BinOpCreateTemplate {
+): HistogramTemplate {
   return {
     inputElementSize: buckets * 4,
     outputElementSize: buckets * 4,
     outputElements: elemType,
+    buckets,
     inputStruct: `histogram: array<${elemType}, ${buckets}>,`,
     outputStruct: `histogram: array<${elemType}, ${buckets}>,`,
     binaryOp: `

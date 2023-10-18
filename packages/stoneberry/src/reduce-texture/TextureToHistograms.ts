@@ -11,7 +11,7 @@ import {
   reactiveTrackUse,
   trackContext,
 } from "thimbleberry";
-import { BinOpTemplate } from "../util/BinOpTemplate.js";
+import { HistogramTemplate } from "../util/HistogramTemplate.js";
 import { maxWorkgroupSize } from "../util/LimitWorkgroupSize.js";
 import { LoadTemplate, loadRedComponent } from "../util/LoadTemplate.js";
 import { getTextureToHistogramsPipeline } from "./TextureToHistogramsPipeline.js";
@@ -34,11 +34,8 @@ export interface TextureToHistogramsParams {
    */
   minMaxBuffer: ValueOrFn<GPUBuffer>;
 
-  /** {@inheritDoc TextureToHistograms#buckets} */
-  buckets?: number;
-
-  /** {@inheritDoc TextureToHistograms#reduceTemplate} */
-  reduceTemplate: BinOpTemplate;
+  /** {@inheritDoc TextureToHistograms#histogramTemplate} */
+  histogramTemplate: HistogramTemplate;
 
   /** {@inheritDoc TextureToHistograms#blockSize} */
   blockSize?: Vec2;
@@ -62,7 +59,6 @@ const defaults: Partial<TextureToHistogramsParams> = {
   pipelineCache: undefined,
   loadTemplate: loadRedComponent,
   label: "",
-  buckets: 256
 };
 
 /** calc histograms from gpu texture 
@@ -78,14 +74,11 @@ export class TextureToHistograms extends HasReactive implements ComposableShader
   /** range of values to consider in histogram */
   @reactively minMaxBuffer!: GPUBuffer;
 
-  /** macros to customize wgsl shader for size of data and type of reduce*/
-  @reactively reduceTemplate!: BinOpTemplate;
+  /** macros to customize wgsl shader for size of data and size of histogram */
+  @reactively histogramTemplate!: HistogramTemplate ;
 
   /** macros to select component from vec4 */
   @reactively loadTemplate!: LoadTemplate;
-
-  /** number of histogram buckets */
-  @reactively buckets!: number;
 
   /** Debug label attached to gpu objects for error reporting */
   @reactively label?: string;
@@ -123,7 +116,7 @@ export class TextureToHistograms extends HasReactive implements ComposableShader
 
   /** histogram bucket counts */
   @reactively get histogramsResult(): GPUBuffer {
-    const size = this.resultElems * this.reduceTemplate.outputElementSize;
+    const size = this.resultElems * this.histogramTemplate.outputElementSize;
     const buffer = this.device.createBuffer({
       label: "texture histograms counts",
       size,
@@ -134,7 +127,7 @@ export class TextureToHistograms extends HasReactive implements ComposableShader
 
   /** histogram bucket sums */
   @reactively get sumsResult(): GPUBuffer {
-    const size = this.resultElems * this.reduceTemplate.outputElementSize;
+    const size = this.resultElems * this.histogramTemplate.outputElementSize;
     const buffer = this.device.createBuffer({
       label: "texture histograms sums",
       size,
@@ -161,10 +154,9 @@ export class TextureToHistograms extends HasReactive implements ComposableShader
         device: this.device,
         workgroupSize: this.workgroupSize,
         blockSize: this.blockSize,
-        reduceTemplate: this.reduceTemplate,
+        histogramTemplate: this.histogramTemplate,
         loadTemplate: this.loadTemplate,
         textureFormat: this.source.format,
-        buckets: this.buckets
       },
       this.pipelineCache
     );
