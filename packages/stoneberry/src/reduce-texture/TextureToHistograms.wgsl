@@ -99,7 +99,7 @@ fn collectPixel(spot: vec2<u32>,
         // (only integer values can be stored in atomic variables)
         // so conceptually we multiply by 2^32-1 and divide by max
         // (actually, we use a number that is less than 2^32-1 to avoid overflow)
-        atomicAdd(&localSum[bucket], u32(f32(p) * toUintRange));
+        atomicAdd(&localSum[bucket], u32(f32(p) * toUintRange)); // TODO avoid this conversion for non-float inputs
     }
 }
 
