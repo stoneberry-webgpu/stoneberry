@@ -2,14 +2,12 @@ import {
   ShaderGroup,
   copyBuffer,
   labeledGpuDevice,
-  printBuffer,
-  printTexture,
   trackRelease,
   trackUse,
-  withAsyncUsage,
+  withAsyncUsage
 } from "thimbleberry";
+import { TextureToHistograms } from "../../src/histogram-texture/TextureToHistograms.js";
 import { histogramTemplate } from "../../src/util/HistogramTemplate.js";
-import { TextureToHistograms } from "./../../src/reduce-texture/TextureToHistograms";
 import { makeBuffer } from "./util/MakeBuffer";
 import { makeTexture } from "./util/MakeTexture.js";
 
