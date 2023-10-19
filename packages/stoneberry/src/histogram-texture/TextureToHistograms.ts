@@ -85,7 +85,7 @@ export class TextureToHistograms extends HasReactive implements ComposableShader
   @reactively loadTemplate!: LoadTemplate;
 
   /** calculate sums for each bucket */
-  bucketSums!: boolean;
+  @reactively bucketSums!: boolean;
 
   /** Debug label attached to gpu objects for error reporting */
   @reactively label?: string;

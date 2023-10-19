@@ -44,6 +44,9 @@ export interface HistogramTextureParams {
   /** {@inheritDoc HistogramTexture#minMaxBuffer} */
   minMaxBuffer?: GPUBuffer;
 
+  /** {@inheritDoc HistogramTexture#bucketSums} */
+  bucketSums?: boolean;
+
   /** {@inheritDoc HistogramTexture#range} */
   range?: Vec2;
 
@@ -65,6 +68,7 @@ const defaults: Partial<HistogramTextureParams> = {
   pipelineCache: undefined,
   label: "",
   minMaxBuffer: undefined,
+  bucketSums: false,
   range: [0, 100],
 };
 
@@ -88,6 +92,9 @@ export class HistogramTexture extends HasReactive implements ComposableShader {
 
   /** buffer containing min and max values for the histogram range */
   @reactively minMaxBuffer?: GPUBuffer;
+
+  /** calculate sums for each bucket */
+  @reactively bucketSums!: boolean;
 
   /** range of histogram values (or provide minMaxBuffer) */
   @reactively range?: Vec2;
@@ -123,9 +130,18 @@ export class HistogramTexture extends HasReactive implements ComposableShader {
   /** result of the final reduction pass, one element in size */
   @reactively get result(): GPUBuffer {
     if (this.reduceBufferNeeded) {
-      return this.reduceBuffer.result;
+      return this.reduceBucketCounts.result;
     } else {
       return this.textureToHistograms.histogramsResult;
+    }
+  }
+
+  /** result of the final reduction pass, one element in size */
+  @reactively get sumsResult(): GPUBuffer {
+    if (this.reduceBufferNeeded) {
+      return this.reduceSumCounts.result;
+    } else {
+      return this.textureToHistograms.sumsResult;
     }
   }
 
@@ -161,7 +177,8 @@ export class HistogramTexture extends HasReactive implements ComposableShader {
   /** all shaders needed to reduce the texture to a single reduced value */
   @reactively private get shaders(): ComposableShader[] {
     if (this.reduceBufferNeeded) {
-      return [this.textureToHistograms, this.reduceBuffer];
+      const sums = this.bucketSums ? [this.reduceSumCounts] : [];
+      return [this.textureToHistograms, this.reduceBucketCounts, ...sums];
     } else {
       return [this.textureToHistograms];
     }
@@ -179,13 +196,14 @@ export class HistogramTexture extends HasReactive implements ComposableShader {
       pipelineCache: this.pipelineCache,
       label: this.label,
       minMaxBuffer: this.rangeBuffer,
+      bucketSums: this.bucketSums,
     });
     reactiveTrackUse(shader, this.usageContext);
     return shader;
   }
 
-  /** created only if necessary, a shader to reduce the buffer to a single element */
-  @reactively private get reduceBuffer(): ReduceBuffer {
+  /** created only if necessary, a shader to reduce the histograms buffer to a single element */
+  @reactively private get reduceBucketCounts(): ReduceBuffer {
     const ws = this.forceWorkgroupSize;
     const workgroupLength = ws ? ws[0] * ws[1] : undefined;
     const shader = new ReduceBuffer({
@@ -195,7 +213,25 @@ export class HistogramTexture extends HasReactive implements ComposableShader {
       label: this.label,
       blockLength: this.bufferBlockLength,
       pipelineCache: this.pipelineCache,
-      template: this.reduceTemplate,
+      template: this.reduceCountsTemplate,
+    });
+    reactiveTrackUse(shader, this.usageContext);
+
+    return shader;
+  }
+
+  /** created only if necessary, a shader to reduce the histograms buffer to a single element */
+  @reactively private get reduceSumCounts(): ReduceBuffer {
+    const ws = this.forceWorkgroupSize;
+    const workgroupLength = ws ? ws[0] * ws[1] : undefined;
+    const shader = new ReduceBuffer({
+      device: this.device,
+      source: () => this.textureToHistograms.sumsResult,
+      forceWorkgroupLength: workgroupLength,
+      label: this.label,
+      blockLength: this.bufferBlockLength,
+      pipelineCache: this.pipelineCache,
+      template: this.histogramTemplate,
     });
     reactiveTrackUse(shader, this.usageContext);
 
@@ -203,7 +239,7 @@ export class HistogramTexture extends HasReactive implements ComposableShader {
   }
 
   // histogram counts are always u32, make sure reduction template is u32
-  @reactively private get reduceTemplate(): HistogramTemplate {
+  @reactively private get reduceCountsTemplate(): HistogramTemplate {
     const texTemplate = this.histogramTemplate;
     if (texTemplate.outputElements === "u32") {
       return texTemplate;
