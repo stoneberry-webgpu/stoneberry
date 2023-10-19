@@ -21,6 +21,7 @@ export interface TextureHistogramsPipelineArgs {
   blockSize?: Vec2;
   loadTemplate?: LoadTemplate;
   bucketSums?: boolean;
+  saturateMax?: boolean;
 }
 
 export function createTextureToHistogramsPipeline(
@@ -34,6 +35,7 @@ export function createTextureToHistogramsPipeline(
     textureFormat,
     histogramTemplate,
     bucketSums = false,
+    saturateMax = false,
   } = params;
 
   const sampleType = textureSampleType(textureFormat);
@@ -94,6 +96,7 @@ export function createTextureToHistogramsPipeline(
     blockHeight: blockSize[1],
     blockArea: blockSize[0] * blockSize[1],
     bucketSums,
+    saturateMax,
     floatElements: histogramTemplate.outputElements === "f32",
     ...histogramTemplate,
     ...loadTemplate,

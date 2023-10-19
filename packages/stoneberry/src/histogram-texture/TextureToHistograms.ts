@@ -52,6 +52,9 @@ export interface TextureToHistogramsParams {
   /** {@inheritDoc TextureToHistograms#bucketSums} */
   bucketSums?: boolean;
 
+  /** {@inheritDoc TextureToHistograms#saturateMax} */
+  saturateMax?: boolean;
+
   /** {@inheritDoc TextureToHistograms#label} */
   label?: string;
 }
@@ -62,6 +65,7 @@ const defaults: Partial<TextureToHistogramsParams> = {
   pipelineCache: undefined,
   loadTemplate: loadRedComponent,
   bucketSums: false,
+  saturateMax: false,
   label: "",
 };
 
@@ -86,6 +90,9 @@ export class TextureToHistograms extends HasReactive implements ComposableShader
 
   /** calculate sums for each bucket */
   @reactively bucketSums!: boolean;
+
+  /** include values > max range in last bucket */
+  @reactively saturateMax!: boolean;
 
   /** Debug label attached to gpu objects for error reporting */
   @reactively label?: string;
@@ -168,6 +175,7 @@ export class TextureToHistograms extends HasReactive implements ComposableShader
         loadTemplate: this.loadTemplate,
         textureFormat: this.source.format,
         bucketSums: this.bucketSums,
+        saturateMax: this.saturateMax,
       },
       this.pipelineCache
     );

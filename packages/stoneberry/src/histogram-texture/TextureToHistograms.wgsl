@@ -87,7 +87,7 @@ fn collectPixel(spot: vec2<u32>,
     maxValue: u32) { //! u32=inputElements
     let texel = textureLoad(srcTexture, vec2<i32>(spot), 0);
     let p = loadOp(texel);
-    if p >= minValue {
+    if p >= minValue && checkMax(p, maxValue) {
         let bucket = toBucket(p, minValue, maxValue);
         atomicAdd(&localHistogram[bucket], 1u);
         // p is a float in the range 0 to max 
@@ -98,6 +98,14 @@ fn collectPixel(spot: vec2<u32>,
         atomicAdd(&localSum[bucket], u32(f32(p) * toUIntRange)); //! IF bucketSums IF floatElements
         atomicAdd(&localSum[bucket], p); //! IF bucketSums IF !floatElements
     }
+}
+
+fn checkMax(p: u32, //! u32=inputElements
+    max: u32) -> bool { //! u32=inputElements
+    if p > max {        //! IF !saturateMax
+        return false;   //! IF !saturateMax
+    }                   //! IF !saturateMax
+    return true;
 }
 
 // return the bucket index for this value
