@@ -171,3 +171,33 @@ it("texture to one histogram, saturateMax", async () => {
     trackRelease(shader);
   });
 });
+
+it("texture to one histogram, no saturateMax", async () => {
+  await withAsyncUsage(async () => {
+    const device = trackUse(await labeledGpuDevice());
+    const minMaxBuffer = makeBuffer(device, [1, 4], "minmax", Uint32Array);
+    const histogramSize = 4;
+    const template = histogramTemplate(histogramSize, "u32");
+    const sourceData = [
+      [1, 1],
+      [2, 10],
+    ];
+    const source = makeTexture(device, sourceData, "r32uint");
+    const shader = new TextureToHistograms({
+      device,
+      source,
+      minMaxBuffer,
+      histogramTemplate: template,
+      bucketSums: false,
+    });
+    trackUse(shader);
+
+    const group = new ShaderGroup(device, shader);
+    group.dispatch();
+
+    const counts = await copyBuffer(device, shader.histogramsResult, "u32");
+    expect(counts).deep.equals([2, 1, 0, 0]);
+
+    trackRelease(shader);
+  });
+});
