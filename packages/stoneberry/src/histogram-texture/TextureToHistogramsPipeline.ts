@@ -94,6 +94,7 @@ export function createTextureToHistogramsPipeline(
     blockHeight: blockSize[1],
     blockArea: blockSize[0] * blockSize[1],
     bucketSums,
+    floatElements: histogramTemplate.outputElements === "f32",
     ...histogramTemplate,
     ...loadTemplate,
     inputElements: histogramTemplate.outputElements,
