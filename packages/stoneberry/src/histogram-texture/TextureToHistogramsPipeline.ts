@@ -20,6 +20,7 @@ export interface TextureHistogramsPipelineArgs {
   workgroupSize?: Vec2;
   blockSize?: Vec2;
   loadTemplate?: LoadTemplate;
+  bucketSums?: boolean;
 }
 
 export function createTextureToHistogramsPipeline(
@@ -32,9 +33,20 @@ export function createTextureToHistogramsPipeline(
     loadTemplate = loadRedComponent,
     textureFormat,
     histogramTemplate,
+    bucketSums = false,
   } = params;
 
   const sampleType = textureSampleType(textureFormat);
+  const sumsBinding: GPUBindGroupLayoutEntry[] = [];
+  if (bucketSums) {
+    sumsBinding.push({
+      binding: 4, // bucket sums output
+      visibility: GPUShaderStage.COMPUTE,
+      buffer: {
+        type: "storage",
+      },
+    });
+  }
   const bindGroupLayout = device.createBindGroupLayout({
     label: "textureToHistograms",
     entries: [
@@ -64,13 +76,7 @@ export function createTextureToHistogramsPipeline(
           type: "storage",
         },
       },
-      {
-        binding: 4, // bucket sums output
-        visibility: GPUShaderStage.COMPUTE,
-        buffer: {
-          type: "storage",
-        },
-      },
+      ...sumsBinding,
       {
         binding: 11, // debug buffer
         visibility: GPUShaderStage.COMPUTE,
@@ -87,6 +93,7 @@ export function createTextureToHistogramsPipeline(
     blockWidth: blockSize[0],
     blockHeight: blockSize[1],
     blockArea: blockSize[0] * blockSize[1],
+    bucketSums,
     ...histogramTemplate,
     ...loadTemplate,
     inputElements: histogramTemplate.outputElements,

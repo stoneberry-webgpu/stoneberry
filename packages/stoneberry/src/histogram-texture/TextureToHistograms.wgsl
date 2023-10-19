@@ -17,10 +17,10 @@ struct Range {
 }
 
 @group(0) @binding(0) var<uniform> u: Uniforms;
-@group(0) @binding(1) var srcTexture: texture_2d<u32>; // source data //! u32=inputElements
+@group(0) @binding(1) var srcTexture: texture_2d<u32>; // source data //! u32=inputElements 
 @group(0) @binding(2) var<storage, read> maxBuffer: array<Range>; 
 @group(0) @binding(3) var<storage, read_write> histogramOut: array<array<u32, 128>>; //! 128=buckets
-@group(0) @binding(4) var<storage, read_write> sumOut: array<array<u32, 128>>; //! u32=inputElements 128=buckets
+@group(0) @binding(4) var<storage, read_write> sumOut: array<array<u32, 128>>; //! u32=inputElements 128=buckets IF bucketSums
 @group(0) @binding(11) var<storage, read_write> debug: array<f32>; // buffer to hold debug values
 
 override workgroupSizeX = 4;      
@@ -118,8 +118,8 @@ fn toBucket(p: u32,  //! u32=inputElements
 fn copyToOuput(toUIntRange: f32, workIndex: u32) {
     for (var i = 0u; i < numBuckets; i++) {
         histogramOut[workIndex][i] = atomicLoad(&localHistogram[i]);
-        let sum = f32(atomicLoad(&localSum[i])) / toUIntRange;
-        sumOut[workIndex][i] = u32(sum); //! u32=inputElements
+        let sum = f32(atomicLoad(&localSum[i])) / toUIntRange; // IF bucketSums
+        sumOut[workIndex][i] = u32(sum); //! u32=inputElements IF bucketSums
     }
 }
 

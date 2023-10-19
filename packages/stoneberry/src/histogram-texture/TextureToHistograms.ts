@@ -49,6 +49,9 @@ export interface TextureToHistogramsParams {
   /** cache for GPUComputePipeline */
   pipelineCache?: <T extends object>() => Cache<T>;
 
+  /** {@inheritDoc TextureToHistograms#bucketSums} */
+  bucketSums?: boolean;
+
   /** {@inheritDoc TextureToHistograms#label} */
   label?: string;
 }
@@ -58,10 +61,11 @@ const defaults: Partial<TextureToHistogramsParams> = {
   forceWorkgroupSize: undefined,
   pipelineCache: undefined,
   loadTemplate: loadRedComponent,
+  bucketSums: false,
   label: "",
 };
 
-/** calc histograms from gpu texture 
+/** calc histograms from gpu texture
  * Each workgroup thread reads a blockSize group of elements to one histogram,
  * and each dispatch reduces the workgroup histograms to one histogram.
  * The result is a buffer of histograms, one per dispatched workgroup.
@@ -75,10 +79,13 @@ export class TextureToHistograms extends HasReactive implements ComposableShader
   @reactively minMaxBuffer!: GPUBuffer;
 
   /** macros to customize wgsl shader for size of data and size of histogram */
-  @reactively histogramTemplate!: HistogramTemplate ;
+  @reactively histogramTemplate!: HistogramTemplate;
 
   /** macros to select component from vec4 */
   @reactively loadTemplate!: LoadTemplate;
+
+  /** calculate sums for each bucket */
+  bucketSums!: boolean;
 
   /** Debug label attached to gpu objects for error reporting */
   @reactively label?: string;
@@ -127,6 +134,9 @@ export class TextureToHistograms extends HasReactive implements ComposableShader
 
   /** histogram bucket sums */
   @reactively get sumsResult(): GPUBuffer {
+    if (!this.bucketSums) {
+      console.error("sumsResult requested but bucketSums is false");
+    }
     const size = this.resultElems * this.histogramTemplate.outputElementSize;
     const buffer = this.device.createBuffer({
       label: "texture histograms sums",
@@ -157,6 +167,7 @@ export class TextureToHistograms extends HasReactive implements ComposableShader
         histogramTemplate: this.histogramTemplate,
         loadTemplate: this.loadTemplate,
         textureFormat: this.source.format,
+        bucketSums: this.bucketSums,
       },
       this.pipelineCache
     );
@@ -191,6 +202,9 @@ export class TextureToHistograms extends HasReactive implements ComposableShader
 
   @reactively private bindGroup(): GPUBindGroup {
     const srcView = this.source.createView({ label: "texture histograms src view" });
+    const sumsBinding: GPUBindGroupEntry[] = this.bucketSums
+      ? [{ binding: 4, resource: { buffer: this.sumsResult } }]
+      : [];
     return this.device.createBindGroup({
       label: "textureHistograms binding",
       layout: this.pipeline().getBindGroupLayout(0),
@@ -198,8 +212,8 @@ export class TextureToHistograms extends HasReactive implements ComposableShader
         { binding: 0, resource: { buffer: this.uniformBuffer } },
         { binding: 1, resource: srcView },
         { binding: 2, resource: { buffer: this.minMaxBuffer } },
+        ...sumsBinding,
         { binding: 3, resource: { buffer: this.histogramsResult } },
-        { binding: 4, resource: { buffer: this.sumsResult } },
         { binding: 11, resource: { buffer: this.debugBuffer } },
       ],
     });
