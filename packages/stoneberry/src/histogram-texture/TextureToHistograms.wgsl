@@ -30,10 +30,11 @@ const numBucketsFloat= f32(100);  //! 100=buckets
 const maxBucket = i32(100u - 1u);  //! 100=buckets
 
 var <private>valueRange: f32;
+var <private>toUIntRange: f32;
 
 // we accumulate bucket totals in workgroup memory and then copy the local buckets to global memory
 var<workgroup> localHistogram: array<atomic<u32>, numBuckets>;
-var<workgroup> localSum: array<atomic<u32>, numBuckets>;
+var<workgroup> localSum: array<atomic<u32>, numBuckets>; //! u32=inputElements IF bucketSums 
 
 @compute 
 @workgroup_size(workgroupSizeX, workgroupSizeY, 1) 
@@ -48,9 +49,9 @@ fn textureToHistograms(
     let maxValue = u32(minMax.max); //! u32=inputElements
     valueRange = f32(maxValue) - f32(minValue);
     let largeU32 = 1000.0 * 1000.0 * 1000.0; // near to max u32 (4 billion), with some room for overflow
-    let toUIntRange: f32 = largeU32 / f32(maxValue);    // conversion factor to convert a density value to a u32 
+    toUIntRange = largeU32 / f32(maxValue);    // conversion factor to convert a density value to a u32 
 
-    collectBlock(grid.xy, minValue, maxValue, toUIntRange);
+    collectBlock(grid.xy, minValue, maxValue);
     workgroupBarrier();
 
     if workGrid.x == 0u && workGrid.y == 0u {
@@ -62,8 +63,7 @@ fn textureToHistograms(
 // collect histogram for one block into workgroup local array
 fn collectBlock(grid: vec2<u32>,
     minValue: u32, //! u32=inputElements
-    maxValue: u32, //! u32=inputElements
-    toUIntRange: f32) {
+    maxValue: u32) { //! u32=inputElements
     let srcDim = vec2<u32>(
         u32(textureDimensions(srcTexture).x),
         u32(textureDimensions(srcTexture).y)
@@ -75,7 +75,7 @@ fn collectBlock(grid: vec2<u32>,
         for (var y = 0u; y < 4u; y++) { //! 4=blockHeight
             let spot = blockStart + vec2<u32>(x, y);
             if spot.x < srcDim.x && spot.y < srcDim.y {
-                collectPixel(spot, minValue, maxValue, toUIntRange);
+                collectPixel(spot, minValue, maxValue);
             }
         }
     }
@@ -84,19 +84,19 @@ fn collectBlock(grid: vec2<u32>,
 // add one pixel into workgroup local histogram bucket and local sum 
 fn collectPixel(spot: vec2<u32>,
     minValue: u32, //! u32=inputElements
-    maxValue: u32, //! u32=inputElements
-    toUintRange: f32) {
+    maxValue: u32) { //! u32=inputElements
     let texel = textureLoad(srcTexture, vec2<i32>(spot), 0);
     let p = loadOp(texel);
     if p >= minValue {
         let bucket = toBucket(p, minValue, maxValue);
         atomicAdd(&localHistogram[bucket], 1u);
+        // TODO avoid this conversion for non-float inputs
         // p is a float in the range 0 to max 
         // we want to store it as an integer in the range 0 to 2^32-1
         // (only integer values can be stored in atomic variables)
         // so conceptually we multiply by 2^32-1 and divide by max
         // (actually, we use a number that is less than 2^32-1 to avoid overflow)
-        atomicAdd(&localSum[bucket], u32(f32(p) * toUintRange)); // TODO avoid this conversion for non-float inputs
+        atomicAdd(&localSum[bucket], u32(f32(p) * toUIntRange)); //! IF bucketSums
     }
 }
 
@@ -118,7 +118,7 @@ fn toBucket(p: u32,  //! u32=inputElements
 fn copyToOuput(toUIntRange: f32, workIndex: u32) {
     for (var i = 0u; i < numBuckets; i++) {
         histogramOut[workIndex][i] = atomicLoad(&localHistogram[i]);
-        let sum = f32(atomicLoad(&localSum[i])) / toUIntRange; // IF bucketSums
+        let sum = f32(atomicLoad(&localSum[i])) / toUIntRange; //! IF bucketSums
         sumOut[workIndex][i] = u32(sum); //! u32=inputElements IF bucketSums
     }
 }
