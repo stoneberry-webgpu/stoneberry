@@ -19,11 +19,12 @@
     "isolatedModules": true,
     "noEmit": true,
     "jsx": "react-jsx",
-    "paths" : {
+    "paths": {
       "stoneberry/scan": ["../src/scan"],
       "stoneberry/util": ["../src/util"],
       "stoneberry/reduce-buffer": ["../src/reduce-buffer"],
       "stoneberry/reduce-texture": ["../src/reduce-texture"],
+      "stoneberry/histogram-texture": ["../src/histogram-texture"]
     }
   },
   "include": ["**/*.ts"]
