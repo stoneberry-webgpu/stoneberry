@@ -5,6 +5,7 @@ import "react";
 import exampleUtils from "stoneberry-examples?sourceFiles";
 import stoneberryReduceBuffer from "stoneberry/reduce-buffer?sourceFiles";
 import stoneberryReduceTexture from "stoneberry/reduce-texture?sourceFiles";
+import stoneberryHistogram from "stoneberry/histogram-texture?sourceFiles";
 import stoneberryScan from "stoneberry/scan?sourceFiles";
 import thimbleberry from "thimbleberry?sourceFiles";
 
@@ -21,6 +22,7 @@ export function StoneberryLive(props: LiveTypescriptProps): JSX.Element {
           stoneberryScan,
           stoneberryReduceBuffer,
           stoneberryReduceTexture,
+          stoneberryHistogram,
           exampleUtils,
           webGPU,
         ],
