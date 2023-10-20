@@ -6,9 +6,8 @@ import {
   withAsyncUsage,
   withLeakTrack,
 } from "thimbleberry";
-import { histogramTemplate } from "../../src/util/HistogramTemplate.js";
-import { HistogramTexture } from "./../../src/histogram-texture/HistogramTexture";
-import { makeTexture } from "./util/MakeTexture.js";
+import { makeHistogramTemplate, HistogramTexture } from "stoneberry/histogram-texture";
+import { makeTexture } from "thimbleberry";
 
 it("histogram texture, no internal reduction", async () => {
   await withAsyncUsage(async () => {
@@ -25,7 +24,7 @@ it("histogram texture, no internal reduction", async () => {
         device,
         source,
         blockSize: [2, 2],
-        histogramTemplate: histogramTemplate(4, "u32"),
+        histogramTemplate: makeHistogramTemplate(4, "u32"),
         loadComponent: "r",
         range: [1, 10],
       });
@@ -54,7 +53,7 @@ it("histogram texture, with reduction", async () => {
         source,
         blockSize: [2, 2],
         forceWorkgroupSize: [1, 1],
-        histogramTemplate: histogramTemplate(4, "u32"),
+        histogramTemplate: makeHistogramTemplate(4, "u32"),
         loadComponent: "r",
         range: [1, 10],
       });
@@ -83,7 +82,7 @@ it("histogram texture, with reduction, float", async () => {
         source,
         blockSize: [2, 2],
         forceWorkgroupSize: [1, 1],
-        histogramTemplate: histogramTemplate(4, "f32"),
+        histogramTemplate: makeHistogramTemplate(4, "f32"),
         loadComponent: "r",
         range: [1, 10],
       });
@@ -112,7 +111,7 @@ it("histogram texture, with reduction, r8uint", async () => {
         source,
         blockSize: [2, 2],
         forceWorkgroupSize: [1, 1],
-        histogramTemplate: histogramTemplate(4, "u32"),
+        histogramTemplate: makeHistogramTemplate(4, "u32"),
         loadComponent: "r",
         range: [1, 10],
       });
@@ -141,7 +140,7 @@ it("histogram texture, with reduction, r32sint", async () => {
         source,
         blockSize: [2, 2],
         forceWorkgroupSize: [1, 1],
-        histogramTemplate: histogramTemplate(4, "i32"),
+        histogramTemplate: makeHistogramTemplate(4, "i32"),
         loadComponent: "r",
         range: [-10, 10],
       });
@@ -170,7 +169,7 @@ it("histogram texture, with reduction, with bucketSums", async () => {
         source,
         blockSize: [2, 2],
         forceWorkgroupSize: [1, 1],
-        histogramTemplate: histogramTemplate(4, "u32"),
+        histogramTemplate: makeHistogramTemplate(4, "u32"),
         loadComponent: "r",
         range: [1, 10],
         bucketSums: true,

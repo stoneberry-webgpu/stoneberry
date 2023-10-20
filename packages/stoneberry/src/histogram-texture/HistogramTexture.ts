@@ -15,7 +15,7 @@ import {
   loaderForComponent,
 } from "../util/LoadTemplate.js";
 import { runAndFetchResult } from "../util/RunAndFetch.js";
-import { HistogramTemplate, histogramTemplate } from "./../util/HistogramTemplate";
+import { HistogramTemplate, makeHistogramTemplate } from "./../util/HistogramTemplate";
 import { TextureToHistograms } from "./TextureToHistograms.js";
 
 export interface HistogramTextureParams {
@@ -244,7 +244,7 @@ export class HistogramTexture extends HasReactive implements ComposableShader {
     if (texTemplate.outputElements === "u32") {
       return texTemplate;
     } else {
-      return histogramTemplate(texTemplate.buckets, "u32");
+      return makeHistogramTemplate(texTemplate.buckets, "u32");
     }
   }
 

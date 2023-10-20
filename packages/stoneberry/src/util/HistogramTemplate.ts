@@ -4,7 +4,7 @@ export interface HistogramTemplate extends BinOpCreateTemplate {
   buckets: number;
 }
 
-export function histogramTemplate(
+export function makeHistogramTemplate(
   buckets: number,
   elemType: "f32" | "u32" | "i32"
 ): HistogramTemplate {
