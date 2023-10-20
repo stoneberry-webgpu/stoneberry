@@ -8,6 +8,8 @@ import stoneberryReduceTexture from "stoneberry/reduce-texture?sourceFiles";
 import stoneberryScan from "stoneberry/scan?sourceFiles";
 import thimbleberry from "thimbleberry?sourceFiles";
 
+export type { LiveTypescriptProps };
+
 export function StoneberryLive(props: LiveTypescriptProps): JSX.Element {
   return (
     <LiveTypescript

@@ -1,9 +1,9 @@
 import React from "react";
-import { StoneberryLiveProps, StoneberryLive } from "stoneberry-live";
+import { StoneberryLive, LiveTypescriptProps } from "stoneberry-live";
 import BrowserOnly from "@docusaurus/BrowserOnly";
 
 /** live documentation for stoneberry, configured for Docusaurus */
-export function StoneberryDoc(props: StoneberryLiveProps): JSX.Element {
+export function StoneberryDoc(props: LiveTypescriptProps): JSX.Element {
   return (
     <BrowserOnly fallback={<div>Loading...</div>}>
       {() => {
