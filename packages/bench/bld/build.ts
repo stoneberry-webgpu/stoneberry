@@ -22,6 +22,7 @@ export async function version(): Promise<string> {
 }
 
 export async function dev(): Promise<void> {
+  await version();
   const server = await createViteServer();
   await server.listen(benchWebPort);
   await benchBrowser();
