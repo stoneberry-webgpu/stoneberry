@@ -37,22 +37,19 @@ var <workgroup> work:array<Output, workgroupThreads>;
 @workgroup_size(workgroupThreads, 1, 1) 
 fn reduceFromBuffer(
     @builtin(global_invocation_id) grid: vec3<u32>,    // coords in the global compute grid
-    @builtin(local_invocation_id) workGrid: vec3<u32>, // coords inside the this workgroup
+    @builtin(local_invocation_id) localId: vec3<u32>, // coords inside the this workgroup
     @builtin(num_workgroups) numWorkgroups: vec3<u32>, // number of workgroups in this dispatch
     @builtin(workgroup_id) workgroupId: vec3<u32>      // workgroup id in the dispatch
 ) {
-    reduceBufferToWork(grid.xy, workGrid.xy);
-    workgroupBarrier();
-    if workGrid.x == 0u && workGrid.y == 0u {
-        let workIndex = workgroupId.x + workgroupId.y * numWorkgroups.x;
-        reduceWorkgroupToOut(grid.xy, workIndex + u.resultOffset);
-    }
+    reduceBufferToWork(grid.xy, localId.x);
+    let outDex = workgroupId.x + u.resultOffset;
+    reduceWorkgroupToOut(outDex, localId.x);
 }
 
-fn reduceBufferToWork(grid: vec2<u32>, workGrid: vec2<u32>) {
+fn reduceBufferToWork(grid: vec2<u32>, localId: u32) {
     var values = fetchSrcBuffer(grid.x);
     var v = reduceBlock(values);
-    work[workGrid.x] = v;
+    work[localId] = v;
 }
 
 // LATER benchmark striping/striding should reduce memory bank conflict
@@ -72,12 +69,18 @@ fn fetchSrcBuffer(gridX: u32) -> array<Output, 4> {  //! 4=blockArea
     return a;
 }
 
-fn reduceWorkgroupToOut(grid: vec2<u32>, workIndex: u32) {
-    var v = work[0];
-    for (var i = 1u; i < 4u; i = i + 1u) { //! 4=workgroupThreads
-        v = binaryOp(v, work[i]);
+fn reduceWorkgroupToOut(outDex: u32, localId: u32) {
+    var v: Output;
+    for (var stride = 4u >> 1u; stride >= 1u; stride >>= 1u) { //! 4=workgroupThreads
+        workgroupBarrier();
+        if localId < stride {
+            v = binaryOp(work[localId], work[localId + stride]);
+            work[localId] = v;
+        }
     }
-    out[workIndex] = v;
+    if localId == 0u {
+        out[outDex] = work[0];
+    }
 }
 
 fn reduceBlock(a: array<Output, 4>) -> Output { //! 4=blockArea
