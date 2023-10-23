@@ -69,19 +69,37 @@ fn fetchSrcBuffer(gridX: u32) -> array<Output, 4> {  //! 4=blockArea
     return a;
 }
 
+// Reduce workgroup stored values to a single value in parallel
+// using the pattern:
+//   iter 1  0 = 0 + 1 
+//           2 = 2 + 3
+//             ...
+//   iter 2  0 = 0 + 2
+//             ...
 fn reduceWorkgroupToOut(outDex: u32, localId: u32) {
-    var v: Output;
-    for (var stride = 4u >> 1u; stride >= 1u; stride >>= 1u) { //! 4=workgroupThreads
+    let workDex = localId << 1u;
+    for (var step = 1u; step < 4u; step <<= 1u) { //! 4=workgroupThreads
         workgroupBarrier();
-        if localId < stride {
-            v = binaryOp(work[localId], work[localId + stride]);
-            work[localId] = v;
+        if localId % step == 0u {
+            work[workDex] = binaryOp(work[workDex], work[workDex + step]);
         }
     }
     if localId == 0u {
         out[outDex] = work[0];
     }
 }
+// Theoretically, the above pattern increases control divergence compared to
+// a reduction that uses the pattern:
+//   iter 1  0 = 0 + 2
+//           1 = 1 + 3
+//             ...
+//   iter 2  0 = 0 + 1
+//             ...
+// i.e. if the gpu can schedule a partial workgroup, there will
+// be partial workgroups available in the second pattern. 
+// but the second pattern requires commutavity of the binary op,
+// and I'm not sure the control divergence matters in practice.
+//
 
 fn reduceBlock(a: array<Output, 4>) -> Output { //! 4=blockArea
     var v = a[0];
