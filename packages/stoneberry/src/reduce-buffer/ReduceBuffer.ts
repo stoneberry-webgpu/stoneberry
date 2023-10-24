@@ -306,12 +306,22 @@ export class ReduceBuffer extends HasReactive implements ComposableShader {
 
   @reactively private get workgroupLength(): number {
     const { device } = this;
-    const workgroupLength = this.forceWorkgroupLength;
-    const maxThreads = device.limits.maxComputeInvocationsPerWorkgroup;
-    if (!workgroupLength || workgroupLength > maxThreads) {
+    const proposedLength = this.forceWorkgroupLength;
+
+    // limit on threads based on workgroup storage required 
+    const storageMaxThreads = Math.floor(
+      device.limits.maxComputeWorkgroupStorageSize / this.template.outputElementSize
+    );
+    // also limit by max threads per workgroup
+    const maxThreads = Math.min(
+      device.limits.maxComputeInvocationsPerWorkgroup,
+      storageMaxThreads
+    );
+
+    if (!proposedLength || proposedLength > maxThreads) {
       return maxThreads;
     } else {
-      return workgroupLength;
+      return proposedLength;
     }
   }
 
