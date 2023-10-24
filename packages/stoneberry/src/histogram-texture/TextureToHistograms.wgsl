@@ -114,7 +114,7 @@ fn toBucket(p: u32,  //! u32=inputElements
     max: u32) -> i32 { //! u32=inputElements
     var bucket: i32;
     if p >= max {
-        bucket = maxBucket; // TODO do we really want to count values > max?
+        bucket = maxBucket;
     } else {
         let i = f32(p - min) / valueRange;
         bucket = i32(floor(i * numBucketsFloat));
