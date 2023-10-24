@@ -88,18 +88,18 @@ fn reduceWorkgroupToOut(outDex: u32, localId: u32) {
         out[outDex] = work[0];
     }
 }
-// Theoretically, the above pattern increases control divergence compared to
-// a reduction that uses the pattern:
+// The above pattern doesn't bunch together used threads in the workgroup
+// compared to a reduction that uses the pattern:
 //   iter 1  0 = 0 + 2
 //           1 = 1 + 3
 //             ...
 //   iter 2  0 = 0 + 1
 //             ...
-// i.e. if the gpu can schedule a partial workgroup, there will
-// be partial workgroups available in the second pattern. 
+// If the gpu can schedule a partial workgroup, there will
+// be partial workgroups available in this second pattern. 
 // but the second pattern requires commutavity of the binary op,
-// and I'm not sure the control divergence matters in practice.
-//
+// and I'm not sure the partial workgroup scheduling is a thing in
+// practice in WebGPU..
 
 fn reduceBlock(a: array<Output, 4>) -> Output { //! 4=blockArea
     var v = a[0];
