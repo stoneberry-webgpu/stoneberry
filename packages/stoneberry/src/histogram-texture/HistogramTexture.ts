@@ -1,3 +1,4 @@
+import { makeHistogramTemplate } from 'stoneberry/histogram-texture';
 import { HasReactive, reactively } from "@reactively/decorate";
 import {
   Cache,
@@ -69,7 +70,7 @@ const defaults: Partial<HistogramTextureParams> = {
   label: "",
   minMaxBuffer: undefined,
   bucketSums: false,
-  range: [0, 100],
+  range: [0, 255],
 };
 
 /**
@@ -107,7 +108,9 @@ export class HistogramTexture extends HasReactive implements ComposableShader {
   */
   @reactively loadComponent!: LoadableComponent | LoadTemplate;
 
-  /** range of histogram values (or provide minMaxBuffer) */
+  /** range of histogram values (or provide minMaxBuffer) 
+   * @defaultValue [0, 255]
+  */
   @reactively range?: Vec2;
 
   /** buffer containing min and max values for the histogram range (or use range) */
