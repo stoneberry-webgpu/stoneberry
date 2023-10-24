@@ -38,7 +38,7 @@ export interface HistogramTextureParams {
   /** {@inheritDoc HistogramTexture#forceWorkgroupSize} */
   forceWorkgroupSize?: Vec2;
 
-  /** {@inheritDoc HistogramTexture#reduceTemplate} */
+  /** {@inheritDoc HistogramTexture#histogramTemplate} */
   histogramTemplate: HistogramTemplate;
 
   /** {@inheritDoc HistogramTexture#minMaxBuffer} */
@@ -72,6 +72,22 @@ const defaults: Partial<HistogramTextureParams> = {
   range: [0, 100],
 };
 
+/**
+ * Calculate a histogram from a source texture.
+ *
+ * Internally, a cascade of shaders is run: the first shader calculates a separate
+ * histogram for each part of the screen, and then a series of reduction shaders
+ * combine the partial histograms.
+ *
+ * The number of buckets in the histogram is configurable.
+ *
+ * The range of values to spread across the buckets is also configurable.
+ * The range may be specified by the cpu, or dynamically provided
+ * some other shader writing to a two element GPUBuffer.
+ *
+ * Optionally, the sum for each bucket can also collected in parallel with the
+ * frequency counts in the histogram. The sums are reported in a separate buffer.
+ */
 export class HistogramTexture extends HasReactive implements ComposableShader {
   @reactively source!: GPUTexture;
 
@@ -90,14 +106,14 @@ export class HistogramTexture extends HasReactive implements ComposableShader {
   /** macros to select or synthesize a component from the source texture */
   @reactively loadComponent!: LoadableComponent | LoadTemplate;
 
-  /** buffer containing min and max values for the histogram range */
-  @reactively minMaxBuffer?: GPUBuffer;
-
-  /** calculate sums for each bucket */
-  @reactively bucketSums!: boolean;
-
   /** range of histogram values (or provide minMaxBuffer) */
   @reactively range?: Vec2;
+
+  /** buffer containing min and max values for the histogram range (or use range) */
+  @reactively minMaxBuffer?: GPUBuffer;
+
+  /** optinally calculate sums for each bucket in addition to counts [false] */
+  @reactively bucketSums!: boolean;
 
   /** Debug label attached to gpu objects for error reporting */
   @reactively label?: string;
@@ -127,7 +143,7 @@ export class HistogramTexture extends HasReactive implements ComposableShader {
     return runAndFetchResult(this, "u32", `${this.label} histogram`);
   }
 
-  /** result of the final reduction pass, one element in size */
+  /** accumulated histogram (frequency counts) */
   @reactively get result(): GPUBuffer {
     if (this.reduceBufferNeeded) {
       return this.reduceBucketCounts.result;
@@ -136,7 +152,7 @@ export class HistogramTexture extends HasReactive implements ComposableShader {
     }
   }
 
-  /** result of the final reduction pass, one element in size */
+  /** accumulated bucket counts, only valid if `bucketSums` is true */
   @reactively get sumsResult(): GPUBuffer {
     if (this.reduceBufferNeeded) {
       return this.reduceSumCounts.result;
