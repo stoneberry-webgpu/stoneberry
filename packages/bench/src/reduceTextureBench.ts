@@ -1,5 +1,5 @@
 import { sumU32 } from "stoneberry/reduce-buffer";
-import { Vec2 } from "thimbleberry";
+import { Vec2, textureFromArray } from "thimbleberry";
 import { ReduceTexture } from "./../../stoneberry/src/reduce-texture/ReduceTexture";
 import { BenchResult, benchShader } from "./benchShader.js";
 
@@ -8,34 +8,14 @@ export async function reduceTextureBench(
   size: Vec2,
   runs = 1
 ): Promise<BenchResult> {
-  const texture = device.createTexture({
-    label: "source",
-    usage:
-      GPUTextureUsage.COPY_DST |
-      GPUTextureUsage.STORAGE_BINDING |
-      GPUTextureUsage.TEXTURE_BINDING,
-    size,
-    format: "r32uint",
-  });
-
   const srcData = new Uint32Array(size[0] * size[1]);
   for (let i = 0; i < srcData.length; i++) {
     // set just a few values to 1, so we can validate the sum w/o uint32 overflow
     srcData[i] = i & 0x111111 ? 0 : 1;
   }
+  const texture = textureFromArray(device, srcData, size, "r32uint", "source");
   const expected = srcData.reduce((a, b) => a + b);
 
-  const components = 1;
-  const componentByteSize = 4;
-  device.queue.writeTexture(
-    { texture },
-    srcData,
-    {
-      bytesPerRow: size[0] * componentByteSize * components,
-      rowsPerImage: size[1],
-    },
-    size
-  );
   const reduce = new ReduceTexture({
     device,
     source: texture,
