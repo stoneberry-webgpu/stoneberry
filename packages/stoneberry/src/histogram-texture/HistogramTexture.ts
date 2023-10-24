@@ -97,13 +97,14 @@ export class HistogramTexture extends HasReactive implements ComposableShader {
   /** number of histograms to read per thread when reducing from buffer to buffer */
   @reactively bufferBlockLength!: number | undefined;
 
-  /** number and arrangement of threads in each dispatched workgroup */
-  @reactively forceWorkgroupSize!: Vec2 | undefined;
-
-  /** wgsl macros for histogram reduction and histogram size */
+  /** wgsl macros for histogram reduction and histogram size.
+   * Typically call `makeHistogramTemplate()`
+   */
   @reactively histogramTemplate!: HistogramTemplate;
 
-  /** macros to select or synthesize a component from the source texture */
+  /** macros to select or synthesize a component from the source texture 
+   * @defaultValue "r"
+  */
   @reactively loadComponent!: LoadableComponent | LoadTemplate;
 
   /** range of histogram values (or provide minMaxBuffer) */
@@ -112,7 +113,14 @@ export class HistogramTexture extends HasReactive implements ComposableShader {
   /** buffer containing min and max values for the histogram range (or use range) */
   @reactively minMaxBuffer?: GPUBuffer;
 
-  /** optinally calculate sums for each bucket in addition to counts [false] */
+  /** Override to set compute workgroup size e.g. for testing. 
+    @defaultValue maxComputeInvocationsPerWorkgroup of the `GPUDevice` (256)
+    */
+  @reactively forceWorkgroupSize!: Vec2 | undefined;
+
+  /** optinally calculate sums for each bucket in addition to counts 
+   * @defaultValue false
+  */
   @reactively bucketSums!: boolean;
 
   /** Debug label attached to gpu objects for error reporting */
@@ -137,7 +145,11 @@ export class HistogramTexture extends HasReactive implements ComposableShader {
 
   /** Execute the histogram immediately and copy the results back to the CPU.
    * (results are copied from the {@link HistogramTexture.result} GPUBuffer)
-   * @returns a single reduced result value in an array
+   * 
+   * To use HistogramTexture in concert with external shaders, 
+   * instead use {@link HistogramTexture.commands} or `ShaderGroup`.
+   * 
+   * @returns a single histogram in an array
    */
   @reactively async histogram(): Promise<number[]> {
     return runAndFetchResult(this, "u32", `${this.label} histogram`);
