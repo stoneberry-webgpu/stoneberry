@@ -186,6 +186,7 @@ export class HistogramTexture extends HasReactive implements ComposableShader {
     }
   }
 
+  /** create a buffer to hold the range values */
   @reactively private get createdRangeBuffer(): GPUBuffer {
     const buffer = this.device.createBuffer({
       label: "histogram range buffer",
