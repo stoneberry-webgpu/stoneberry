@@ -52,7 +52,12 @@ fn reduceBufferToWork(grid: vec2<u32>, localId: u32) {
     work[localId] = v;
 }
 
-// LATER benchmark striping/striding should reduce memory bank conflict
+// LATER benchmark striping/striding could reduce memory bank conflict
+// might be useful on other hardware.
+//
+// Current benchmarks are near the practical limit on memory bandwidth on my m1max 
+// theoretical limit is 400gb/sec, practical reports of 330 gb/sec for native apps,
+// and we're at 320 gb/sec.
 fn fetchSrcBuffer(gridX: u32) -> array<Output, 4> {  //! 4=blockArea
     let start = u.sourceOffset + (gridX * 4u); //! 4=blockArea
     let end = arrayLength(&src);
