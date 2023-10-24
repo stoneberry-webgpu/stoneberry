@@ -1,4 +1,3 @@
-import { makeHistogramTemplate } from 'stoneberry/histogram-texture';
 import { HasReactive, reactively } from "@reactively/decorate";
 import {
   Cache,
@@ -16,8 +15,8 @@ import {
   loaderForComponent,
 } from "../util/LoadTemplate.js";
 import { runAndFetchResult } from "../util/RunAndFetch.js";
-import { HistogramTemplate, makeHistogramTemplate } from "./../util/HistogramTemplate";
 import { TextureToHistograms } from "./TextureToHistograms.js";
+import { HistogramTemplate, makeHistogramTemplate } from "../util/HistogramTemplate.js";
 
 export interface HistogramTextureParams {
   device: GPUDevice;
@@ -103,14 +102,14 @@ export class HistogramTexture extends HasReactive implements ComposableShader {
    */
   @reactively histogramTemplate!: HistogramTemplate;
 
-  /** macros to select or synthesize a component from the source texture 
+  /** macros to select or synthesize a component from the source texture
    * @defaultValue "r"
-  */
+   */
   @reactively loadComponent!: LoadableComponent | LoadTemplate;
 
-  /** range of histogram values (or provide minMaxBuffer) 
+  /** range of histogram values (or provide minMaxBuffer)
    * @defaultValue [0, 255]
-  */
+   */
   @reactively range?: Vec2;
 
   /** buffer containing min and max values for the histogram range (or use range) */
@@ -121,9 +120,9 @@ export class HistogramTexture extends HasReactive implements ComposableShader {
     */
   @reactively forceWorkgroupSize!: Vec2 | undefined;
 
-  /** optinally calculate sums for each bucket in addition to counts 
+  /** optinally calculate sums for each bucket in addition to counts
    * @defaultValue false
-  */
+   */
   @reactively bucketSums!: boolean;
 
   /** Debug label attached to gpu objects for error reporting */
@@ -148,10 +147,10 @@ export class HistogramTexture extends HasReactive implements ComposableShader {
 
   /** Execute the histogram immediately and copy the results back to the CPU.
    * (results are copied from the {@link HistogramTexture.result} GPUBuffer)
-   * 
-   * To use HistogramTexture in concert with external shaders, 
+   *
+   * To use HistogramTexture in concert with external shaders,
    * instead use {@link HistogramTexture.commands} or `ShaderGroup`.
-   * 
+   *
    * @returns a single histogram in an array
    */
   @reactively async histogram(): Promise<number[]> {
