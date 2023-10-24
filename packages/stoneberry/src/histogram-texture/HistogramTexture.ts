@@ -145,33 +145,39 @@ export class HistogramTexture extends HasReactive implements ComposableShader {
     }
   }
 
+  /** create a range buffer if necessary */
   @reactively private get rangeBuffer(): GPUBuffer {
     if (this.minMaxBuffer) {
       return this.minMaxBuffer;
     } else if (this.range) {
-      // if now minMax buffer is provided, make our own
-      const buffer = this.device.createBuffer({
-        label: "histogram range buffer",
-        size: Uint32Array.BYTES_PER_ELEMENT * 2,
-        usage: GPUBufferUsage.STORAGE | GPUBufferUsage.COPY_DST,
-        mappedAtCreation: true,
-      });
-      reactiveTrackUse(buffer, this.usageContext);
+      // if no minMax buffer is provided, make our own
+      const elems = 2;
+      const buffer = this.createdRangeBuffer;
 
       let data: Uint32Array | Float32Array;
       if (this.histogramTemplate.outputElements === "f32") {
-        data = new Float32Array(buffer.getMappedRange());
+        data = new Float32Array(elems);
       } else {
-        data = new Uint32Array(buffer.getMappedRange());
+        data = new Uint32Array(elems);
       }
       data[0] = this.range[0];
       data[1] = this.range[1];
-      buffer.unmap();
+      this.device.queue.writeBuffer(buffer, 0, data);
 
       return buffer;
     } else {
       throw new Error("range or minMaxBuffer must be provided");
     }
+  }
+
+  @reactively private get createdRangeBuffer(): GPUBuffer {
+    const buffer = this.device.createBuffer({
+      label: "histogram range buffer",
+      size: Uint32Array.BYTES_PER_ELEMENT * 2,
+      usage: GPUBufferUsage.STORAGE | GPUBufferUsage.COPY_DST,
+    });
+    reactiveTrackUse(buffer, this.usageContext);
+    return buffer;
   }
 
   /** all shaders needed to reduce the texture to a single reduced value */
