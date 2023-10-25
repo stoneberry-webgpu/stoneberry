@@ -4,6 +4,7 @@ import { logCsvReport } from "./benchReport.js";
 import { prefixScanBench } from "./prefixScanBench.js";
 import { reduceBufferBench } from "./reduceBufferBench.js";
 import { reduceTextureBench } from "./reduceTextureBench.js";
+import { histogramTextureBench } from "./histogramTextureBench.js";
 
 main();
 
@@ -15,6 +16,7 @@ async function main(): Promise<void> {
   await benchScan(device, testUtc);
   await benchReduceBuffer(device, testUtc);
   await benchReduceTexture(device, testUtc);
+  await benchHistogramTexture(device, testUtc);
 }
 
 async function benchScan(device: GPUDevice, time: string): Promise<void> {
@@ -37,4 +39,12 @@ async function benchReduceTexture(device: GPUDevice, time: string): Promise<void
   const { averageClockTime, fastest } = await reduceTextureBench(device, size, 400);
 
   logCsvReport([fastest], averageClockTime, linearSize, "reduceTex:", time, false);
+}
+
+async function benchHistogramTexture(device: GPUDevice, time: string): Promise<void> {
+  const size = [2 ** 13, 2 ** 13] as Vec2;
+  const { averageClockTime, fastest } = await histogramTextureBench(device, size, 400);
+  const linearSize = size[0] * size[1];
+
+  logCsvReport([fastest], averageClockTime, linearSize, "histTex:", time, false);
 }
