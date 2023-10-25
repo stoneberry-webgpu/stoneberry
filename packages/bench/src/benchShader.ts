@@ -42,7 +42,7 @@ export async function benchShader(
   /* run the shader in batches, so we don't overflow timing buffers */
   for (let i = 0; i < runs; ) {
     const runsThisBatch = Math.min(runsPerBatch, runs - i);
-    const result = await runBatch(device, i, runsPerBatch, shaderGroup);
+    const result = await runBatch(device, i, runsThisBatch, shaderGroup);
     batchResults.push(result);
     i += runsThisBatch;
   }
