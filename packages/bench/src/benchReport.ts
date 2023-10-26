@@ -27,20 +27,15 @@ export interface LogCsvConfig {
 
 /** log a csv formatted version of the report to a localhost websocket, and the debug console */
 export function logCsvReport(params: LogCsvConfig): void {
-  const { benchResult, srcSize, label = "", tags } = params;
-  const { averageClockTime } = benchResult;
-
   const gpuReports = selectGpuCsv(params);
-  const sections: string[] = [...gpuReports];
-  const summaryText = summaryCsv(label, averageClockTime, srcSize, { ...tags });
-  sections.push(summaryText);
+  const summaryText = summaryCsv(params);
+  const sections = [...gpuReports, summaryText];
   const msg = sections.join("\n\n") + "\n\n";
-
   console.log(msg);
   logWebSocket(msg);
 }
 
-/** return the gpu perf csv requested by reportType, 
+/** return the gpu perf csv requested by reportType,
  * (or none for "summary-only") */
 function selectGpuCsv(params: LogCsvConfig): string[] {
   const { benchResult, reportType = "fastest", label = "", tags } = params;
@@ -85,13 +80,11 @@ function gpuPerfCsv(
 }
 
 /** create a summary csv table showing gb/sec */
-function summaryCsv(
-  label: string,
-  averageTime: number,
-  srcSize: number,
-  tags?: Record<string, string>
-): string {
-  const seconds = averageTime / 1000;
+function summaryCsv(params: LogCsvConfig): string {
+  const { benchResult, srcSize, label = "", tags } = params;
+  const { averageClockTime } = benchResult;
+
+  const seconds = averageClockTime / 1000;
   const gigabytes = srcSize / 2 ** 30;
   const gbSec = (gigabytes / seconds).toFixed(2);
 
