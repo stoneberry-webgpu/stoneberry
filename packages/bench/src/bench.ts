@@ -50,10 +50,11 @@ function logCsv(
   benchResult: BenchResult,
   srcElems: number,
   utc: string,
-  reportType: BenchReportType = "fastest"
+  reportType: BenchReportType = "median"
 ): void {
   const preTags = { benchmark: label };
   const tags = { gitVersion, utc };
   const srcSize = srcElems * 4;
   logCsvReport({ benchResult, srcSize, reportType, preTags, tags, precision: 2 });
+  // logCsvReport({ benchResult, srcSize, reportType:"fastest", preTags, tags, precision: 2 });
 }

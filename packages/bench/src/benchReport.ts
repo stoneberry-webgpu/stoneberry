@@ -3,9 +3,10 @@ import { BenchResult, GpuPerfWithId } from "./benchShader.js";
 
 /** "summary-only" shows only a gb/sec table
  * "fastest" shows a table with perf details from the fastest run, and also the summary
+ * "median" shows a table with perf details from the median fastest run, and also the summary
  * "details" shows a table with perf details from all runs, and also the summary
  */
-export type BenchReportType = "summary-only" | "details" | "fastest";
+export type BenchReportType = "summary-only" | "median" | "fastest" | "details";
 
 export interface LogCsvConfig {
   /** perf results to log */
@@ -15,7 +16,7 @@ export interface LogCsvConfig {
   srcSize: number;
 
   /** amount of detail to include in the report
-   * @defaultValue "fastest" */
+   * @defaultValue "median" */
   reportType?: BenchReportType;
 
   /** additional columns to add at the end (e.g. git tag) */
@@ -50,6 +51,11 @@ function selectGpuCsv(params: LogCsvConfig): string[] {
     return [];
   } else if (reportType === "details") {
     toReport = reports;
+  } else if (reportType === "median") {
+    const durations = reports.map(r => ({ report: r, duration: reportDuration(r) }));
+    durations.sort((a, b) => a.duration - b.duration);
+    const median = durations[Math.floor(durations.length / 2)];
+    toReport = [median.report];
   } else if (reportType === "fastest") {
     const fastest = reports.reduce((a, b) =>
       reportDuration(a) < reportDuration(b) ? a : b
@@ -91,7 +97,7 @@ function summaryCsv(params: LogCsvConfig): string {
   const averageTimeMs = averageClockTime.toFixed(precision);
   const jsonRows = [
     { name: `avg clock`, value: averageTimeMs },
-    { name: 'gb/sec', value: gbSec },
+    { name: "gb/sec", value: gbSec },
   ];
   const fullRows = jsonRows.map(row => ({ ...preTags, ...row, ...tags }));
 
