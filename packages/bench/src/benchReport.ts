@@ -68,9 +68,10 @@ function gpuPerfCsv(
   tags?: Record<string, string>,
   precision = 2
 ): string {
-  const reportsRows = reports.map(report => {
+  const reportsRows = reports.map((report,i) => {
     const jsonRows = reportJson(report, label, precision);
-    return jsonRows;
+    const rowsWithRun = jsonRows.map(row => ({...row, 'runId': i.toString()}));
+    return rowsWithRun;
   });
   const flatRows = reportsRows.flat();
   const reportFullRows = flatRows.map(row => ({ ...row, ...tags }));
