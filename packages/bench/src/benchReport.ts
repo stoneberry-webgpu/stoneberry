@@ -19,7 +19,6 @@ export interface LogCsvConfig {
 
   /** additional columns to add to the report (e.g. git tag) */
   tags?: Record<string, string>;
-
 }
 
 /** log a csv formatted version of the report to a localhost websocket, and the debug console */
@@ -52,6 +51,7 @@ export function logCsvReport(params: LogCsvConfig): void {
   logWebSocket(msg);
 }
 
+/** return a csv table from gpu performance records */
 function gpuPerfCsv(
   reports: GpuPerfReport[],
   label: string,
@@ -73,6 +73,7 @@ function gpuPerfCsv(
   return csv;
 }
 
+/** create a summary csv table showing gb/sec */
 function summaryCsv(
   label: string,
   averageTime: number,
@@ -80,8 +81,7 @@ function summaryCsv(
   tags?: Record<string, string>
 ): string {
   const seconds = averageTime / 1000;
-  const bytesPerElement = 4;
-  const gigabytes = (srcSize * bytesPerElement) / 2 ** 30;
+  const gigabytes = srcSize / 2 ** 30;
   const gbSec = (gigabytes / seconds).toFixed(2);
 
   const name = `${label} gb/sec`;
@@ -90,6 +90,8 @@ function summaryCsv(
   return summaryCsv.report([{ name, speed: gbSec, ...tags }]);
 }
 
+/** If reporting is enabled via the ?reportUrl url param,
+ *  write a message to a websocket on that port */
 function logWebSocket(message: string): void {
   const url = new URL(document.URL);
   const params = new URLSearchParams(url.search);

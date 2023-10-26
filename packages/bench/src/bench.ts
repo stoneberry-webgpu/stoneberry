@@ -53,12 +53,12 @@ async function benchHistogramTexture(device: GPUDevice, utc: string): Promise<vo
 function logCsv(
   label: string,
   benchResult: BenchResult,
-  srcSize: number,
+  srcElems: number,
   utc: string
 ): void {
   logCsvReport({
     benchResult,
-    srcSize,
+    srcSize: srcElems * 4,
     label,
     reportType: "details",
     tags: { git: gitVersion, utc },
