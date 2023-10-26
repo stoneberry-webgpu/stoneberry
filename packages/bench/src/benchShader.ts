@@ -5,15 +5,14 @@ import {
   ShaderGroup,
   filterReport,
   gpuTiming,
-  reportDuration,
   withTimestampGroup,
 } from "thimbleberry";
 
 // TODO mv this file to thimbleberry
 
+/** timing results */
 export interface BenchResult {
   reports: GpuPerfReport[];
-  fastest: GpuPerfReport;
   averageClockTime: number;
 }
 
@@ -24,7 +23,7 @@ export interface BenchConfig {
   warmup?: boolean;
 }
 
-/** run the shader multiple times and report the fastest iteration */
+/** run the shader multiple times and report the iteration */
 export async function benchShader(
   config: BenchConfig,
   ...shaders: ComposableShader[]
@@ -51,15 +50,11 @@ export async function benchShader(
   const batchAverages = batchResults.map(r => r.averageClockTime * r.batchSize);
   const averageClockTime = batchAverages.reduce((a, b) => a + b) / runs;
 
-  // find single fastest overall frame
   const reports = batchResults.flatMap(({ report, spans }) =>
     spans.map(s => filterReport(report, s))
   );
-  const fastest = reports.reduce((a, b) =>
-    reportDuration(a) < reportDuration(b) ? a : b
-  );
 
-  return { reports, fastest, averageClockTime };
+  return { reports, averageClockTime };
 }
 
 interface BatchResult {
