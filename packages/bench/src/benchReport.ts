@@ -1,6 +1,10 @@
 import { reportJson, FormattedCsv, GpuPerfReport, reportDuration } from "thimbleberry";
 import { BenchResult } from "./benchShader.js";
 
+/** "summary-only" shows only a gb/sec table
+ * "fastest" shows a table with perf details from the fastest run, and also the summary
+ * "details" shows a table with perf details from all runs, and also the summary
+*/
 export type ReportType = "summary-only" | "details" | "fastest";
 
 export interface LogCsvConfig {
