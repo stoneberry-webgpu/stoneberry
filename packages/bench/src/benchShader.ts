@@ -12,8 +12,12 @@ import {
 
 /** timing results */
 export interface BenchResult {
-  reports: GpuPerfReport[];
+  reports: GpuPerfWithId[];
   averageClockTime: number;
+}
+
+export interface GpuPerfWithId extends GpuPerfReport {
+  id: string;
 }
 
 export interface BenchConfig {
@@ -50,9 +54,12 @@ export async function benchShader(
   const batchAverages = batchResults.map(r => r.averageClockTime * r.batchSize);
   const averageClockTime = batchAverages.reduce((a, b) => a + b) / runs;
 
-  const reports = batchResults.flatMap(({ report, spans }) =>
-    spans.map(s => filterReport(report, s))
-  );
+  const reports = batchResults.flatMap(({ report, spans }) => {
+    return spans.map((span, i) => {
+      const filtered = filterReport(report, span);
+      return { ...filtered, id: i.toString() };
+    });
+  });
 
   return { reports, averageClockTime };
 }
@@ -62,7 +69,6 @@ interface BatchResult {
   spans: CompletedSpan[];
   report: GpuPerfReport;
   batchSize: number;
-  run: number;
 }
 
 async function runBatch(
@@ -85,7 +91,7 @@ async function runBatch(
   const clockTime = performance.now() - batchStart;
   const report = await gpuTiming!.results();
   const averageClockTime = clockTime / batchSize;
-  return { run, averageClockTime, spans, report, batchSize };
+  return { averageClockTime, spans, report, batchSize };
 }
 
 function runOnce(id: number, shaderGroup: ShaderGroup): CompletedSpan | undefined {

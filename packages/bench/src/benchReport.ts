@@ -1,5 +1,5 @@
 import { reportJson, FormattedCsv, GpuPerfReport, reportDuration } from "thimbleberry";
-import { BenchResult } from "./benchShader.js";
+import { BenchResult, GpuPerfWithId } from "./benchShader.js";
 
 /** "summary-only" shows only a gb/sec table
  * "fastest" shows a table with perf details from the fastest run, and also the summary
@@ -45,7 +45,7 @@ function selectGpuCsv(params: LogCsvConfig): string[] {
   const { benchResult, reportType = "fastest", label = "", tags } = params;
   const { reports } = benchResult;
 
-  let toReport: GpuPerfReport[] = [];
+  let toReport: GpuPerfWithId[] = [];
   if (reportType === "summary-only") {
     return [];
   } else if (reportType === "details") {
@@ -63,14 +63,14 @@ function selectGpuCsv(params: LogCsvConfig): string[] {
 
 /** return a csv table from gpu performance records */
 function gpuPerfCsv(
-  reports: GpuPerfReport[],
+  reports: GpuPerfWithId[],
   label: string,
   tags?: Record<string, string>,
   precision = 2
 ): string {
-  const reportsRows = reports.map((report,i) => {
+  const reportsRows = reports.map((report) => {
     const jsonRows = reportJson(report, label, precision);
-    const rowsWithRun = jsonRows.map(row => ({...row, 'runId': i.toString()}));
+    const rowsWithRun = jsonRows.map(row => ({...row, 'runId': report.id}));
     return rowsWithRun;
   });
   const flatRows = reportsRows.flat();
