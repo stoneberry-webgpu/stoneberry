@@ -25,7 +25,8 @@ export interface LogCsvConfig {
   tags?: Record<string, string>;
 }
 
-/** log a csv formatted version of the report to a localhost websocket, and the debug console */
+/** log a csv formatted version of the benchmark performance records 
+ * to the debug console and to a localhost websocket */
 export function logCsvReport(params: LogCsvConfig): void {
   const gpuReports = selectGpuCsv(params);
   const summaryText = summaryCsv(params);
