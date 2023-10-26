@@ -1,21 +1,33 @@
 import { reportJson, FormattedCsv, GpuPerfReport, reportDuration } from "thimbleberry";
-import { gitVersion } from "../version/gitVersion.js";
 import { BenchResult } from "./benchShader.js";
 
 export type ReportType = "summary-only" | "details" | "fastest";
 
 export interface LogCsvConfig {
-  label: string;
+  /** perf results to log */
   benchResult: BenchResult;
+
+  /** optional label prepended to summary rows */
+  label?: string;
+
+  /** number of 32 bit words in the source, for gb/sec calculation */
   srcSize: number;
+
+  /** amount of detail to include in the report
+   * @defaultValue "fastest" */
   reportType?: ReportType;
+
+  /** additional columns to add to the report (e.g. git tag) */
   tags?: Record<string, string>;
+
+  /** benchmark launch time (in epoch milliseconds)
+   * @defaultValue current time */
   utc?: string;
 }
 
 /** log a csv formatted version of the report to a localhost websocket, and the debug console */
 export function logCsvReport(params: LogCsvConfig): void {
-  const { benchResult, srcSize, reportType = "fastest", label, tags } = params;
+  const { benchResult, srcSize, reportType = "fastest", label = "", tags } = params;
   const { utc = Date.now().toString() } = params;
   const { averageClockTime, reports } = benchResult;
 
@@ -31,11 +43,11 @@ export function logCsvReport(params: LogCsvConfig): void {
 
   const sections: string[] = [];
   if (reportType !== "summary-only") {
-    const reportCsv = gpuPerfCsv(toReport, label, utc, averageClockTime);
+    const reportCsv = gpuPerfCsv(toReport, label, averageClockTime, { utc, ...tags });
     sections.push(reportCsv);
   }
 
-  const summaryText = summaryCsv(label, averageClockTime, srcSize, utc, tags);
+  const summaryText = summaryCsv(label, averageClockTime, srcSize, { utc, ...tags });
   sections.push(summaryText);
 
   const msg = sections.join("\n\n") + "\n\n";
@@ -47,8 +59,8 @@ export function logCsvReport(params: LogCsvConfig): void {
 function gpuPerfCsv(
   reports: GpuPerfReport[],
   label: string,
-  utc: string,
   averageTime: number,
+  tags?: Record<string, string>,
   precision = 2
 ): string {
   const averageTimeMs = averageTime.toFixed(precision);
@@ -58,7 +70,7 @@ function gpuPerfCsv(
   });
   const flatRows = reportsRows.flat();
   flatRows.push({ name: `${label} avg clock`, duration: averageTimeMs });
-  const reportFullRows = flatRows.map(row => ({ ...row, utc, git: gitVersion }));
+  const reportFullRows = flatRows.map(row => ({ ...row, ...tags }));
 
   const fmt = new FormattedCsv();
   const csv = fmt.report(reportFullRows);
@@ -69,7 +81,6 @@ function summaryCsv(
   label: string,
   averageTime: number,
   srcSize: number,
-  utc: string,
   tags?: Record<string, string>
 ): string {
   const seconds = averageTime / 1000;
@@ -80,7 +91,7 @@ function summaryCsv(
   const name = `${label} gb/sec`;
 
   const summaryCsv = new FormattedCsv();
-  return summaryCsv.report([{ name, speed: gbSec, utc }]);
+  return summaryCsv.report([{ name, speed: gbSec, ...tags }]);
 }
 
 function logWebSocket(message: string): void {
