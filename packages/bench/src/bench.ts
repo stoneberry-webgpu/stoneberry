@@ -15,38 +15,33 @@ async function main(): Promise<void> {
   const device = await benchDevice();
 
   initGpuTiming(device);
-  // await benchScan(device, testUtc);
-  // await benchReduceBuffer(device, testUtc);
-  // await benchReduceTexture(device, testUtc);
+  await benchScan(device, testUtc);
+  await benchReduceBuffer(device, testUtc);
+  await benchReduceTexture(device, testUtc);
   await benchHistogramTexture(device, testUtc);
 }
 
 async function benchScan(device: GPUDevice, time: string): Promise<void> {
   const size = 2 ** 27;
-  // const { averageClockTime, fastest } = await prefixScanBench(device, size, 100);
-
-  // logCsvReport([fastest], averageClockTime, size, "scan:", time, false);
+  const benchResult = await prefixScanBench(device, size, 100);
+  logCsv("scan", benchResult, size, time);
 }
 
 async function benchReduceBuffer(device: GPUDevice, time: string): Promise<void> {
   const size = 2 ** 27;
-  // const { averageClockTime, fastest } = await reduceBufferBench(device, size, 700);
-
-  // logCsvReport([fastest], averageClockTime, size, "reduceBuf:", time, false);
+  const benchResult = await reduceBufferBench(device, size, 700);
+  logCsv("reduceBuffer", benchResult, size, time);
 }
 
 async function benchReduceTexture(device: GPUDevice, time: string): Promise<void> {
   const size = [2 ** 13, 2 ** 13] as Vec2;
-  const linearSize = size[0] * size[1];
-  // const { averageClockTime, fastest } = await reduceTextureBench(device, size, 400);
-
-  // logCsvReport([fastest], averageClockTime, linearSize, "reduceTex:", time, false);
+  const benchResult = await reduceTextureBench(device, size, 400);
+  logCsv("reduceTexture", benchResult, size[0] * size[1], time);
 }
 
 async function benchHistogramTexture(device: GPUDevice, utc: string): Promise<void> {
-  const size = [2 ** 13, 2 ** 8] as Vec2;
-  const benchResult = await histogramTextureBench(device, size, 3);
-
+  const size = [2 ** 13, 2 ** 13] as Vec2;
+  const benchResult = await histogramTextureBench(device, size, 400);
   logCsv("histogramTexture", benchResult, size[0] * size[1], utc);
 }
 
@@ -60,5 +55,5 @@ function logCsv(
   const preTags = { benchmark: label };
   const tags = { gitVersion, utc };
   const srcSize = srcElems * 4;
-  logCsvReport({ benchResult, srcSize, reportType, preTags, tags });
+  logCsvReport({ benchResult, srcSize, reportType, preTags, tags, precision: 2 });
 }
