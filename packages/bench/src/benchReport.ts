@@ -11,9 +11,6 @@ export interface LogCsvConfig {
   /** perf results to log */
   benchResult: BenchResult;
 
-  /** optional label prepended to summary rows */
-  label?: string;
-
   /** number of 32 bit words in the source, for gb/sec calculation */
   srcSize: number;
 
@@ -67,9 +64,8 @@ function selectGpuCsv(params: LogCsvConfig): string[] {
 /** return a csv table from gpu performance records */
 function gpuPerfCsv(reports: GpuPerfWithId[], params: LogCsvConfig): string {
   const { preTags, tags, precision } = params;
-  const { label = "" } = params;
 
-  const totalLabel = `${label} gpu total`;
+  const totalLabel = `--> gpu total`;
   const reportsRows = reports.map(report => {
     const jsonRows = reportJson(report, totalLabel, precision);
     const rowsWithRun = jsonRows.map(row => ({ ...row, runId: report.id }));
@@ -83,21 +79,19 @@ function gpuPerfCsv(reports: GpuPerfWithId[], params: LogCsvConfig): string {
   return csv;
 }
 
-/** create a summary csv table showing gb/sec */
+/** create a summary csv table showing gb/sec, and average clock timetime */
 function summaryCsv(params: LogCsvConfig): string {
-  const { benchResult, srcSize, label = "", preTags, tags, precision = 2 } = params;
+  const { benchResult, srcSize, preTags, tags, precision = 2 } = params;
   const { averageClockTime } = benchResult;
 
   const seconds = averageClockTime / 1000;
   const gigabytes = srcSize / 2 ** 30;
   const gbSec = (gigabytes / seconds).toFixed(2);
 
-  const name = `${label} gb/sec`;
-
   const averageTimeMs = averageClockTime.toFixed(precision);
   const jsonRows = [
-    { name: `${label} avg clock`, value: averageTimeMs },
-    { name, value: gbSec },
+    { name: `avg clock`, value: averageTimeMs },
+    { name: 'gb/sec', value: gbSec },
   ];
   const fullRows = jsonRows.map(row => ({ ...preTags, ...row, ...tags }));
 
