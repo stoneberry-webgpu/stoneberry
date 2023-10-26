@@ -59,8 +59,8 @@ function logCsv(
   logCsvReport({
     benchResult,
     srcSize: srcElems * 4,
-    label,
-    reportType: "details",
-    tags: { git: gitVersion, utc },
+    // reportType: "details",
+    preTags: { benchmark: label },
+    tags: { gitVersion, utc },
   });
 }

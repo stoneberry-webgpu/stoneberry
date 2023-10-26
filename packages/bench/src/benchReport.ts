@@ -1,4 +1,4 @@
-import { reportJson, FormattedCsv, GpuPerfReport, reportDuration } from "thimbleberry";
+import { FormattedCsv, reportDuration, reportJson } from "thimbleberry";
 import { BenchResult, GpuPerfWithId } from "./benchShader.js";
 
 /** "summary-only" shows only a gb/sec table
@@ -21,8 +21,11 @@ export interface LogCsvConfig {
    * @defaultValue "fastest" */
   reportType?: ReportType;
 
-  /** additional columns to add to the report (e.g. git tag) */
+  /** additional columns to add at the end (e.g. git tag) */
   tags?: Record<string, string>;
+
+  /** additional columns to prepend (e.g. git tag) */
+  preTags?: Record<string, string>;
 
   /** number of fractions in numerical values */
   precision?: number;
@@ -42,7 +45,7 @@ export function logCsvReport(params: LogCsvConfig): void {
 /** return the gpu perf csv requested by reportType,
  * (or none for "summary-only") */
 function selectGpuCsv(params: LogCsvConfig): string[] {
-  const { benchResult, reportType = "fastest", label = "", tags } = params;
+  const { benchResult, reportType = "fastest" } = params;
   const { reports } = benchResult;
 
   let toReport: GpuPerfWithId[] = [];
@@ -57,24 +60,23 @@ function selectGpuCsv(params: LogCsvConfig): string[] {
     toReport = [fastest];
   }
 
-  const reportCsv = gpuPerfCsv(toReport, label, { ...tags });
+  const reportCsv = gpuPerfCsv(toReport, params);
   return [reportCsv];
 }
 
 /** return a csv table from gpu performance records */
-function gpuPerfCsv(
-  reports: GpuPerfWithId[],
-  label: string,
-  tags?: Record<string, string>,
-  precision = 2
-): string {
-  const reportsRows = reports.map((report) => {
-    const jsonRows = reportJson(report, label, precision);
-    const rowsWithRun = jsonRows.map(row => ({...row, 'runId': report.id}));
+function gpuPerfCsv(reports: GpuPerfWithId[], params: LogCsvConfig): string {
+  const { preTags, tags, precision } = params;
+  const { label = "" } = params;
+
+  const totalLabel = `${label} gpu total`;
+  const reportsRows = reports.map(report => {
+    const jsonRows = reportJson(report, totalLabel, precision);
+    const rowsWithRun = jsonRows.map(row => ({ ...row, runId: report.id }));
     return rowsWithRun;
   });
   const flatRows = reportsRows.flat();
-  const reportFullRows = flatRows.map(row => ({ ...row, ...tags }));
+  const reportFullRows = flatRows.map(row => ({ ...preTags, ...row, ...tags }));
 
   const fmt = new FormattedCsv();
   const csv = fmt.report(reportFullRows);
@@ -83,7 +85,7 @@ function gpuPerfCsv(
 
 /** create a summary csv table showing gb/sec */
 function summaryCsv(params: LogCsvConfig): string {
-  const { benchResult, srcSize, label = "", tags, precision = 2 } = params;
+  const { benchResult, srcSize, label = "", preTags, tags, precision = 2 } = params;
   const { averageClockTime } = benchResult;
 
   const seconds = averageClockTime / 1000;
@@ -94,12 +96,13 @@ function summaryCsv(params: LogCsvConfig): string {
 
   const averageTimeMs = averageClockTime.toFixed(precision);
   const jsonRows = [
-    { name: `${label} avg clock`, value: averageTimeMs, ...tags },
-    { name, value: gbSec, ...tags },
+    { name: `${label} avg clock`, value: averageTimeMs },
+    { name, value: gbSec },
   ];
+  const fullRows = jsonRows.map(row => ({ ...preTags, ...row, ...tags }));
 
   const summaryCsv = new FormattedCsv();
-  return summaryCsv.report(jsonRows);
+  return summaryCsv.report(fullRows);
 }
 
 /** If reporting is enabled via the ?reportUrl url param,
