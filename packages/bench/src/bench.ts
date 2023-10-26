@@ -1,6 +1,6 @@
 import { Vec2, initGpuTiming } from "thimbleberry";
 import { benchDevice } from "./benchDevice.js";
-import { logCsvReport } from "./benchReport.js";
+import { BenchReportType, logCsvReport } from "./benchReport.js";
 import { prefixScanBench } from "./prefixScanBench.js";
 import { reduceBufferBench } from "./reduceBufferBench.js";
 import { reduceTextureBench } from "./reduceTextureBench.js";
@@ -44,7 +44,7 @@ async function benchReduceTexture(device: GPUDevice, time: string): Promise<void
 }
 
 async function benchHistogramTexture(device: GPUDevice, utc: string): Promise<void> {
-  const size = [2 ** 8, 2 ** 8] as Vec2;
+  const size = [2 ** 13, 2 ** 8] as Vec2;
   const benchResult = await histogramTextureBench(device, size, 3);
 
   logCsv("histogramTexture", benchResult, size[0] * size[1], utc);
@@ -54,13 +54,11 @@ function logCsv(
   label: string,
   benchResult: BenchResult,
   srcElems: number,
-  utc: string
+  utc: string,
+  reportType: BenchReportType = "fastest"
 ): void {
-  logCsvReport({
-    benchResult,
-    srcSize: srcElems * 4,
-    // reportType: "details",
-    preTags: { benchmark: label },
-    tags: { gitVersion, utc },
-  });
+  const preTags = { benchmark: label };
+  const tags = { gitVersion, utc };
+  const srcSize = srcElems * 4;
+  logCsvReport({ benchResult, srcSize, reportType, preTags, tags });
 }

@@ -5,7 +5,7 @@ import { BenchResult, GpuPerfWithId } from "./benchShader.js";
  * "fastest" shows a table with perf details from the fastest run, and also the summary
  * "details" shows a table with perf details from all runs, and also the summary
  */
-export type ReportType = "summary-only" | "details" | "fastest";
+export type BenchReportType = "summary-only" | "details" | "fastest";
 
 export interface LogCsvConfig {
   /** perf results to log */
@@ -16,7 +16,7 @@ export interface LogCsvConfig {
 
   /** amount of detail to include in the report
    * @defaultValue "fastest" */
-  reportType?: ReportType;
+  reportType?: BenchReportType;
 
   /** additional columns to add at the end (e.g. git tag) */
   tags?: Record<string, string>;
