@@ -6,6 +6,7 @@ import { reduceBufferBench } from "./reduceBufferBench.js";
 import { reduceTextureBench } from "./reduceTextureBench.js";
 import { histogramTextureBench } from "./histogramTextureBench.js";
 import { gitVersion } from "../version/gitVersion.js";
+import { BenchResult } from "./benchShader.js";
 
 main();
 
@@ -45,9 +46,16 @@ async function benchReduceTexture(device: GPUDevice, time: string): Promise<void
 async function benchHistogramTexture(device: GPUDevice, utc: string): Promise<void> {
   const size = [2 ** 8, 2 ** 8] as Vec2;
   const benchResult = await histogramTextureBench(device, size, 3);
-  const srcSize = size[0] * size[1];
-  const label = "histogramTexture";
 
+  logCsv("histogramTexture", benchResult, size[0] * size[1], utc);
+}
+
+function logCsv(
+  label: string,
+  benchResult: BenchResult,
+  srcSize: number,
+  utc: string
+): void {
   logCsvReport({
     benchResult,
     srcSize,
