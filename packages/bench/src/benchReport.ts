@@ -4,7 +4,7 @@ import { BenchResult } from "./benchShader.js";
 /** "summary-only" shows only a gb/sec table
  * "fastest" shows a table with perf details from the fastest run, and also the summary
  * "details" shows a table with perf details from all runs, and also the summary
-*/
+ */
 export type ReportType = "summary-only" | "details" | "fastest";
 
 export interface LogCsvConfig {
@@ -27,11 +27,29 @@ export interface LogCsvConfig {
 
 /** log a csv formatted version of the report to a localhost websocket, and the debug console */
 export function logCsvReport(params: LogCsvConfig): void {
-  const { benchResult, srcSize, reportType = "fastest", label = "", tags } = params;
+  const { benchResult, srcSize, label = "", tags } = params;
+  const { averageClockTime } = benchResult;
+
+  const gpuReports = selectGpuCsv(params);
+  const sections: string[] = [...gpuReports];
+  const summaryText = summaryCsv(label, averageClockTime, srcSize, { ...tags });
+  sections.push(summaryText);
+  const msg = sections.join("\n\n") + "\n\n";
+
+  console.log(msg);
+  logWebSocket(msg);
+}
+
+/** return the gpu perf csv requested by reportType, 
+ * (or none for "summary-only") */
+function selectGpuCsv(params: LogCsvConfig): string[] {
+  const { benchResult, reportType = "fastest", label = "", tags } = params;
   const { averageClockTime, reports } = benchResult;
 
   let toReport: GpuPerfReport[] = [];
-  if (reportType === "details") {
+  if (reportType === "summary-only") {
+    return [];
+  } else if (reportType === "details") {
     toReport = reports;
   } else if (reportType === "fastest") {
     const fastest = reports.reduce((a, b) =>
@@ -40,19 +58,8 @@ export function logCsvReport(params: LogCsvConfig): void {
     toReport = [fastest];
   }
 
-  const sections: string[] = [];
-  if (reportType !== "summary-only") {
-    const reportCsv = gpuPerfCsv(toReport, label, averageClockTime, { ...tags });
-    sections.push(reportCsv);
-  }
-
-  const summaryText = summaryCsv(label, averageClockTime, srcSize, { ...tags });
-  sections.push(summaryText);
-
-  const msg = sections.join("\n\n") + "\n\n";
-
-  console.log(msg);
-  logWebSocket(msg);
+  const reportCsv = gpuPerfCsv(toReport, label, averageClockTime, { ...tags });
+  return [reportCsv];
 }
 
 /** return a csv table from gpu performance records */
