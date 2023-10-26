@@ -23,9 +23,12 @@ export interface LogCsvConfig {
 
   /** additional columns to add to the report (e.g. git tag) */
   tags?: Record<string, string>;
+
+  /** number of fractions in numerical values */
+  precision?: number;
 }
 
-/** log a csv formatted version of the benchmark performance records 
+/** log a csv formatted version of the benchmark performance records
  * to the debug console and to a localhost websocket */
 export function logCsvReport(params: LogCsvConfig): void {
   const gpuReports = selectGpuCsv(params);
@@ -40,7 +43,7 @@ export function logCsvReport(params: LogCsvConfig): void {
  * (or none for "summary-only") */
 function selectGpuCsv(params: LogCsvConfig): string[] {
   const { benchResult, reportType = "fastest", label = "", tags } = params;
-  const { averageClockTime, reports } = benchResult;
+  const { reports } = benchResult;
 
   let toReport: GpuPerfReport[] = [];
   if (reportType === "summary-only") {
@@ -54,7 +57,7 @@ function selectGpuCsv(params: LogCsvConfig): string[] {
     toReport = [fastest];
   }
 
-  const reportCsv = gpuPerfCsv(toReport, label, averageClockTime, { ...tags });
+  const reportCsv = gpuPerfCsv(toReport, label, { ...tags });
   return [reportCsv];
 }
 
@@ -62,17 +65,14 @@ function selectGpuCsv(params: LogCsvConfig): string[] {
 function gpuPerfCsv(
   reports: GpuPerfReport[],
   label: string,
-  averageTime: number,
   tags?: Record<string, string>,
   precision = 2
 ): string {
-  const averageTimeMs = averageTime.toFixed(precision);
   const reportsRows = reports.map(report => {
-    const jsonRows = reportJson(report, label);
+    const jsonRows = reportJson(report, label, precision);
     return jsonRows;
   });
   const flatRows = reportsRows.flat();
-  flatRows.push({ name: `${label} avg clock`, duration: averageTimeMs });
   const reportFullRows = flatRows.map(row => ({ ...row, ...tags }));
 
   const fmt = new FormattedCsv();
@@ -82,7 +82,7 @@ function gpuPerfCsv(
 
 /** create a summary csv table showing gb/sec */
 function summaryCsv(params: LogCsvConfig): string {
-  const { benchResult, srcSize, label = "", tags } = params;
+  const { benchResult, srcSize, label = "", tags, precision = 2 } = params;
   const { averageClockTime } = benchResult;
 
   const seconds = averageClockTime / 1000;
@@ -91,8 +91,14 @@ function summaryCsv(params: LogCsvConfig): string {
 
   const name = `${label} gb/sec`;
 
+  const averageTimeMs = averageClockTime.toFixed(precision);
+  const jsonRows = [
+    { name: `${label} avg clock`, value: averageTimeMs, ...tags },
+    { name, value: gbSec, ...tags },
+  ];
+
   const summaryCsv = new FormattedCsv();
-  return summaryCsv.report([{ name, speed: gbSec, ...tags }]);
+  return summaryCsv.report(jsonRows);
 }
 
 /** If reporting is enabled via the ?reportUrl url param,
