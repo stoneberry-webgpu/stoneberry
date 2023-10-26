@@ -20,15 +20,11 @@ export interface LogCsvConfig {
   /** additional columns to add to the report (e.g. git tag) */
   tags?: Record<string, string>;
 
-  /** benchmark launch time (in epoch milliseconds)
-   * @defaultValue current time */
-  utc?: string;
 }
 
 /** log a csv formatted version of the report to a localhost websocket, and the debug console */
 export function logCsvReport(params: LogCsvConfig): void {
   const { benchResult, srcSize, reportType = "fastest", label = "", tags } = params;
-  const { utc = Date.now().toString() } = params;
   const { averageClockTime, reports } = benchResult;
 
   let toReport: GpuPerfReport[] = [];
@@ -43,11 +39,11 @@ export function logCsvReport(params: LogCsvConfig): void {
 
   const sections: string[] = [];
   if (reportType !== "summary-only") {
-    const reportCsv = gpuPerfCsv(toReport, label, averageClockTime, { utc, ...tags });
+    const reportCsv = gpuPerfCsv(toReport, label, averageClockTime, { ...tags });
     sections.push(reportCsv);
   }
 
-  const summaryText = summaryCsv(label, averageClockTime, srcSize, { utc, ...tags });
+  const summaryText = summaryCsv(label, averageClockTime, srcSize, { ...tags });
   sections.push(summaryText);
 
   const msg = sections.join("\n\n") + "\n\n";

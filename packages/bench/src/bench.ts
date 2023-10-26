@@ -52,8 +52,7 @@ async function benchHistogramTexture(device: GPUDevice, utc: string): Promise<vo
     benchResult,
     srcSize,
     label,
-    utc,
     reportType: "details",
-    tags: { git: gitVersion },
+    tags: { git: gitVersion, utc },
   });
 }
