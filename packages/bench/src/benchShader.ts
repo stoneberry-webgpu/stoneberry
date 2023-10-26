@@ -67,6 +67,7 @@ interface BatchResult {
   spans: CompletedSpan[];
   report: GpuPerfReport;
   batchSize: number;
+  run: number;
 }
 
 async function runBatch(
@@ -89,7 +90,7 @@ async function runBatch(
   const clockTime = performance.now() - batchStart;
   const report = await gpuTiming!.results();
   const averageClockTime = clockTime / batchSize;
-  return { averageClockTime, spans, report, batchSize };
+  return { run, averageClockTime, spans, report, batchSize };
 }
 
 function runOnce(id: number, shaderGroup: ShaderGroup): CompletedSpan | undefined {
