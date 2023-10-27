@@ -39,7 +39,7 @@ export async function bench(outfile="benchmarks.csv", gitCheck=true): Promise<vo
     await benchBrowser();
   } else {
     // record benchmark results from the browser via websocket
-    stdExec(`websocat -s ${benchResultsPort} --no-line >> ${outfile}`);
+    stdExec(`websocat -B 4194304 -s ${benchResultsPort} --no-line >> ${outfile}`);
     await benchBrowser({ reportPort: benchResultsPort.toString() });
   }
 }
