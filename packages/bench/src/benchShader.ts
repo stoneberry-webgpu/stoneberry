@@ -8,7 +8,7 @@ export interface BenchConfig {
   device: GPUDevice;
   runs: number;
   runsPerBatch?: number;
-  warmup?: boolean;
+  warmup?: number;
 }
 
 /** timing results */
@@ -26,14 +26,13 @@ export async function benchShader(
   config: BenchConfig,
   ...shaders: ComposableShader[]
 ): Promise<BenchResult> {
-  const { device, runs, warmup = true, runsPerBatch = 50 } = config;
+  const { device, runs, warmup = 15, runsPerBatch = 50 } = config;
   const batchResults: BatchResult[] = [];
   const shaderGroup = new ShaderGroup(device, ...shaders);
 
-  /* warmup run */
+  /* warmup runs */
   if (warmup) {
-    shaderGroup.dispatch();
-    await device.queue.onSubmittedWorkDone();
+    await runBatch(device, 0, warmup, shaderGroup);
   }
 
   /* run the shader in batches, so we don't overflow timing buffers */
