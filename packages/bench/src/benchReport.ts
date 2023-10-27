@@ -1,5 +1,5 @@
 import { FormattedCsv, reportDuration, reportJson } from "thimbleberry";
-import { BenchResult, GpuPerfWithId, } from "./benchShader.js";
+import { BenchResult, GpuPerfWithId } from "./benchShader.js";
 
 /** "summary-only" shows only a gb/sec table
  * "fastest" shows a table with perf details from the fastest run, and also the summary
@@ -33,8 +33,8 @@ export interface LogCsvConfig {
  * to the debug console and to a localhost websocket */
 export function logCsvReport(params: LogCsvConfig): void {
   const gpuReports = selectGpuCsv(params);
-  const summaryText = summaryCsv(params);
-  const sections = [...gpuReports, summaryText];
+  const summaryReports = summaryCsv(params);
+  const sections = [...gpuReports, summaryReports];
   const msg = sections.join("\n\n") + "\n\n";
   console.log(msg);
   logWebSocket(msg);
@@ -86,9 +86,12 @@ function gpuPerfCsv(reports: GpuPerfWithId[], params: LogCsvConfig): string {
 }
 
 /** create a summary csv table showing gb/sec, and average clock timetime */
-function summaryCsv(params: LogCsvConfig): string {
-  const { benchResult, srcSize, preTags, tags, precision = 2 } = params;
+function summaryCsv(params: LogCsvConfig): string[] {
+  const { reportType, benchResult, srcSize, preTags, tags, precision = 2 } = params;
   const { averageClockTime } = benchResult;
+  if (reportType === "details") {
+    return [];
+  }
 
   const seconds = averageClockTime / 1000;
   const gigabytes = srcSize / 2 ** 30;
@@ -102,7 +105,7 @@ function summaryCsv(params: LogCsvConfig): string {
   const fullRows = jsonRows.map(row => ({ ...preTags, ...row, ...tags }));
 
   const summaryCsv = new FormattedCsv();
-  return summaryCsv.report(fullRows);
+  return [summaryCsv.report(fullRows)];
 }
 
 /** If reporting is enabled via the ?reportUrl url param,
