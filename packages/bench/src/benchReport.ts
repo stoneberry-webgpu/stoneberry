@@ -1,5 +1,5 @@
 import { FormattedCsv, reportDuration, reportJson } from "thimbleberry";
-import { BenchResult, GpuPerfWithId } from "./benchShader.js";
+import { BenchResult, GpuPerfWithId, } from "./benchShader.js";
 
 /** "summary-only" shows only a gb/sec table
  * "fastest" shows a table with perf details from the fastest run, and also the summary

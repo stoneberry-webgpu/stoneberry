@@ -15,9 +15,9 @@ async function main(): Promise<void> {
   const device = await benchDevice();
 
   initGpuTiming(device);
-  await benchScan(device, testUtc);
-  await benchReduceBuffer(device, testUtc);
-  await benchReduceTexture(device, testUtc);
+  // await benchScan(device, testUtc);
+  // await benchReduceBuffer(device, testUtc);
+  // await benchReduceTexture(device, testUtc);
   await benchHistogramTexture(device, testUtc);
 }
 
@@ -40,8 +40,8 @@ async function benchReduceTexture(device: GPUDevice, time: string): Promise<void
 }
 
 async function benchHistogramTexture(device: GPUDevice, utc: string): Promise<void> {
-  const size = [2 ** 13, 2 ** 13] as Vec2;
-  const benchResult = await histogramTextureBench(device, size, 400);
+  const size = [2 ** 8, 2 ** 8] as Vec2;
+  const benchResult = await histogramTextureBench(device, size, 100);
   logCsv("histogramTexture", benchResult, size[0] * size[1], utc);
 }
 
@@ -50,7 +50,7 @@ function logCsv(
   benchResult: BenchResult,
   srcElems: number,
   utc: string,
-  reportType: BenchReportType = "median"
+  reportType: BenchReportType = "details"
 ): void {
   const preTags = { benchmark: label };
   const tags = { gitVersion, utc };
