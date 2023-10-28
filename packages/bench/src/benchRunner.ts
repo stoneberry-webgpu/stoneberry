@@ -19,15 +19,16 @@ export interface MakeBenchableShader extends Partial<ControlParams> {
   makeShader: MakeShader;
 }
 
+export interface ControlParams {
+  runs: number;
+  reportType: BenchReportType;
+  precision: number;
+}
+
 interface NamedBenchResult {
   name: string;
   benchResult: BenchResult;
   srcSize: number;
-}
-
-interface ControlParams {
-  runs: number;
-  reportType: BenchReportType;
 }
 
 /** run one or more benchmarks and report the results.
@@ -55,19 +56,19 @@ export async function benchRunner(makeBenchables: MakeBenchableShader[]): Promis
   const namedResults: NamedBenchResult[] = [];
   for (const b of benchables) {
     const { srcSize } = b;
-    const { reportType, runs } = controlParams(b);
+    const { reportType, runs, precision } = controlParams(b);
     const name = b.shader.name || b.shader.constructor.name || "<shader>";
     const benchResult = await benchShader({ device, runs }, b.shader);
     namedResults.push({ benchResult, name, srcSize });
     if (reportType !== "summary-only") {
-      logCsv(name, benchResult, srcSize, testUtc, reportType);
+      logCsv(name, benchResult, srcSize, testUtc, reportType, precision);
     }
   }
 
-  const { reportType } = controlParams();
+  const { reportType, precision } = controlParams();
   if (reportType === "details") {
     namedResults.forEach(r => {
-      logCsv(r.name, r.benchResult, r.srcSize, testUtc, "summary-only");
+      logCsv(r.name, r.benchResult, r.srcSize, testUtc, "summary-only", precision);
     });
   }
 }
@@ -76,6 +77,7 @@ function controlParams(provided?: Partial<ControlParams>): ControlParams {
   const defaults: ControlParams = {
     reportType: "median",
     runs: 100,
+    precision: 2,
   };
   const urlParams = urlControlParams();
   const result = { ...defaults, ...provided, ...urlParams };
@@ -83,21 +85,19 @@ function controlParams(provided?: Partial<ControlParams>): ControlParams {
   return result;
 }
 
-function urlControlParams():Partial<ControlParams> {
+function urlControlParams(): Partial<ControlParams> {
   const params = new URLSearchParams(window.location.search);
   const runsParam = params.get("runs");
   const runs = runsParam ? parseInt(runsParam) : undefined;
-  const reportType = params.get("reportType") as BenchReportType || undefined;
+  const reportType = (params.get("reportType") as BenchReportType) || undefined;
+  const precisionParam = params.get("precision");
+  const precision = precisionParam ? parseInt(precisionParam) : undefined;
 
-  const urlParams: Partial<ControlParams> = {};
-  if (runs) {
-    urlParams.runs = runs;
-  }
-  if (reportType) {
-    urlParams.reportType = reportType;
-  }
-
-  return urlParams;
+  return removeUndefined({
+    runs,
+    reportType,
+    precision,
+  });
 }
 
 function logCsv(
@@ -105,9 +105,21 @@ function logCsv(
   benchResult: BenchResult,
   srcSize: number,
   utc: string,
-  reportType: BenchReportType
+  reportType: BenchReportType,
+  precision: number
 ): void {
   const preTags = { benchmark: label };
   const tags = { gitVersion, utc };
-  logCsvReport({ benchResult, srcSize, reportType, preTags, tags, precision: 4 });
+  logCsvReport({ benchResult, srcSize, reportType, preTags, tags, precision });
+}
+
+/** @return a copy, eliding fields with undefined values */
+function removeUndefined<T>(obj: T): Partial<T> {
+  const result = { ...obj };
+  for (const key in result) {
+    if (result[key] === undefined) {
+      delete result[key];
+    }
+  }
+  return result;
 }
