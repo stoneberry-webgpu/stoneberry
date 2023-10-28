@@ -1,22 +1,20 @@
 import { PrefixScan } from "stoneberry/scan";
 import { ComposableShader } from "thimbleberry";
 import { prefixScanBench } from "./prefixScanBench.js";
-import { benchRunner } from "./benchRunner.js";
-
-const scanElems = 2 ** 27;
+import { ShaderAndSize, benchRunner } from "./benchRunner.js";
 
 main();
 
 async function main(): Promise<void> {
   // const benches = [benchScan, benchReduceBuffer, benchReduceTexture, benchHistogramTexture];
-  const benches = [{ name: "scan", makeShader: makeScan, srcSize: scanElems * 4 }];
+  const benches = [{ makeShader: (d: GPUDevice) => makeScan(d, 2 ** 27) }];
   await benchRunner(benches);
 }
 
-function makeScan(device: GPUDevice): ComposableShader {
+function makeScan(device: GPUDevice, elems: number): ShaderAndSize {
   const source = device.createBuffer({
     label: "source",
-    size: scanElems * Uint32Array.BYTES_PER_ELEMENT,
+    size: elems * Uint32Array.BYTES_PER_ELEMENT,
     usage: GPUBufferUsage.STORAGE | GPUBufferUsage.COPY_DST,
     mappedAtCreation: true,
   });
@@ -28,7 +26,7 @@ function makeScan(device: GPUDevice): ComposableShader {
   }
   source.unmap();
   const scan = new PrefixScan({ device, source, forceWorkgroupLength: 256 });
-  return scan;
+  return { shader: scan, srcSize: elems * 4 };
 }
 
 // async function benchScan(device: GPUDevice): Promise<NamedBenchResult> {

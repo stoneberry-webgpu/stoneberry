@@ -4,13 +4,16 @@ import { benchDevice } from "./benchDevice.js";
 import { BenchReportType, logCsvReport } from "./benchReport.js";
 import { BenchResult, benchShader } from "./benchShader.js";
 
+export interface ShaderAndSize {
+  shader: ComposableShader;
+  srcSize: number;
+}
+
 /** Create a shader and run */
-export type MakeShader = (device: GPUDevice) => ComposableShader;
+export type MakeShader = (device: GPUDevice, ...params: any[]) => ShaderAndSize;
 
 export interface MakeBenchableShader {
-  name: string;
   makeShader: MakeShader;
-  srcSize: number;
   runs?: number;
 }
 
@@ -25,14 +28,22 @@ export async function benchRunner(makeBenchables: MakeBenchableShader[]): Promis
   const testUtc = Date.now().toString();
   const device = await benchDevice();
   initGpuTiming(device);
-  const {reportType} = controlParams();
+  const { reportType } = controlParams();
 
-  const benchables = makeBenchables.map(b => ({ shader: b.makeShader(device), ...b }));
+  const benchables = makeBenchables.map(make => {
+    const { shader, srcSize } = make.makeShader(device);
+    return {
+      ...make,
+      shader,
+      srcSize,
+    };
+  });
   const namedResults: NamedBenchResult[] = [];
   for (const b of benchables) {
-    const {runs = 50, name, srcSize} = b;
+    const { runs = 50, srcSize } = b;
+    const name = b.shader.name || b.shader.constructor.name || "<shader>";
     const benchResult = await benchShader({ device, runs }, b.shader);
-    namedResults.push({benchResult, name, srcSize});
+    namedResults.push({ benchResult, name, srcSize });
     if (reportType !== "summary-only") {
       logCsv(name, benchResult, srcSize, testUtc, reportType);
     }
