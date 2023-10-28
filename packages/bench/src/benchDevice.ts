@@ -1,4 +1,4 @@
-/** return a GPU Device with some expanded limits */
+/** return a GPU Device with some expanded limits and timestamp-query enabled */
 export async function benchDevice(label = ""): Promise<GPUDevice> {
   const adapter = (await navigator.gpu.requestAdapter())!;
   const {

@@ -17,6 +17,7 @@ export interface BenchResult {
   averageClockTime: number;
 }
 
+/** associates a benchmark run id with the returned gpu spans and marks */
 export interface GpuPerfWithId extends GpuPerfReport {
   id: string;
 }

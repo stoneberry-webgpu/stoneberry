@@ -4,21 +4,26 @@ import { benchDevice } from "./benchDevice.js";
 import { BenchReportType, logCsvReport } from "./benchReport.js";
 import { BenchResult, benchShader } from "./benchShader.js";
 
-export interface ShaderAndSize {
-  shader: ComposableShader;
-  srcSize: number;
-}
-
 /** Create function to make a shader for benchmarking */
 export type MakeShader = (
   device: GPUDevice,
   ...params: any[]
 ) => Promise<ShaderAndSize> | ShaderAndSize;
 
+/** function to create a shader for benchmarking, and optionally set default
+ * benchmark parameters for each shader */
 export interface MakeBenchableShader extends Partial<ControlParams> {
   makeShader: MakeShader;
 }
 
+/** A ready-to-run shader for benchmarking, and the number of source bytes
+ * that the shader processes (used for reporting) */
+export interface ShaderAndSize {
+  shader: ComposableShader;
+  srcSize: number;
+}
+
+/** control benchmark parameters per benchmark (or globally via url parameters) */
 export interface ControlParams {
   runs: number;
   reportType: BenchReportType;
@@ -41,12 +46,14 @@ interface NamedBenchResult {
   srcSize: number;
 }
 
-/** run one or more benchmarks and report the results.
- * Control parameters for the benchmarks (e.g. # of runs, type of reports),
- * may be specified statically as parameters to benchRunner().
- * Url query parameters are also supported (e.g. ?runs=1000&reportType=details),
- * and will override static parameters.
+/**
+ * Run one or more benchmarks and report the results.
  *
+ * Control parameters for the benchmarks (e.g. # of runs, type of reports),
+ * may optionally be specified statically as parameters to benchRunner() for each shader.
+ *
+ * Url query parameters are also supported (e.g. ?runs=1000&reportType=details),
+ * and will globally override static parameters.
  */
 export async function benchRunner(makeBenchables: MakeBenchableShader[]): Promise<void> {
   const testUtc = Date.now().toString();
@@ -83,6 +90,7 @@ export async function benchRunner(makeBenchables: MakeBenchableShader[]): Promis
   }
 }
 
+/** consolidate control parameters from caller params, defaults and url param overrides */
 function controlParams(provided?: Partial<ControlParams>): ControlParams {
   const urlParams = urlControlParams();
   const result = { ...defaultControl, ...provided, ...urlParams };
@@ -90,6 +98,20 @@ function controlParams(provided?: Partial<ControlParams>): ControlParams {
   return result;
 }
 
+function logCsv(
+  label: string,
+  benchResult: BenchResult,
+  srcSize: number,
+  utc: string,
+  reportType: BenchReportType,
+  precision: number
+): void {
+  const preTags = { benchmark: label };
+  const tags = { gitVersion, utc };
+  logCsvReport({ benchResult, srcSize, reportType, preTags, tags, precision });
+}
+
+/** return global control parameters from url */
 function urlControlParams(): Partial<ControlParams> {
   const params = new URLSearchParams(window.location.search);
 
@@ -109,19 +131,6 @@ function intParam(params: URLSearchParams, name: string): number | undefined {
 
 function stringParam<T = string>(params: URLSearchParams, name: string): T | undefined {
   return (params.get(name) as T) || undefined;
-}
-
-function logCsv(
-  label: string,
-  benchResult: BenchResult,
-  srcSize: number,
-  utc: string,
-  reportType: BenchReportType,
-  precision: number
-): void {
-  const preTags = { benchmark: label };
-  const tags = { gitVersion, utc };
-  logCsvReport({ benchResult, srcSize, reportType, preTags, tags, precision });
 }
 
 /** @return a copy, eliding fields with undefined values */
