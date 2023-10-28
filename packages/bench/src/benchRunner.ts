@@ -15,9 +15,8 @@ export type MakeShader = (
   ...params: any[]
 ) => Promise<ShaderAndSize> | ShaderAndSize;
 
-export interface MakeBenchableShader {
+export interface MakeBenchableShader extends Partial<ControlParams> {
   makeShader: MakeShader;
-  runs?: number;
 }
 
 interface NamedBenchResult {
@@ -26,12 +25,22 @@ interface NamedBenchResult {
   srcSize: number;
 }
 
-/** run one or more benchmarks and report the results */
+interface ControlParams {
+  runs: number;
+  reportType: BenchReportType;
+}
+
+/** run one or more benchmarks and report the results.
+ * Control parameters for the benchmarks (e.g. # of runs, type of reports),
+ * may be specified statically as parameters to benchRunner().
+ * Url query parameters are also supported (e.g. ?runs=1000&reportType=details),
+ * and will override static parameters.
+ *
+ */
 export async function benchRunner(makeBenchables: MakeBenchableShader[]): Promise<void> {
   const testUtc = Date.now().toString();
   const device = await benchDevice();
   initGpuTiming(device);
-  const { reportType } = controlParams();
 
   const benchables = [];
   for (const make of makeBenchables) {
@@ -45,7 +54,8 @@ export async function benchRunner(makeBenchables: MakeBenchableShader[]): Promis
 
   const namedResults: NamedBenchResult[] = [];
   for (const b of benchables) {
-    const { runs = 50, srcSize } = b;
+    const { srcSize } = b;
+    const { reportType, runs } = controlParams(b);
     const name = b.shader.name || b.shader.constructor.name || "<shader>";
     const benchResult = await benchShader({ device, runs }, b.shader);
     namedResults.push({ benchResult, name, srcSize });
@@ -54,6 +64,7 @@ export async function benchRunner(makeBenchables: MakeBenchableShader[]): Promis
     }
   }
 
+  const { reportType } = controlParams();
   if (reportType === "details") {
     namedResults.forEach(r => {
       logCsv(r.name, r.benchResult, r.srcSize, testUtc, "summary-only");
@@ -61,12 +72,32 @@ export async function benchRunner(makeBenchables: MakeBenchableShader[]): Promis
   }
 }
 
-interface ControlParams {
-  reportType: BenchReportType;
+function controlParams(provided?: Partial<ControlParams>): ControlParams {
+  const defaults: ControlParams = {
+    reportType: "median",
+    runs: 100,
+  };
+  const urlParams = urlControlParams();
+  const result = { ...defaults, ...provided, ...urlParams };
+
+  return result;
 }
 
-function controlParams(): ControlParams {
-  return { reportType: "details" };
+function urlControlParams():Partial<ControlParams> {
+  const params = new URLSearchParams(window.location.search);
+  const runsParam = params.get("runs");
+  const runs = runsParam ? parseInt(runsParam) : undefined;
+  const reportType = params.get("reportType") as BenchReportType || undefined;
+
+  const urlParams: Partial<ControlParams> = {};
+  if (runs) {
+    urlParams.runs = runs;
+  }
+  if (reportType) {
+    urlParams.reportType = reportType;
+  }
+
+  return urlParams;
 }
 
 function logCsv(
