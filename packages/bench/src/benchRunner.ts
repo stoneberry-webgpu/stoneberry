@@ -23,7 +23,17 @@ export interface ControlParams {
   runs: number;
   reportType: BenchReportType;
   precision: number;
+  warmup: number;
+  runsPerBatch: number;
 }
+
+const defaultControl: ControlParams = {
+  reportType: "median",
+  runs: 100,
+  precision: 2,
+  warmup: 15,
+  runsPerBatch: 50,
+};
 
 interface NamedBenchResult {
   name: string;
@@ -55,10 +65,10 @@ export async function benchRunner(makeBenchables: MakeBenchableShader[]): Promis
 
   const namedResults: NamedBenchResult[] = [];
   for (const b of benchables) {
-    const { srcSize } = b;
-    const { reportType, runs, precision } = controlParams(b);
-    const name = b.shader.name || b.shader.constructor.name || "<shader>";
-    const benchResult = await benchShader({ device, runs }, b.shader);
+    const { srcSize, shader } = b;
+    const { reportType, runs, precision, warmup, runsPerBatch } = controlParams(b);
+    const name = shader.name || shader.constructor.name || "<shader>";
+    const benchResult = await benchShader({ device, runs, warmup, runsPerBatch }, shader);
     namedResults.push({ benchResult, name, srcSize });
     if (reportType !== "summary-only") {
       logCsv(name, benchResult, srcSize, testUtc, reportType, precision);
@@ -74,30 +84,31 @@ export async function benchRunner(makeBenchables: MakeBenchableShader[]): Promis
 }
 
 function controlParams(provided?: Partial<ControlParams>): ControlParams {
-  const defaults: ControlParams = {
-    reportType: "median",
-    runs: 100,
-    precision: 2,
-  };
   const urlParams = urlControlParams();
-  const result = { ...defaults, ...provided, ...urlParams };
+  const result = { ...defaultControl, ...provided, ...urlParams };
 
   return result;
 }
 
 function urlControlParams(): Partial<ControlParams> {
   const params = new URLSearchParams(window.location.search);
-  const runsParam = params.get("runs");
-  const runs = runsParam ? parseInt(runsParam) : undefined;
-  const reportType = (params.get("reportType") as BenchReportType) || undefined;
-  const precisionParam = params.get("precision");
-  const precision = precisionParam ? parseInt(precisionParam) : undefined;
 
   return removeUndefined({
-    runs,
-    reportType,
-    precision,
+    runs: intParam(params, "runs"),
+    reportType: stringParam(params, "reportType"),
+    warmup: intParam(params, "warmup"),
+    runsPerBatch: intParam(params, "runsPerBatch"),
+    precision: intParam(params, "precision"),
   });
+}
+
+function intParam(params: URLSearchParams, name: string): number | undefined {
+  const value = params.get(name);
+  return value ? parseInt(value) : undefined;
+}
+
+function stringParam<T = string>(params: URLSearchParams, name: string): T | undefined {
+  return (params.get(name) as T) || undefined;
 }
 
 function logCsv(
