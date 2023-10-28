@@ -2,12 +2,12 @@ import { sumU32 } from "stoneberry/reduce-buffer";
 import { Vec2, textureFromArray } from "thimbleberry";
 import { ReduceTexture } from "./../../stoneberry/src/reduce-texture/ReduceTexture";
 import { BenchResult, benchShader } from "./benchShader.js";
+import { ShaderAndSize } from "./benchRunner.js";
 
 export async function reduceTextureBench(
   device: GPUDevice,
-  size: Vec2,
-  runs = 1
-): Promise<BenchResult> {
+  size: Vec2
+): Promise<ShaderAndSize> {
   const srcData = new Uint32Array(size[0] * size[1]);
   for (let i = 0; i < srcData.length; i++) {
     // set just a few values to 1, so we can validate the sum w/o uint32 overflow
@@ -26,10 +26,9 @@ export async function reduceTextureBench(
     bufferBlockLength: 4,
   });
 
-  // verify correctness
+  // run once to verify correctness
   const result = await reduce.reduce();
   if (result[0] !== expected) throw new Error(`expected ${expected}, got ${result[0]}`);
 
-  // run benchmark
-  return benchShader({ device, runs }, reduce);
+  return { shader: reduce, srcSize: size[0] * size[1] * 4 };
 }
