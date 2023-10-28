@@ -9,8 +9,11 @@ export interface ShaderAndSize {
   srcSize: number;
 }
 
-/** Create a shader and run */
-export type MakeShader = (device: GPUDevice, ...params: any[]) => ShaderAndSize;
+/** Create function to make a shader for benchmarking */
+export type MakeShader = (
+  device: GPUDevice,
+  ...params: any[]
+) => Promise<ShaderAndSize> | ShaderAndSize;
 
 export interface MakeBenchableShader {
   makeShader: MakeShader;
@@ -30,14 +33,16 @@ export async function benchRunner(makeBenchables: MakeBenchableShader[]): Promis
   initGpuTiming(device);
   const { reportType } = controlParams();
 
-  const benchables = makeBenchables.map(make => {
-    const { shader, srcSize } = make.makeShader(device);
-    return {
+  const benchables = [];
+  for (const make of makeBenchables) {
+    const { shader, srcSize } = await make.makeShader(device);
+    benchables.push({
       ...make,
       shader,
       srcSize,
-    };
-  });
+    });
+  }
+
   const namedResults: NamedBenchResult[] = [];
   for (const b of benchables) {
     const { runs = 50, srcSize } = b;

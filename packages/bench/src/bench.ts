@@ -2,20 +2,18 @@ import { PrefixScan } from "stoneberry/scan";
 import { ComposableShader } from "thimbleberry";
 import { prefixScanBench } from "./prefixScanBench.js";
 import { ShaderAndSize, benchRunner } from "./benchRunner.js";
+import { reduceBufferBench } from "./reduceBufferBench.js";
 
 main();
 
 async function main(): Promise<void> {
   // const benches = [benchScan, benchReduceBuffer, benchReduceTexture, benchHistogramTexture];
-  const benches = [{ makeShader: (d: GPUDevice) => prefixScanBench(d, 2 ** 27) }];
+  const benches = [
+    { makeShader: (d: GPUDevice) => prefixScanBench(d, 2 ** 27) },
+    { makeShader: (d: GPUDevice) => reduceBufferBench(d, 2 ** 27) },
+  ];
   await benchRunner(benches);
 }
-
-// async function benchScan(device: GPUDevice): Promise<NamedBenchResult> {
-//   const size = 2 ** 27;
-//   const benchResult = await prefixScanBench(device, size, 100);
-//   return { name: "scan", benchResult, elems: size };
-// }
 
 // async function benchReduceBuffer(device: GPUDevice): Promise<NamedBenchResult> {
 //   const size = 2 ** 27;

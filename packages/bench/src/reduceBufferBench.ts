@@ -1,11 +1,10 @@
 import { ReduceBuffer, sumU32 } from "stoneberry/reduce-buffer";
-import { BenchResult, benchShader } from "./benchShader.js";
+import { ShaderAndSize } from "./benchRunner.js";
 
 export async function reduceBufferBench(
   device: GPUDevice,
-  size: number,
-  runs = 1
-): Promise<BenchResult> {
+  size: number
+): Promise<ShaderAndSize> {
   const source = device.createBuffer({
     label: "source",
     size: size * Uint32Array.BYTES_PER_ELEMENT,
@@ -32,6 +31,5 @@ export async function reduceBufferBench(
   const result = await reduce.reduce();
   if (result[0] !== expected) throw new Error(`expected ${expected}, got ${result[0]}`);
 
-  // run benchmark
-  return benchShader({ device, runs }, reduce);
+  return { shader: reduce, srcSize: size * 4 };
 }
