@@ -1,12 +1,8 @@
 import { HistogramTexture, makeHistogramTemplate } from "stoneberry/histogram-texture";
 import { Vec2, mapN, textureFromArray } from "thimbleberry";
-import { BenchResult, benchShader } from "./benchShader.js";
+import { ShaderAndSize } from "./benchRunner.js";
 
-export async function histogramTextureBench(
-  device: GPUDevice,
-  size: Vec2,
-  runs = 1
-): Promise<BenchResult> {
+export function histogramTextureBench(device: GPUDevice, size: Vec2): ShaderAndSize {
   const srcData = new Uint32Array(size[0] * size[1]);
   mapN(srcData.length, i => (srcData[i] = i & 0xff));
   const source = textureFromArray(device, srcData, size, "r32uint", "source");
@@ -19,5 +15,5 @@ export async function histogramTextureBench(
     histogramTemplate: makeHistogramTemplate(64, "u32"),
   });
 
-  return benchShader({ device, runs }, shader);
+  return { shader, srcSize: size[0] * size[1] * 4 };
 }
