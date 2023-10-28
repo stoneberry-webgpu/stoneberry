@@ -32,8 +32,9 @@ export interface LogCsvConfig {
 /** log a csv formatted version of the benchmark performance records
  * to the debug console and to a localhost websocket */
 export function logCsvReport(params: LogCsvConfig): void {
-  const gpuReports = selectGpuCsv(params);
-  const summaryReports = summaryCsv(params);
+  const validParams = validateParams(params);
+  const gpuReports = selectGpuCsv(validParams);
+  const summaryReports = summaryCsv(validParams);
   const sections = [...gpuReports, summaryReports];
   const msg = sections.join("\n\n") + "\n\n";
 
@@ -41,10 +42,29 @@ export function logCsvReport(params: LogCsvConfig): void {
   logWebSocket(msg);
 }
 
+function validateParams(config: LogCsvConfig): Required<LogCsvConfig> {
+  const defaultReportType: BenchReportType = "median";
+  const defaults = {
+    reportType: defaultReportType,
+    tags: {},
+    preTags: {},
+    precision: 2,
+  };
+  const result = { ...defaults, ...config };
+  const reportType = result.reportType;
+  if (!["summary-only", "median", "fastest", "details"].includes(reportType)) {
+    console.error(
+      `invalid reportType: "${reportType}", using reportType: "${defaultReportType}"`
+    );
+    result.reportType = defaultReportType;
+  }
+  return result;
+}
+
 /** return the gpu perf csv requested by reportType,
  * (or none for "summary-only") */
-function selectGpuCsv(params: LogCsvConfig): string[] {
-  const { benchResult, reportType = "fastest" } = params;
+function selectGpuCsv(params: Required<LogCsvConfig>): string[] {
+  const { benchResult, reportType } = params;
   const { reports } = benchResult;
 
   let toReport: GpuPerfWithId[] = [];
@@ -69,7 +89,7 @@ function selectGpuCsv(params: LogCsvConfig): string[] {
 }
 
 /** return a csv table from gpu performance records */
-function gpuPerfCsv(reports: GpuPerfWithId[], params: LogCsvConfig): string {
+function gpuPerfCsv(reports: GpuPerfWithId[], params: Required<LogCsvConfig>): string {
   const { preTags, tags, precision } = params;
 
   const totalLabel = `--> gpu total`;
@@ -87,10 +107,11 @@ function gpuPerfCsv(reports: GpuPerfWithId[], params: LogCsvConfig): string {
 }
 
 /** create a summary csv table showing gb/sec, and average clock timetime */
-function summaryCsv(params: LogCsvConfig): string[] {
-  const { reportType, benchResult, srcSize, preTags, tags, precision = 2 } = params;
+function summaryCsv(params: Required<LogCsvConfig>): string[] {
+  const { reportType, benchResult, srcSize, preTags, tags, precision } = params;
   const { averageClockTime } = benchResult;
-  if (reportType === "details") {  // defer summary, to keep table types together for spreadsheet import
+  if (reportType === "details") {
+    // defer summary, to keep table types together for spreadsheet import
     return [];
   }
 
@@ -100,7 +121,11 @@ function summaryCsv(params: LogCsvConfig): string[] {
 
   const averageTimeMs = averageClockTime.toFixed(precision);
   const jsonRows = [
-    { "avg time / run (ms)": averageTimeMs, "src GB/sec": gbSec, "src bytes": srcSize.toString() },
+    {
+      "avg time / run (ms)": averageTimeMs,
+      "src GB/sec": gbSec,
+      "src bytes": srcSize.toString(),
+    },
   ];
   const fullRows = jsonRows.map(row => ({ ...preTags, ...row, ...tags }));
 
