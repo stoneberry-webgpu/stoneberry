@@ -99,8 +99,7 @@ function summaryCsv(params: LogCsvConfig): string[] {
 
   const averageTimeMs = averageClockTime.toFixed(precision);
   const jsonRows = [
-    { name: `avg clock`, value: averageTimeMs },
-    { name: "gb/sec", value: gbSec },
+    { "avg time / run (ms)": averageTimeMs, "src GB/sec": gbSec, "src bytes": srcSize.toString() },
   ];
   const fullRows = jsonRows.map(row => ({ ...preTags, ...row, ...tags }));
 
