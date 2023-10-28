@@ -72,5 +72,5 @@ function logCsv(
   const preTags = { benchmark: label };
   const tags = { gitVersion, utc };
   const srcSize = srcElems * 4;
-  logCsvReport({ benchResult, srcSize, reportType, preTags, tags, precision: 2 });
+  logCsvReport({ benchResult, srcSize, reportType, preTags, tags, precision: 4 });
 }
