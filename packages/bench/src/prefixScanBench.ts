@@ -1,14 +1,10 @@
 import { PrefixScan } from "stoneberry/scan";
-import { BenchResult, benchShader } from "./benchShader.js";
+import { ShaderAndSize } from "./benchRunner.js";
 
-export async function prefixScanBench(
-  device: GPUDevice,
-  size: number,
-  runs = 1
-): Promise<BenchResult> {
+export function prefixScanBench(device: GPUDevice, elems: number): ShaderAndSize {
   const source = device.createBuffer({
     label: "source",
-    size: size * Uint32Array.BYTES_PER_ELEMENT,
+    size: elems * Uint32Array.BYTES_PER_ELEMENT,
     usage: GPUBufferUsage.STORAGE | GPUBufferUsage.COPY_DST,
     mappedAtCreation: true,
   });
@@ -20,5 +16,6 @@ export async function prefixScanBench(
   }
   source.unmap();
   const scan = new PrefixScan({ device, source, forceWorkgroupLength: 256 });
-  return benchShader({ device, runs }, scan);
+
+  return { shader: scan, srcSize: elems * 4 };
 }
