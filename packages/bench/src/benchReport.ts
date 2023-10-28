@@ -90,7 +90,7 @@ function gpuPerfCsv(reports: GpuPerfWithId[], params: LogCsvConfig): string {
 function summaryCsv(params: LogCsvConfig): string[] {
   const { reportType, benchResult, srcSize, preTags, tags, precision = 2 } = params;
   const { averageClockTime } = benchResult;
-  if (reportType === "details") {
+  if (reportType === "details") {  // defer summary, to keep table types together for spreadsheet import
     return [];
   }
 

@@ -77,11 +77,10 @@ export async function benchRunner(makeBenchables: MakeBenchableShader[]): Promis
     const name = shader.name || shader.constructor.name || "<shader>";
     const benchResult = await benchShader({ device, runs, warmup, runsPerBatch }, shader);
     namedResults.push({ benchResult, name, srcSize });
-    if (reportType !== "summary-only") {
-      logCsv(name, benchResult, srcSize, testUtc, reportType, precision);
-    }
+    logCsv(name, benchResult, srcSize, testUtc, reportType, precision);
   }
 
+  // log summary separately for detail reports, for easier spreadsheet import
   const { reportType, precision } = controlParams();
   if (reportType === "details") {
     namedResults.forEach(r => {
