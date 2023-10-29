@@ -4,11 +4,8 @@ import { benchDevice } from "./benchDevice.js";
 import { BenchReportType, logCsvReport } from "./benchReport.js";
 import { BenchResult, benchShader } from "./benchShader.js";
 
-/** Create function to make a shader for benchmarking */
-export type MakeShader = (
-  device: GPUDevice,
-  ...params: any[]
-) => Promise<ShaderAndSize> | ShaderAndSize;
+/** Create function to make a runnable shader for benchmarking. */
+export type MakeShader = (device: GPUDevice) => Promise<ShaderAndSize> | ShaderAndSize;
 
 /** function to create a shader for benchmarking, and optionally set default
  * benchmark parameters for each shader */
