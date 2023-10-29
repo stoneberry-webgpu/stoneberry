@@ -1,5 +1,5 @@
 import { ReduceBuffer, sumU32 } from "stoneberry/reduce-buffer";
-import { ShaderAndSize } from "./benchRunner.js";
+import { ShaderAndSize } from "thimbleberry";
 
 export async function reduceBufferBench(
   device: GPUDevice,
