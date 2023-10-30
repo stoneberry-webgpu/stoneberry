@@ -5,7 +5,10 @@
   "scripts": {
     "dev": "bld/run dev",
     "bench": "bld/run bench",
-    "bench:dev": "bld/run bench-dev"
+    "bench:browser": "bld/run bench:browser",
+    "bench:dev": "bld/run bench:dev",
+    "bench:details": "bld/run bench:details",
+    "bench:split": "bld/run bench:split"
   },
   "dependencies": {
     "stoneberry": "workspace:*",

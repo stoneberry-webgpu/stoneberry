@@ -2,6 +2,7 @@ import { exec } from "child_process";
 import { promisify } from "util";
 import { createServer as createViteServer } from "vite";
 import { writeGitVersionTs } from "./extractGitVersion.js";
+import fs from "fs/promises";
 
 const execPromise = promisify(exec);
 
@@ -13,8 +14,10 @@ const taskMap = new Map<string, any>([
   ["version", version],
   ["dev", dev],
   ["bench", bench],
-  ["bench-dev", benchDev],
-  ["bench-browser", benchBrowser],
+  ["bench:dev", benchDev],
+  ["bench:details", benchDetails],
+  ["bench:browser", benchBrowser],
+  ["bench:split", benchSplit],
 ]);
 
 export async function version(): Promise<string> {
@@ -28,7 +31,11 @@ export async function dev(): Promise<void> {
   await benchBrowser();
 }
 
-export async function bench(outfile="benchmarks.csv", gitCheck=true): Promise<void> {
+export async function bench(
+  outfile = "benchmarks.csv",
+  gitCheck = true,
+  searchParams?: Record<string, any>
+): Promise<void> {
   const rev = await version();
   const server = await createViteServer();
   await server.listen(benchWebPort);
@@ -40,26 +47,42 @@ export async function bench(outfile="benchmarks.csv", gitCheck=true): Promise<vo
   } else {
     // record benchmark results from the browser via websocket
     stdExec(`websocat -B 4194304 -s ${benchResultsPort} --no-line >> ${outfile}`);
-    await benchBrowser({ reportPort: benchResultsPort.toString() });
+    const params = { reportPort: benchResultsPort.toString(), ...searchParams };
+    await benchBrowser(params);
   }
 }
 
 /** run the benchmarks out to temp file */
-export async function benchDev():Promise<void> {
+export async function benchDev(): Promise<void> {
   return bench("benchmarks-dev.csv", false);
+}
+
+/** run the benchmarks out to temp file, in details mode */
+export async function benchDetails(): Promise<void> {
+  await fs.rm("benchmarks-details.csv", { force: true });
+  return bench("benchmarks-details.csv", false, {
+    precision: "4",
+    reportType: "details",
+  });
 }
 
 export async function benchBrowser(searchParams?: Record<string, string>): Promise<void> {
   const query = searchParams ? "?" + new URLSearchParams(searchParams) : "";
   // TODO implement for windows
   const browserCmd =
-    `open -a "Google Chrome Canary" http://localhost:${benchWebPort}/${query} --args` +
+    `open -a "Google Chrome Canary" 'http://localhost:${benchWebPort}/${query}' --args` +
     " --enable-dawn-features=allow_unsafe_apis" +
     " --enable-webgpu-developer-features" +
     " --disable-dawn-features=timestamp_quantization" +
     " --profile-directory=bench";
   console.log(browserCmd);
   await stdExec(browserCmd);
+}
+
+export async function benchSplit():Promise<void> {
+  const cmd = "awk -f split-details.awk benchmarks-details.csv";
+  console.log(cmd);
+  await stdExec(cmd);
 }
 
 async function runCmd(): Promise<number> {
