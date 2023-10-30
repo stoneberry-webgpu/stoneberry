@@ -14,7 +14,7 @@ async function main(): Promise<void> {
     benchable(histogramTextureBench, [2 ** 13, 2 ** 13]),
     benchable(prefixScanBench, 2 ** 27),
   ];
-  await benchRunner(benches, { git: gitVersion });
+  await benchRunner(benches, { gitVersion });
 }
 
 function benchable<T, U>(fn: (device: GPUDevice, p: T) => Promise<U>, param: T): any {
