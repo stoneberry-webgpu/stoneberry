@@ -1,23 +1,22 @@
-import { MakeShader, benchRunner } from "thimbleberry";
+import { benchRunner } from "thimbleberry";
+import { gitVersion } from "../version/gitVersion.js";
 import { histogramTextureBench } from "./histogramTextureBench.js";
 import { prefixScanBench } from "./prefixScanBench.js";
 import { reduceBufferBench } from "./reduceBufferBench.js";
 import { reduceTextureBench } from "./reduceTextureBench.js";
-import { gitVersion } from "../version/gitVersion.js";
 
 main();
 
 async function main(): Promise<void> {
   const benches = [
-    benchable((d: GPUDevice) => reduceBufferBench(d, 2 ** 27)),
-    benchable((d: GPUDevice) => reduceTextureBench(d, [2 ** 13, 2 ** 13])),
-    benchable((d: GPUDevice) => histogramTextureBench(d, [2 ** 13, 2 ** 13])),
-    benchable((d: GPUDevice) => prefixScanBench(d, 2 ** 27)),
+    benchable(reduceBufferBench, 2 ** 27),
+    benchable(reduceTextureBench, [2 ** 13, 2 ** 13]),
+    benchable(histogramTextureBench, [2 ** 13, 2 ** 13]),
+    benchable(prefixScanBench, 2 ** 27),
   ];
-  await benchRunner(benches);
+  await benchRunner(benches, { git: gitVersion });
 }
 
-/** attach gitVersion to all reported rows */
-function benchable(makeShader: MakeShader): any {
-  return { makeShader, attributes: { git: gitVersion } };
+function benchable<T, U>(fn: (device: GPUDevice, p: T) => Promise<U>, param: T): any {
+  return { makeShader: (device: GPUDevice) => fn(device, param) };
 }
