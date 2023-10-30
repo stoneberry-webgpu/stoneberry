@@ -56,6 +56,7 @@ export async function benchBrowser(searchParams?: Record<string, string>): Promi
     `open -a "Google Chrome Canary" http://localhost:${benchWebPort}/${query} --args` +
     " --enable-dawn-features=allow_unsafe_apis" +
     " --enable-webgpu-developer-features" +
+    " --disable-dawn-features=timestamp_quantization" +
     " --profile-directory=bench";
   console.log(browserCmd);
   await stdExec(browserCmd);
