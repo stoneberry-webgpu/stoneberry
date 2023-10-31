@@ -1,7 +1,6 @@
 import { sumU32 } from "stoneberry/reduce-buffer";
-import { Vec2, textureFromArray } from "thimbleberry";
+import { ShaderAndSize, Vec2, textureFromArray } from "thimbleberry";
 import { ReduceTexture } from "./../../stoneberry/src/reduce-texture/ReduceTexture";
-import { ShaderAndSize } from "./benchRunner.js";
 
 export async function reduceTextureBench(
   device: GPUDevice,

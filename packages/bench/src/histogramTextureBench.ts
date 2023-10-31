@@ -1,6 +1,5 @@
 import { HistogramTexture, makeHistogramTemplate } from "stoneberry/histogram-texture";
-import { Vec2, mapN, textureFromArray } from "thimbleberry";
-import { ShaderAndSize } from "./benchRunner.js";
+import { ShaderAndSize, Vec2, mapN, textureFromArray } from "thimbleberry";
 
 export function histogramTextureBench(device: GPUDevice, size: Vec2): ShaderAndSize {
   const srcData = new Uint32Array(size[0] * size[1]);

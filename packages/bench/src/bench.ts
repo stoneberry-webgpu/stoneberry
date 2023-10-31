@@ -17,6 +17,6 @@ async function main(): Promise<void> {
   await benchRunner(benches, { gitVersion });
 }
 
-function benchable<T, U>(fn: (device: GPUDevice, p: T) => Promise<U>, param: T): any {
+function benchable<T, U>(fn: (device: GPUDevice, p: T) => U, param: T): any {
   return { makeShader: (device: GPUDevice) => fn(device, param) };
 }

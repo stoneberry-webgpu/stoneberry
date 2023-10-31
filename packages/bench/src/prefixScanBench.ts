@@ -1,5 +1,5 @@
 import { PrefixScan } from "stoneberry/scan";
-import { ShaderAndSize } from "./benchRunner.js";
+import { ShaderAndSize } from "thimbleberry";
 
 export function prefixScanBench(device: GPUDevice, elems: number): ShaderAndSize {
   const source = device.createBuffer({
