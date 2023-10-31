@@ -1,5 +1,7 @@
 import { ConstructArray, filledGPUBuffer } from "thimbleberry";
 
+// TODO get rid of this and use thimbleberry
+
 /** create a gpu buffer filled with data for tests */
 export function makeBuffer(
   device: GPUDevice,

@@ -1,5 +1,7 @@
 import {
   labeledGpuDevice,
+  make3dSequence,
+  makeTexture,
   trackRelease,
   trackUse,
   withAsyncUsage,
@@ -7,7 +9,6 @@ import {
 } from "thimbleberry";
 import { sumF32 } from "../../src/util/BinOpTemplate.js";
 import { ReduceTexture } from "./../../src/reduce-texture/ReduceTexture";
-import { make3dSequence, makeTexture } from "./util/MakeTexture.js";
 import { sumReds } from "./util/Reductions.js";
 
 it("reduce texture, no internal reduction", async () => {

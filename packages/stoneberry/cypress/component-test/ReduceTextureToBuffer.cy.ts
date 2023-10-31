@@ -2,6 +2,8 @@ import {
   labeledGpuDevice,
   loadRedComponent,
   make2dSequence,
+  make3dSequence,
+  makeTexture,
   ShaderGroup,
   trackRelease,
   trackUse,
@@ -11,7 +13,6 @@ import {
 } from "thimbleberry";
 import { ReduceTextureToBuffer } from "../../src/reduce-texture/ReduceTextureToBuffer.js";
 import { minMaxPositiveF32, sumF32, sumU32 } from "../../src/util/BinOpTemplate.js";
-import { make3dSequence, makeTexture } from "./util/MakeTexture.js";
 import { minMaxPositiveReds, sumReds } from "./util/Reductions.js";
 
 it("reduce texture to buffer, workgroup size = 1", async () => {

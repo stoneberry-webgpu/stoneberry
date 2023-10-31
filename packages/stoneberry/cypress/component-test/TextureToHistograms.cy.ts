@@ -2,13 +2,13 @@ import {
   ShaderGroup,
   copyBuffer,
   labeledGpuDevice,
+  makeTexture,
   trackRelease,
   trackUse,
   withAsyncUsage,
 } from "thimbleberry";
 import { makeHistogramTemplate } from "stoneberry/histogram-texture";
 import { makeBuffer } from "./util/MakeBuffer";
-import { makeTexture } from "./util/MakeTexture.js";
 import { TextureToHistograms } from "../../src/histogram-texture/TextureToHistograms.js";
 
 it("texture to one histogram, one thread", async () => {
