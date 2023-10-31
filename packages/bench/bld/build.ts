@@ -79,8 +79,9 @@ export async function benchBrowser(searchParams?: Record<string, string>): Promi
   await stdExec(browserCmd);
 }
 
-export async function benchSplit():Promise<void> {
-  const cmd = "awk -f split-details.awk benchmarks-details.csv";
+export async function benchSplit(): Promise<void> {
+  const cmd =
+    "awk -v date=$(date '+%Y-%b-%d_%H-%M-%S') -f split-details.awk benchmarks-details.csv";
   console.log(cmd);
   await stdExec(cmd);
 }
