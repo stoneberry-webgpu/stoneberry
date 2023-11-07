@@ -9,7 +9,7 @@
     "bench:compare": "bld/run bench:compare",
     "bench:dev": "bld/run bench:dev",
     "bench:details": "bld/run bench:details",
-    "bench:dash": "bld/run bench:dash"
+    "bench:dashcsv": "bld/run bench:dashcsv"
   },
   "dependencies": {
     "stoneberry": "workspace:*",

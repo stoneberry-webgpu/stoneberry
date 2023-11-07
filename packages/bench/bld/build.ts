@@ -19,7 +19,7 @@ const taskMap = new Map<string, any>([
   ["bench:dev", benchDev],
   ["bench:details", benchDetails],
   ["bench:browser", benchBrowser],
-  ["bench:dash", benchDash],
+  ["bench:dashcsv", benchDashCsv],
 ]);
 
 export async function version(): Promise<string> {
@@ -82,7 +82,7 @@ export async function benchBrowser(searchParams?: Record<string, string>): Promi
 }
 
 /** preprocess benchmark-details.csv files for import into tableau dashboard */
-export async function benchDash(): Promise<void> {
+export async function benchDashCsv(): Promise<void> {
   const date = await execOut(`date '+%Y-%b-%d_%H-%M-%S'`);
   // splits the detailed output from the browser and produces:
   // two dated output files bench-summary-{date}.csv and bench-details-{date}.csv
@@ -104,13 +104,14 @@ async function compareCsv(
   baseline: string,
   compare: string
 ): Promise<void> {
-  // trim the
+  // trim column spaces from the baseline and details csv files
   const tempDir = await fs.mkdtemp(join(os.tmpdir(), "csv-"));
   const trimmedDetails = join(tempDir, "details.csv");
   const trimmedBase = join(tempDir, "base.csv");
-  trimCsv(details, trimmedDetails);
-  trimCsv(baseline, trimmedBase);
+  await trimCsv(details, trimmedDetails);
+  await trimCsv(baseline, trimmedBase);
 
+  // combine the files and remove blank lines
   const combinedCsv = join(tempDir, "combined.csv");
   const cpCmd = `cp ${trimmedDetails} ${combinedCsv}`;
   await execEcho(cpCmd);
@@ -118,8 +119,13 @@ async function compareCsv(
   const concatCmd = `tail +2 ${trimmedBase} >> ${combinedCsv}`;
   await execEcho(concatCmd);
 
-  const noBlanksCmd = `awk NF ${combinedCsv} > ${compare}`;
+  const noBlanksCmd = `awk NF ${combinedCsv} > compare.csv`;
   await execEcho(noBlanksCmd);
+
+  // sql script reads compare.csv and writes to compare-sorted.csv
+  await execEcho(`sqlite3 < script/sort-runs.sql`);
+  await fs.rm("compare.csv");
+  await fs.rename("compare-sorted.csv", compare);
 
   await fs.rm(tempDir, { recursive: true });
 }

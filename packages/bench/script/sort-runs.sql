@@ -35,9 +35,9 @@ UPDATE details SET sortId = (
 );
 
 .headers on
-.output sorted-compare.csv
+.output compare-sorted.csv
 SELECT * FROM details ORDER BY benchmark,gitVersion,sortId;
 
 
--- probably this could be rewritten without the windowing tricks (see OVER clause above)
--- by first creating a separate table for the totals...
+-- probably this could be rewritten without so many subqueries
+-- by first creating a separate table for the totals.
