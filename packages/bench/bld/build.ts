@@ -84,34 +84,66 @@ export async function benchBrowser(searchParams?: Record<string, string>): Promi
 /** preprocess benchmark-details.csv files for import into tableau dashboard */
 export async function benchDash(): Promise<void> {
   const date = await execOut(`date '+%Y-%b-%d_%H-%M-%S'`);
+  // splits the detailed output from the browser and produces:
+  // two dated output files bench-summary-{date}.csv and bench-details-{date}.csv
   await execEcho(
     `awk -v date=${date} -f script/split-details.awk benchmarks-details.csv`
   );
 
-  // LATER look at argv[3] for baseline as baseline or current files
-  const recentCmd = `ls -t *details*-*.csv | head -2`;
-  const exec = await execPromise(recentCmd);
-  const files = exec.stdout.split("\n").filter(s => s.length > 0);
-  console.log(files);
-
-  const tempDir = await fs.mkdtemp(join(os.tmpdir(), "csv-"));
-  const destFiles = files.map(f => join(tempDir, f));
-
-  for (const [i, file] of files.entries()) {
-    const trimCmd = `awk -f script/trim-csv.awk ${file} > ${destFiles[i]}`;
-    await execEcho(trimCmd);
+  const details = `bench-details-${date}.csv`;
+  const baseline = await baselineDetailsCsv();
+  if (baseline) {
+    const compare = `bench-compare-${date}.csv`;
+    await compareCsv(details, baseline, compare);
   }
+}
+
+/** construct the compare .csv file */
+async function compareCsv(
+  details: string,
+  baseline: string,
+  compare: string
+): Promise<void> {
+  // trim the
+  const tempDir = await fs.mkdtemp(join(os.tmpdir(), "csv-"));
+  const trimmedDetails = join(tempDir, "details.csv");
+  const trimmedBase = join(tempDir, "base.csv");
+  trimCsv(details, trimmedDetails);
+  trimCsv(baseline, trimmedBase);
 
   const combinedCsv = join(tempDir, "combined.csv");
-  const cpCmd = `cp ${destFiles[0]} ${combinedCsv}`;
+  const cpCmd = `cp ${trimmedDetails} ${combinedCsv}`;
   await execEcho(cpCmd);
 
-  const concatCmd = `tail +2 ${destFiles[1]} >> ${combinedCsv}`;
+  const concatCmd = `tail +2 ${trimmedBase} >> ${combinedCsv}`;
   await execEcho(concatCmd);
 
-  const compareCsv = "compare.csv";
-  const noBlanksCmd = `awk NF ${combinedCsv} > ${compareCsv}`;
+  const noBlanksCmd = `awk NF ${combinedCsv} > ${compare}`;
   await execEcho(noBlanksCmd);
+
+  await fs.rm(tempDir, { recursive: true });
+}
+
+/** verify that the baseline csv file exists */
+async function baselineDetailsCsv(): Promise<string | null> {
+  const baseline = "bench-baseline.csv";
+  try {
+    const path = await fs.realpath(baseline);
+    const details = await fs.stat(path);
+    if (details.isFile()) {
+      return path;
+    }
+  } catch (e) { 
+    // fall through
+  }
+  console.warn(`${baseline} not found`);
+  return null;
+}
+
+/** rm spaces around columns */
+async function trimCsv(srcFile: string, destFile: string): Promise<void> {
+  const trimCmd = `awk -f script/trim-csv.awk ${srcFile} > ${destFile}`;
+  await execEcho(trimCmd);
 }
 
 async function runCmd(): Promise<number> {
