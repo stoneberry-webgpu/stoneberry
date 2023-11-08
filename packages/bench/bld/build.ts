@@ -84,65 +84,86 @@ export async function benchBrowser(searchParams?: Record<string, string>): Promi
 /** preprocess benchmark-details.csv files for import into tableau dashboard */
 export async function benchDashCsv(): Promise<void> {
   const date = await execOut(`date '+%Y-%b-%d_%H-%M-%S'`);
-  // splits the detailed output from the browser and produces:
-  // two dated output files bench-summary-{date}.csv and bench-details-{date}.csv
+  // split the -details.csv into bench-summary-{date}.csv and bench-details-{date}.csv
   await execEcho(
     `awk -v date=${date} -f script/split-details.awk benchmarks-details.csv`
   );
+  const tempDir = await fs.mkdtemp(join(os.tmpdir(), "csv-"));
 
-  const details = `bench-details-${date}.csv`;
-  const baseline = await baselineDetailsCsv();
+  const baseline = await verifyFile("bench-baseline.csv");
   if (baseline) {
-    const compare = `bench-compare-${date}.csv`;
-    await compareCsv(details, baseline, compare);
+    const details = `bench-details-${date}.csv`;
+    await compareCsv(details, baseline, `bench-compare-${date}.csv`, tempDir);
   }
+
+  const baseSummary = await verifyFile("bench-baseline-summary.csv");
+  if (baseSummary) {
+    const summary = `bench-summary-${date}.csv`;
+    const combinedSummary = `bench-combined-summary-${date}.csv`;
+    await combinedSummaryCsv(summary, baseSummary, combinedSummary, tempDir);
+  }
+  await fs.rm(tempDir, { recursive: true });
 }
 
-/** construct the compare .csv file */
+/** construct the compare details .csv file */
 async function compareCsv(
   details: string,
   baseline: string,
-  compare: string
+  compare: string,
+  tempDir: string
 ): Promise<void> {
-  // trim column spaces from the baseline and details csv files
-  const tempDir = await fs.mkdtemp(join(os.tmpdir(), "csv-"));
-  const trimmedDetails = join(tempDir, "details.csv");
-  const trimmedBase = join(tempDir, "base.csv");
-  await trimCsv(details, trimmedDetails);
-  await trimCsv(baseline, trimmedBase);
-
-  // combine the files and remove blank lines
-  const combinedCsv = join(tempDir, "combined.csv");
-  const cpCmd = `cp ${trimmedDetails} ${combinedCsv}`;
-  await execEcho(cpCmd);
-
-  const concatCmd = `tail +2 ${trimmedBase} >> ${combinedCsv}`;
-  await execEcho(concatCmd);
-
-  const noBlanksCmd = `awk NF ${combinedCsv} > compare.csv`;
-  await execEcho(noBlanksCmd);
+  const combined = await trimAndCombine(details, baseline, tempDir);
+  await fs.rename(combined, "compare.csv");
 
   // sql script reads compare.csv and writes to compare-sorted.csv
   await execEcho(`sqlite3 < script/sort-runs.sql`);
   await fs.rm("compare.csv");
   await fs.rename("compare-sorted.csv", compare);
-
-  await fs.rm(tempDir, { recursive: true });
 }
 
-/** verify that the baseline csv file exists */
-async function baselineDetailsCsv(): Promise<string | null> {
-  const baseline = "bench-baseline.csv";
+async function trimAndCombine(
+  file: string,
+  base: string,
+  tempDir: string
+): Promise<string> {
+  // trim column spaces from the baseline and details csv files
+  const trimmedFile = join(tempDir, "file.csv");
+  const trimmedBase = join(tempDir, "base.csv");
+  await trimCsv(file, trimmedFile);
+  await trimCsv(base, trimmedBase);
+
+  // combine the files and remove blank lines
+  const concatCsv = join(tempDir, "concat.csv");
+  const combinedCsv = join(tempDir, "combined.csv");
+  await execEcho(`cp ${trimmedFile} ${concatCsv}`);
+  await execEcho(`tail +2 ${trimmedBase} >> ${concatCsv}`);
+  await execEcho(`awk NF ${concatCsv} > ${combinedCsv}`);
+
+  return combinedCsv;
+}
+
+async function combinedSummaryCsv(
+  summary: string,
+  base: string,
+  combinedCsv: string,
+  tempDir: string
+): Promise<void> {
+  const combined = await trimAndCombine(summary, base, tempDir);
+  await execEcho(`awk -f script/strip-extra-headers.awk ${combined} > ${combinedCsv}`);
+}
+
+/** verify that the file exists, and return its real path or null */
+async function verifyFile(file: string): Promise<string | null> {
   try {
-    const path = await fs.realpath(baseline);
+    const path = await fs.realpath(file);
     const details = await fs.stat(path);
     if (details.isFile()) {
       return path;
     }
-  } catch (e) { 
+  } catch (e) {
     // fall through
   }
-  console.warn(`${baseline} not found`);
+  console.warn(`${file} not found`);
   return null;
 }
 
