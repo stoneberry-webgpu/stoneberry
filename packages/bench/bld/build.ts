@@ -99,8 +99,8 @@ export async function benchDashCsv(): Promise<void> {
   const baseSummary = await verifyFile("bench-baseline-summary.csv");
   if (baseSummary) {
     const summary = `bench-summary-${date}.csv`;
-    const combinedSummary = `bench-combined-summary-${date}.csv`;
-    await combinedSummaryCsv(summary, baseSummary, combinedSummary, tempDir);
+    const mergedSummary = `merged-summary-${date}.csv`;
+    await mergedSummaryCsv(summary, baseSummary, mergedSummary, tempDir);
   }
   await fs.rm(tempDir, { recursive: true });
 }
@@ -142,10 +142,10 @@ async function trimAndCombine(
   return combinedCsv;
 }
 
-async function combinedSummaryCsv(
+async function mergedSummaryCsv(
   summary: string,
   base: string,
-  combinedCsv: string,
+  mergedCsv: string,
   tempDir: string
 ): Promise<void> {
   const combined = await trimAndCombine(summary, base, tempDir);
@@ -153,7 +153,7 @@ async function combinedSummaryCsv(
   await execEcho(`awk -f script/strip-extra-headers.awk ${combined} > combined-summary.csv`);
   await execEcho(`sqlite3 < script/merge-summary.sql`);
   await fs.rm("combined-summary.csv");
-  await fs.rename("merged-summary.csv", combinedCsv);
+  await fs.rename("merged-summary.csv", mergedCsv);
 }
 
 /** verify that the file exists, and return its real path or null */
