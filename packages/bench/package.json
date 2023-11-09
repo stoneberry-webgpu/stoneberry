@@ -6,7 +6,6 @@
     "dev": "bld/run dev",
     "bench": "bld/run bench",
     "bench:browser": "bld/run bench:browser",
-    "bench:compare": "bld/run bench:compare",
     "bench:dev": "bld/run bench:dev",
     "bench:details": "bld/run bench:details",
     "bench:dashcsv": "bld/run bench:dashcsv"
