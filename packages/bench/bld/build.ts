@@ -149,7 +149,11 @@ async function combinedSummaryCsv(
   tempDir: string
 ): Promise<void> {
   const combined = await trimAndCombine(summary, base, tempDir);
-  await execEcho(`awk -f script/strip-extra-headers.awk ${combined} > ${combinedCsv}`);
+
+  await execEcho(`awk -f script/strip-extra-headers.awk ${combined} > combined-summary.csv`);
+  await execEcho(`sqlite3 < script/merge-summary.sql`);
+  await fs.rm("combined-summary.csv");
+  await fs.rename("merged-summary.csv", combinedCsv);
 }
 
 /** verify that the file exists, and return its real path or null */
