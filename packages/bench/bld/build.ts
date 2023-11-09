@@ -93,7 +93,7 @@ export async function benchDashCsv(): Promise<void> {
   const baseline = await verifyFile("bench-baseline.csv");
   if (baseline) {
     const details = `bench-details-${date}.csv`;
-    await compareCsv(details, baseline, `bench-compare-${date}.csv`, tempDir);
+    await compareCsv(details, baseline, `compare-details-${date}.csv`, tempDir);
   }
 
   const baseSummary = await verifyFile("bench-baseline-summary.csv");
