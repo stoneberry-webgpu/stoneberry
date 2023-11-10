@@ -48,7 +48,7 @@ fn reduceFromBuffer(
 
 fn reduceBufferToWork(grid: vec2<u32>, localId: u32) {
     var values = fetchSrcBuffer(grid.x);
-    var v = reduceSrcBlock(values);
+    var v = reduceBlock(values);
     work[localId] = v;
 }
 
@@ -74,38 +74,44 @@ fn fetchSrcBuffer(gridX: u32) -> array<Output, 4> {  //! 4=blockArea
     return a;
 }
 
-fn reduceSrcBlock(a: array<Output, 4>) -> Output { //! 4=blockArea
+// Reduce workgroup stored values to a single value in parallel
+// using the pattern:
+//   iter 1  0 = 0 + 1 
+//           2 = 2 + 3
+//             ...
+//   iter 2  0 = 0 + 2
+//             ...
+fn reduceWorkgroupToOut(outDex: u32, localId: u32) {
+    let workDex = localId << 1u;
+    for (var step = 1u; step < 4u; step <<= 1u) { //! 4=workgroupThreads
+        workgroupBarrier();
+        if localId % step == 0u {
+            work[workDex] = binaryOp(work[workDex], work[workDex + step]);
+        }
+    }
+    if localId == 0u {
+        out[outDex] = work[0];
+    }
+}
+// The above pattern doesn't bunch together used threads in the workgroup
+// compared to a reduction that uses the pattern:
+//   iter 1  0 = 0 + 2
+//           1 = 1 + 3
+//             ...
+//   iter 2  0 = 0 + 1
+//             ...
+// If the gpu can schedule a partial workgroup, there will
+// be partial workgroups available in this second pattern. 
+// but the second pattern requires commutavity of the binary op,
+// and I'm not sure the partial workgroup scheduling is a thing in
+// practice in WebGPU..
+
+fn reduceBlock(a: array<Output, 4>) -> Output { //! 4=blockArea
     var v = a[0];
     for (var i = 1u; i < 4u; i = i + 1u) { //! 4=blockArea
         v = binaryOp(v, a[i]);
     }
     return v;
-}
-
-// We write in a pattern like this:
-// 0    1    2    3    4    5    6    7  (from reduceBufferToWork for workgroupThreads=8)
-// 01        23        45        67     (first iteration of reduceWorkgroupToOut, stride=1
-// 0123                4567             (second iteration of reduceWorkgroupToOut, stride=2
-// 01234567
-// The pattern is constructed to:
-// . avoid races within an iteration 
-//   (which would require an extra barrier between reads and writes)
-// . binary operations always occur in in sequence order (no commutativity required) 
-// . a continguous set of lowest thread ids are active (so free high id threads can be rescheduled)
-//
-fn reduceWorkgroupToOut(outDex: u32, localId: u32) {
-    var stride = 1u;
-    for (var threads = 4u >> 1u; threads >= 1u; threads >>= 1u) { //! 4=workgroupThreads
-        workgroupBarrier();
-        if localId < threads {
-            let src = localId * 2u * stride;
-            work[src] = binaryOp(work[src], work[src + stride]);
-        }
-        stride <<= 1u;
-    }
-    if localId == 0u {
-        out[outDex] = work[0];
-    }
 }
 
 fn binaryOp(a: Output, b: Output) -> Output {
