@@ -3,5 +3,6 @@ BEGIN {
   detailsOut = "bench-details-" date ".csv";
 } 
 /## Summary/ { summary = 1; next }
+NF == 0 { next }
 !summary { print $0 > detailsOut }
 summary { print $0 > summaryOut }
