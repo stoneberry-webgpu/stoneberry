@@ -48,7 +48,7 @@ fn reduceFromBuffer(
 
 fn reduceBufferToWork(grid: vec2<u32>, localId: u32) {
     var values = fetchSrcBuffer(grid.x);
-    var v = reduceBlock(values);
+    var v = reduceSrcBlock(values);
     work[localId] = v;
 }
 
@@ -94,19 +94,11 @@ fn reduceWorkgroupToOut(outDex: u32, localId: u32) {
     }
 }
 // The above pattern doesn't bunch together used threads in the workgroup
-// compared to a reduction that uses the pattern:
-//   iter 1  0 = 0 + 2
-//           1 = 1 + 3
-//             ...
-//   iter 2  0 = 0 + 1
-//             ...
-// If the gpu can schedule a partial workgroup, there will
-// be partial workgroups available in this second pattern. 
-// but the second pattern requires commutavity of the binary op,
-// and I'm not sure the partial workgroup scheduling is a thing in
-// practice in WebGPU..
+// I tried an alternate pattern in 15169571 that allowed for coalaescing free threads
+// at the cost of some memory coherence. It was slightly slower in benchmarking, but 
+// could be explored further.
 
-fn reduceBlock(a: array<Output, 4>) -> Output { //! 4=blockArea
+fn reduceSrcBlock(a: array<Output, 4>) -> Output { //! 4=blockArea
     var v = a[0];
     for (var i = 1u; i < 4u; i = i + 1u) { //! 4=blockArea
         v = binaryOp(v, a[i]);
