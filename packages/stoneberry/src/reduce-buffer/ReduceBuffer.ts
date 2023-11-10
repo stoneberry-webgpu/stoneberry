@@ -109,7 +109,7 @@ export class ReduceBuffer extends HasReactive implements ComposableShader {
     const sourceBind = this.sourceBindGroup;
     const inputSlices = this.inputSlicing;
     this.sourceReductions.forEach((dispatchSize, i) => {
-      const dispatchLabel = `${dispatchSize}`;
+      const dispatchLabel = `${dispatchSize} s${i}`;
       const offset = [inputSlices.slices[i].uniformOffset];
       this.encodePass(commandEncoder, sourceBind, dispatchSize, offset, dispatchLabel);
     });
@@ -117,7 +117,8 @@ export class ReduceBuffer extends HasReactive implements ComposableShader {
     const layerBindGroups = this.layerBindGroups;
     this.layerReductions.forEach((dispatchSize, i) => {
       const bindGroup = layerBindGroups[i];
-      this.encodePass(commandEncoder, bindGroup, dispatchSize, [0], `${dispatchSize}`);
+      const dispatchLabel = `${dispatchSize} l${i}`;
+      this.encodePass(commandEncoder, bindGroup, dispatchSize, [0], dispatchLabel);
     });
   }
 
