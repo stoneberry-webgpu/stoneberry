@@ -90,13 +90,13 @@ export async function benchDashCsv(): Promise<void> {
   );
   const tempDir = await fs.mkdtemp(join(os.tmpdir(), "csv-"));
 
-  const baseline = await verifyFile("bench-baseline.csv");
-  if (baseline) {
+  const baseDetails = await verifyFile("baseline-details.csv");
+  if (baseDetails) {
     const details = `bench-details-${date}.csv`;
-    await compareCsv(details, baseline, `compare-details-${date}.csv`, tempDir);
+    await compareCsv(details, baseDetails, `compare-details-${date}.csv`, tempDir);
   }
 
-  const baseSummary = await verifyFile("bench-baseline-summary.csv");
+  const baseSummary = await verifyFile("baseline-summary.csv");
   if (baseSummary) {
     const summary = `bench-summary-${date}.csv`;
     const mergedSummary = `merged-summary-${date}.csv`;
@@ -150,7 +150,9 @@ async function mergedSummaryCsv(
 ): Promise<void> {
   const combined = await trimAndCombine(summary, base, tempDir);
 
-  await execEcho(`awk -f script/strip-extra-headers.awk ${combined} > combined-summary.csv`);
+  await execEcho(
+    `awk -f script/strip-extra-headers.awk ${combined} > combined-summary.csv`
+  );
   await execEcho(`sqlite3 < script/merge-summary.sql`);
   await fs.rm("combined-summary.csv");
   await fs.rename("merged-summary.csv", mergedCsv);
