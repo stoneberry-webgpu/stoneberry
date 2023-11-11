@@ -159,23 +159,26 @@ export class WorkgroupScan extends HasReactive implements ComposableShader {
       ? [{ buffer: { type: "storage" } }]
       : [];
 
-    const compute = computePipeline({
-      device: this.device,
-      label: this.label,
-      wgsl,
-      wgslParams: {
-        ...this.template,
-        workgroupSizeX: this.workgroupLength,
-        blockSums: this.emitBlockSums,
+    const compute = computePipeline(
+      {
+        device: this.device,
+        label: this.label,
+        wgsl,
+        wgslParams: {
+          ...this.template,
+          workgroupSizeX: this.workgroupLength,
+          blockSums: this.emitBlockSums,
+        },
+        bindings: [
+          { buffer: { type: "uniform" } },
+          { buffer: { type: "read-only-storage" } },
+          { buffer: { type: "storage" } },
+          ...sumsBinding,
+        ],
+        debugBuffer: true,
       },
-      bindings: [
-        { buffer: { type: "uniform" } },
-        { buffer: { type: "read-only-storage" } },
-        { buffer: { type: "storage" } },
-        ...sumsBinding,
-      ],
-      debugBuffer: true,
-    });
+      this.pipelineCache
+    );
     return compute.pipeline;
   }
 
