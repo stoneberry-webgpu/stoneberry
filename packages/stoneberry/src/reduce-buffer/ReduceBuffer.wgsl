@@ -93,10 +93,10 @@ fn reduceWorkgroupToOut(outDex: u32, localId: u32) {
         out[outDex] = work[0];
     }
 }
-// The above pattern doesn't bunch together used threads in the workgroup
-// I tried an alternate pattern in 15169571 that allowed for coalaescing free threads
-// at the cost of some memory coherence. It was slightly slower in benchmarking, but 
-// could be explored further.
+// I tried an alternate pattern in 15169571 that allows the driver to 
+// reuse free threads by coalescing the free thread ids into a contiguous block,
+// but at the cost of some memory coherence. It was slightly slower in limited 
+// benchmarking on an M1Max, but worth exploring further.
 
 fn reduceSrcBlock(a: array<Output, 4>) -> Output { //! 4=blockArea
     var v = a[0];
