@@ -7,10 +7,11 @@ import {
   reactiveTrackUse,
   trackContext,
 } from "thimbleberry";
+import { BinOpTemplate, sumU32 } from "../util/BinOpTemplate.js";
+import { BindingEntry, computePipeline } from "../util/ComputePipeline.js";
 import { calcDispatchSizes } from "../util/DispatchSizes.js";
 import { Cache, ComposableShader, ValueOrFn } from "../util/Util.js";
-import { getWorkgroupScanPipeline } from "./WorkgroupScanPipeline";
-import { BinOpTemplate, sumU32 } from "../util/BinOpTemplate.js";
+import wgsl from "./WorkgroupScan.wgsl?raw";
 
 /** @internal */
 export interface WorkgroupScanArgs {
@@ -105,7 +106,7 @@ export class WorkgroupScan extends HasReactive implements ComposableShader {
     this.updateUniforms();
     const bindGroups = this.bindGroups;
     this.dispatchSizes.forEach((dispatchSize, i) => {
-      const dispatchLabel = `${this.label} ${dispatchSize} ${i}`
+      const dispatchLabel = `${this.label} ${dispatchSize} ${i}`;
       const timestampWrites = gpuTiming?.timestampWrites(dispatchLabel);
       const passEncoder = commandEncoder.beginComputePass({ timestampWrites });
       passEncoder.label = `${this.label} workgroup scan`;
@@ -154,15 +155,28 @@ export class WorkgroupScan extends HasReactive implements ComposableShader {
   }
 
   @reactively private get pipeline(): GPUComputePipeline {
-    return getWorkgroupScanPipeline(
-      {
-        device: this.device,
-        workgroupSize: this.workgroupLength,
+    const sumsBinding: BindingEntry[] = this.emitBlockSums
+      ? [{ buffer: { type: "storage" } }]
+      : [];
+
+    const compute = computePipeline({
+      device: this.device,
+      label: this.label,
+      wgsl,
+      wgslParams: {
+        ...this.template,
+        workgroupSizeX: this.workgroupLength,
         blockSums: this.emitBlockSums,
-        template: this.template,
       },
-      this.pipelineCache
-    );
+      bindings: [
+        { buffer: { type: "uniform" } },
+        { buffer: { type: "read-only-storage" } },
+        { buffer: { type: "storage" } },
+        ...sumsBinding,
+      ],
+      debugBuffer: true,
+    });
+    return compute.pipeline;
   }
 
   @reactively private get bindGroups(): GPUBindGroup[] {

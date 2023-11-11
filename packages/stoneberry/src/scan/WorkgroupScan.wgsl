@@ -57,7 +57,7 @@ var <workgroup> bankB: array<Output, workgroupSizeX>;
 
 @compute
 @workgroup_size(workgroupSizeX, 1, 1) 
-fn workgroupPrefixScan(
+fn main(
     @builtin(global_invocation_id) grid: vec3<u32>,
     @builtin(local_invocation_id) localGrid: vec3<u32>,
     @builtin(workgroup_id) workGrid: vec3<u32>,
