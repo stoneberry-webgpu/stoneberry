@@ -35,7 +35,7 @@ var <workgroup> work:array<Output, workgroupThreads>;
 
 @compute
 @workgroup_size(workgroupThreads, 1, 1) 
-fn reduceFromBuffer(
+fn main(
     @builtin(global_invocation_id) grid: vec3<u32>,    // coords in the global compute grid
     @builtin(local_invocation_id) localId: vec3<u32>, // coords inside the this workgroup
     @builtin(num_workgroups) numWorkgroups: vec3<u32>, // number of workgroups in this dispatch

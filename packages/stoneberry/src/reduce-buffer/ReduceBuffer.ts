@@ -1,4 +1,5 @@
 import { HasReactive, reactively } from "@reactively/decorate";
+import wgsl from "./ReduceBuffer.wgsl?raw";
 import {
   Cache,
   ComposableShader,
@@ -12,7 +13,7 @@ import {
 import { BinOpTemplate } from "../util/BinOpTemplate.js";
 import { SlicingResults, inputSlicing } from "../util/InputSlicing.js";
 import { runAndFetchResult } from "../util/RunAndFetch.js";
-import { getBufferReducePipeline } from "./ReduceBufferPipeline.js";
+import { computePipeline } from "../util/ComputePipeline.js";
 
 export interface BufferReduceParams {
   device: GPUDevice;
@@ -158,6 +159,10 @@ export class ReduceBuffer extends HasReactive implements ComposableShader {
     return this.resultBuffers.slice(-1)[0];
   }
 
+  @reactively get workgroupWGSL(): string {
+    return "";
+  }
+
   /** @internal */
   @reactively get debugBuffer(): GPUBuffer {
     const buffer = createDebugBuffer(this.device, "BufferReduce debug");
@@ -224,15 +229,25 @@ export class ReduceBuffer extends HasReactive implements ComposableShader {
 
   /** all dispatches use the same pipeline */
   @reactively private pipeline(): GPUComputePipeline {
-    return getBufferReducePipeline(
+    const cp = computePipeline(
       {
         device: this.device,
-        workgroupThreads: this.workgroupLength,
-        blockArea: this.blockLength,
-        reduceTemplate: this.template,
+        wgsl,
+        wgslParams: {
+          workgroupThreads: this.workgroupLength,
+          blockArea: this.blockLength,
+          ...this.template,
+        },
+        bufferBindings: [
+          { type: "uniform", hasDynamicOffset: true },
+          { type: "read-only-storage" },
+          { type: "storage" },
+        ],
+        debugBuffer: true,
       },
       this.pipelineCache
     );
+    return cp.pipeline;
   }
 
   /** * One bind group for all source reductions,
@@ -309,7 +324,7 @@ export class ReduceBuffer extends HasReactive implements ComposableShader {
     const { device } = this;
     const proposedLength = this.forceWorkgroupLength;
 
-    // limit on threads based on workgroup storage required 
+    // limit on threads based on workgroup storage required
     const storageMaxThreads = Math.floor(
       device.limits.maxComputeWorkgroupStorageSize / this.template.outputElementSize
     );
