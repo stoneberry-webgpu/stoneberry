@@ -132,30 +132,33 @@ export class ReduceTextureToBuffer extends HasReactive implements ComposableShad
   @reactively private pipeline(): GPUComputePipeline {
     const workgroupSize = this.workgroupSize;
     const blockSize = this.blockSize;
-    const compute = computePipeline({
-      label: "textureReduce",
-      device: this.device,
-      wgsl,
-      wgslParams: {
-        texelType: texelLoadType(this.source.format),
-        blockWidth: blockSize[0],
-        blockHeight: blockSize[1],
-        blockArea: blockSize[0] * blockSize[1],
-        ...this.reduceTemplate,
-        ...this.loadTemplate,
+    const compute = computePipeline(
+      {
+        label: "textureReduce",
+        device: this.device,
+        wgsl,
+        wgslParams: {
+          texelType: texelLoadType(this.source.format),
+          blockWidth: blockSize[0],
+          blockHeight: blockSize[1],
+          blockArea: blockSize[0] * blockSize[1],
+          ...this.reduceTemplate,
+          ...this.loadTemplate,
+        },
+        constants: {
+          workgroupThreads: workgroupSize[0] * workgroupSize[1],
+          workgroupSizeX: workgroupSize[0],
+          workgroupSizeY: workgroupSize[1],
+        },
+        bindings: [
+          { buffer: { type: "uniform" } },
+          { texture: { sampleType: this.sampleType } },
+          { buffer: { type: "storage" } },
+        ],
+        debugBuffer: true,
       },
-      constants: {
-        workgroupThreads: workgroupSize[0] * workgroupSize[1],
-        workgroupSizeX: workgroupSize[0],
-        workgroupSizeY: workgroupSize[1],
-      },
-      bindings: [
-        { buffer: { type: "uniform" } },
-        { texture: { sampleType: this.sampleType } },
-        { buffer: { type: "storage" } },
-      ],
-      debugBuffer: true,
-    });
+      this.pipelineCache
+    );
     return compute.pipeline;
   }
 
