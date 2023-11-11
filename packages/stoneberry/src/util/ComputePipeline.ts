@@ -9,11 +9,23 @@ export type BindingEntry =
 
 export interface ComputePipelineArgs {
   device: GPUDevice;
+
+  /** shader source code text */
   wgsl: string;
+
+  /** portion of a GPUBindGroupLayoutEntry, for defining binding layout */
   bindings: BindingEntry[];
+
+  /** string substititions for wgsl templating */
   wgslParams?: Record<string, any>;
+
+  /** debug label */
   label?: string;
+
+  /** use binding 11 for a debug buffer */
   debugBuffer?: boolean;
+
+  /** constants for wgsl override variables */
   constants?: Record<string, GPUPipelineConstantValue>;
 }
 
