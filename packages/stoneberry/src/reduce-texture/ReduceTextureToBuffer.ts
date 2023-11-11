@@ -9,12 +9,15 @@ import {
   createDebugBuffer,
   gpuTiming,
   reactiveTrackUse,
+  texelLoadType,
+  textureSampleType,
   trackContext,
 } from "thimbleberry";
 import { BinOpTemplate } from "../util/BinOpTemplate.js";
+import { computePipeline } from "../util/ComputePipeline.js";
 import { maxWorkgroupSize } from "../util/LimitWorkgroupSize.js";
 import { LoadTemplate } from "../util/LoadTemplate.js";
-import { getReduceTexturePipeline } from "./ReduceTexturePipeline.js";
+import wgsl from "./ReduceTexture.wgsl?raw";
 
 export interface TextureToBufferParams {
   device: GPUDevice;
@@ -122,18 +125,38 @@ export class ReduceTextureToBuffer extends HasReactive implements ComposableShad
     return buffer;
   }
 
+  @reactively private get sampleType(): GPUTextureSampleType {
+    return textureSampleType(this.source.format);
+  }
+
   @reactively private pipeline(): GPUComputePipeline {
-    return getReduceTexturePipeline(
-      {
-        device: this.device,
-        workgroupSize: this.workgroupSize,
-        blockSize: this.blockSize, 
-        reduceTemplate: this.reduceTemplate,
-        loadTemplate: this.loadTemplate,
-        textureFormat: this.source.format,
+    const workgroupSize = this.workgroupSize;
+    const blockSize = this.blockSize;
+    const compute = computePipeline({
+      label: "textureReduce",
+      device: this.device,
+      wgsl,
+      wgslParams: {
+        texelType: texelLoadType(this.source.format),
+        blockWidth: blockSize[0],
+        blockHeight: blockSize[1],
+        blockArea: blockSize[0] * blockSize[1],
+        ...this.reduceTemplate,
+        ...this.loadTemplate,
       },
-      this.pipelineCache
-    );
+      constants: {
+        workgroupThreads: workgroupSize[0] * workgroupSize[1],
+        workgroupSizeX: workgroupSize[0],
+        workgroupSizeY: workgroupSize[1],
+      },
+      bindings: [
+        { buffer: { type: "uniform" } },
+        { texture: { sampleType: this.sampleType } },
+        { buffer: { type: "storage" } },
+      ],
+      debugBuffer: true,
+    });
+    return compute.pipeline;
   }
 
   @reactively private get uniformBuffer(): GPUBuffer {

@@ -21,7 +21,7 @@ var <workgroup> work:array<Output, workgroupThreads>;
 // (i.e. do the first two reduction levels)
 @compute 
 @workgroup_size(workgroupSizeX, workgroupSizeY, 1) 
-fn reduceFromTexture(
+fn main(
     @builtin(global_invocation_id) grid: vec3<u32>,    // coords in the global compute grid, one per block
     @builtin(num_workgroups) numWorkgroups: vec3<u32>, // number of workgroups in this dispatch
     @builtin(workgroup_id) workgroupId: vec3<u32>,     // workgroup id in the dispatch

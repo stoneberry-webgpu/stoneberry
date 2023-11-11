@@ -238,10 +238,10 @@ export class ReduceBuffer extends HasReactive implements ComposableShader {
           blockArea: this.blockLength,
           ...this.template,
         },
-        bufferBindings: [
-          { type: "uniform", hasDynamicOffset: true },
-          { type: "read-only-storage" },
-          { type: "storage" },
+        bindings: [
+          { buffer: { type: "uniform", hasDynamicOffset: true } },
+          { buffer: { type: "read-only-storage" } },
+          { buffer: { type: "storage" } },
         ],
         debugBuffer: true,
       },
