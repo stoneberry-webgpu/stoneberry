@@ -7,10 +7,11 @@ import {
   reactiveTrackUse,
   trackContext,
 } from "thimbleberry";
-import { getApplyBlocksPipeline } from "./ApplyScanBlocksPipeline";
-import { Cache, ComposableShader } from "../util/Util.js";
-import { calcDispatchSizes } from "../util/DispatchSizes.js";
 import { BinOpTemplate, sumU32 } from "../util/BinOpTemplate.js";
+import { computePipeline } from "../util/ComputePipeline.js";
+import { calcDispatchSizes } from "../util/DispatchSizes.js";
+import { Cache, ComposableShader } from "../util/Util.js";
+import wgsl from "./ApplyScanBlocks.wgsl?raw";
 
 /** @internal */
 export interface ApplyScanBlocksArgs {
@@ -101,14 +102,26 @@ export class ApplyScanBlocks extends HasReactive implements ComposableShader {
   }
 
   @reactively private get pipeline(): GPUComputePipeline {
-    return getApplyBlocksPipeline(
+    const compute = computePipeline(
       {
         device: this.device,
-        workgroupLength: this.workgroupLength,
-        template: this.template,
+        label: this.label,
+        wgsl,
+        wgslParams: {
+          workgroupSizeX: this.workgroupLength,
+          ...this.template,
+        },
+        bindings: [
+          { buffer: { type: "uniform" } },
+          { buffer: { type: "read-only-storage" } },
+          { buffer: { type: "read-only-storage" } },
+          { buffer: { type: "storage" } },
+        ],
+        debugBuffer: true,
       },
       this.pipelineCache
     );
+    return compute.pipeline;
   }
 
   @reactively private get bindGroups(): GPUBindGroup[] {
@@ -121,9 +134,9 @@ export class ApplyScanBlocks extends HasReactive implements ComposableShader {
       layout: this.pipeline.getBindGroupLayout(0),
       entries: [
         { binding: 0, resource: { buffer: this.uniforms[index] } },
-        { binding: 2, resource: { buffer: this.partialScan } },
-        { binding: 3, resource: { buffer: this.blockSums } },
-        { binding: 4, resource: { buffer: this.result } },
+        { binding: 1, resource: { buffer: this.partialScan } },
+        { binding: 2, resource: { buffer: this.blockSums } },
+        { binding: 3, resource: { buffer: this.result } },
         { binding: 11, resource: { buffer: this.debugBuffer } },
       ],
     });
