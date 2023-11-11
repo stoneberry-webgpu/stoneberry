@@ -58,7 +58,10 @@ function makeComputePipeline(args: ComputePipelineArgs): ComputePipelineResults 
       entryPoint: "main",
       constants,
     },
-    layout: device.createPipelineLayout({ bindGroupLayouts: [bindGroupLayout] }),
+    layout: device.createPipelineLayout({
+      label: label,
+      bindGroupLayouts: [bindGroupLayout],
+    }),
   });
 
   return { pipeline };
