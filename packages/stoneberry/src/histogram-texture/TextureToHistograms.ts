@@ -1,3 +1,4 @@
+import { BindingEntry } from "./../util/ComputePipeline";
 import { HasReactive, reactively } from "@reactively/decorate";
 import deepEqual from "fast-deep-equal";
 import {
@@ -9,12 +10,15 @@ import {
   createDebugBuffer,
   gpuTiming,
   reactiveTrackUse,
+  texelLoadType,
+  textureSampleType,
   trackContext,
 } from "thimbleberry";
 import { HistogramTemplate } from "../util/HistogramTemplate.js";
 import { maxWorkgroupSize } from "../util/LimitWorkgroupSize.js";
 import { LoadTemplate, loadRedComponent } from "../util/LoadTemplate.js";
-import { getTextureToHistogramsPipeline } from "./TextureToHistogramsPipeline.js";
+import wgsl from "./TextureToHistograms.wgsl?raw";
+import { computePipeline } from "../util/ComputePipeline.js";
 
 export interface TextureToHistogramsParams {
   device: GPUDevice;
@@ -166,19 +170,44 @@ export class TextureToHistograms extends HasReactive implements ComposableShader
   }
 
   @reactively private pipeline(): GPUComputePipeline {
-    return getTextureToHistogramsPipeline(
+    const sumsBinding: BindingEntry[] = this.bucketSums
+      ? [{ buffer: { type: "storage" } }]
+      : [];
+
+    const blockSize = this.blockSize;
+    const compute = computePipeline(
       {
         device: this.device,
-        workgroupSize: this.workgroupSize,
-        blockSize: this.blockSize,
-        histogramTemplate: this.histogramTemplate,
-        loadTemplate: this.loadTemplate,
-        textureFormat: this.source.format,
-        bucketSums: this.bucketSums,
-        saturateMax: this.saturateMax,
+        wgsl,
+        wgslParams: {
+          texelType: texelLoadType(this.source.format),
+          blockWidth: blockSize[0],
+          blockHeight: blockSize[1],
+          blockArea: blockSize[0] * blockSize[1],
+          bucketSums: this.bucketSums,
+          saturateMax: this.saturateMax,
+          floatElements: this.histogramTemplate.outputElements === "f32",
+          ...this.histogramTemplate,
+          ...this.loadTemplate,
+          inputElements: this.histogramTemplate.outputElements,
+        },
+        constants: {
+          workgroupSizeX: this.workgroupSize[0],
+          workgroupSizeY: this.workgroupSize[1],
+          numBuckets: this.histogramTemplate.buckets,
+        },
+        bindings: [
+          { buffer: { type: "uniform" } },
+          { texture: { sampleType: textureSampleType(this.source.format) } },
+          { buffer: { type: "read-only-storage" } },
+          { buffer: { type: "storage" } },
+          ...sumsBinding,
+        ],
+        debugBuffer: true,
       },
       this.pipelineCache
     );
+    return compute.pipeline;
   }
 
   @reactively private get uniformBuffer(): GPUBuffer {

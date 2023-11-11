@@ -38,7 +38,7 @@ var<workgroup> localSum: array<atomic<u32>, numBuckets>; //! u32=inputElements I
 
 @compute 
 @workgroup_size(workgroupSizeX, workgroupSizeY, 1) 
-fn textureToHistograms(
+fn main(
     @builtin(global_invocation_id) grid: vec3<u32>,    // coords in the global compute grid
     @builtin(local_invocation_id) workGrid: vec3<u32>, // coords inside the this workgroup
     @builtin(num_workgroups) numWorkgroups: vec3<u32>, // number of workgroups in this dispatch
