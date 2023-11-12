@@ -93,7 +93,7 @@ export async function benchDashCsv(): Promise<void> {
   const baseDetails = await verifyFile("baseline-details.csv");
   if (baseDetails) {
     const details = `bench-details-${date}.csv`;
-    await compareCsv(details, baseDetails, `compare-details-${date}.csv`, tempDir);
+    await compareCsv(details, baseDetails, `merged-details-${date}.csv`, tempDir);
   }
 
   const baseSummary = await verifyFile("baseline-summary.csv");
@@ -105,11 +105,11 @@ export async function benchDashCsv(): Promise<void> {
   await fs.rm(tempDir, { recursive: true });
 }
 
-/** construct the compare details .csv file */
+/** construct the merged-details .csv file */
 async function compareCsv(
   details: string,
   baseline: string,
-  compare: string,
+  outfile: string,
   tempDir: string
 ): Promise<void> {
   const combined = await trimAndCombine(details, baseline, tempDir);
@@ -118,7 +118,7 @@ async function compareCsv(
   // sql script reads compare.csv and writes to compare-sorted.csv
   await execEcho(`sqlite3 < script/sort-runs.sql`);
   await fs.rm("compare.csv");
-  await fs.rename("compare-sorted.csv", compare);
+  await fs.rename("compare-sorted.csv", outfile);
 }
 
 async function trimAndCombine(
