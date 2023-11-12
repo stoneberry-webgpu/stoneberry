@@ -9,10 +9,11 @@ main();
 
 async function main(): Promise<void> {
   const benches = [
-    benchable(reduceBufferBench, 2 ** 27),
-    benchable(reduceTextureBench, [2 ** 13, 2 ** 13]),
-    benchable(histogramTextureBench, [2 ** 13, 2 ** 13]),
-    benchable(prefixScanBench, 2 ** 27),
+    // benchable(reduceBufferBench, 2 ** 27),
+    // benchable(reduceTextureBench, [2 ** 13, 2 ** 13]),
+    benchable(reduceTextureBench, [2 ** 10, 2 ** 10]),
+    // benchable(histogramTextureBench, [2 ** 13, 2 ** 13]),
+    // benchable(prefixScanBench, 2 ** 27),
   ];
   await benchRunner(benches, { gitVersion });
 }
