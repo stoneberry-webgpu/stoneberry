@@ -32,10 +32,12 @@ UPDATE summary SET bUtc = (
   AND s2.gitVersion != summary.gitVersion
 );
 
+-- we now have two sets of rows with the regular and b- columns reversed
+-- drop one set, so that the b- columns remaining are the for older baseline 
 DELETE FROM summary 
   WHERE gitVersion IN (
     SELECT gitVersion FROM summary
-    ORDER BY utc DESC
+    ORDER BY utc ASC
     LIMIT 1
   );
 
