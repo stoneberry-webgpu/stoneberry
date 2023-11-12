@@ -37,13 +37,13 @@ var <workgroup> work:array<Output, workgroupThreads>;
 @workgroup_size(workgroupThreads, 1, 1) 
 fn main(
     @builtin(global_invocation_id) grid: vec3<u32>,    // coords in the global compute grid
-    @builtin(local_invocation_id) localId: vec3<u32>, // coords inside the this workgroup
+    @builtin(local_invocation_index) localIndex: u32,  // index inside the this workgroup
     @builtin(num_workgroups) numWorkgroups: vec3<u32>, // number of workgroups in this dispatch
     @builtin(workgroup_id) workgroupId: vec3<u32>      // workgroup id in the dispatch
 ) {
-    reduceBufferToWork(grid.xy, localId.x);
+    reduceBufferToWork(grid.xy, localIndex);
     let outDex = workgroupId.x + u.resultOffset;
-    reduceWorkgroupToOut(outDex, localId.x);
+    reduceWorkgroupToOut(outDex, localIndex);
 }
 
 fn reduceBufferToWork(grid: vec2<u32>, localId: u32) {
