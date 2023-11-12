@@ -139,6 +139,7 @@ export class ReduceTextureToBuffer extends HasReactive implements ComposableShad
         wgsl,
         wgslParams: {
           texelType: texelLoadType(this.source.format),
+          workgroupThreads: workgroupSize[0] * workgroupSize[1],
           blockWidth: blockSize[0],
           blockHeight: blockSize[1],
           blockArea: blockSize[0] * blockSize[1],

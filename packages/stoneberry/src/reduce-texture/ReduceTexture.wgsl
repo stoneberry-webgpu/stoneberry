@@ -28,11 +28,9 @@ fn main(
     @builtin(local_invocation_index) localIndex: u32   // index of this thread in the workgroup
 ) {
     reduceSrcToWork(grid.xy, localIndex);
-    workgroupBarrier();
-    if localIndex == 0u {
-        let workIndex = workgroupId.x + workgroupId.y * numWorkgroups.x;
-        reduceWorkgroupToOut(grid.xy, workIndex);
-    }
+    let workIndex = workgroupId.x + workgroupId.y * numWorkgroups.x;
+    let outDex = workIndex + u.resultOffset;
+    reduceWorkgroupToOut(outDex, localIndex);
 }
 
 fn reduceSrcToWork(grid: vec2<u32>, localIndex: u32) {
@@ -54,7 +52,7 @@ fn fetchSrc(grid: vec2<u32>) -> array<Output, 4> { //! 4=blockArea
             if x >= srcWidth || y >= srcHeight {
                 result[outDex] = identityOp();
             } else {
-                let srcSpot = vec2(x, y); 
+                let srcSpot = vec2(x, y);
                 let texel = textureLoad(srcTexture, srcSpot, 0);
                 let loaded = loadOp(texel);
                 result[outDex] = createOp(loaded);
@@ -65,12 +63,18 @@ fn fetchSrc(grid: vec2<u32>) -> array<Output, 4> { //! 4=blockArea
     return result;
 }
 
-fn reduceWorkgroupToOut(grid: vec2<u32>, workIndex: u32) {
-    var v = work[0];
-    for (var i = 1u; i < u32(workgroupThreads); i = i + 1u) {
-        v = binaryOp(v, work[i]);
+// TODO use linker to DRY this with ReduceBuffer.wgsl
+fn reduceWorkgroupToOut(outDex: u32, localId: u32) {
+    let workDex = localId << 1u;
+    for (var step = 1u; step < 4u; step <<= 1u) { //! 4=workgroupThreads
+        workgroupBarrier();
+        if localId % step == 0u {
+            work[workDex] = binaryOp(work[workDex], work[workDex + step]);
+        }
     }
-    out[workIndex] = v;
+    if localId == 0u {
+        out[outDex] = work[0];
+    }
 }
 
 // reduce a block of source pixels to a single output structure
