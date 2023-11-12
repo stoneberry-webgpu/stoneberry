@@ -48,13 +48,13 @@ fn fetchSrc(grid: vec2<u32>) -> array<Output, 4> { //! 4=blockArea
     let srcHeight = textureDimensions(srcTexture).y;
 
     for (var ix = 0u; ix < 2u; ix = ix + 1u) { //! 2=blockWidth
-        var x = i32(grid.x * 2u + ix); //! i32="u32" 2=blockWidth
+        var x = grid.x * 2u + ix; //! 2=blockWidth
         for (var iy = 0u; iy < 2u; iy = iy + 1u) { //! 2=blockHeight
-            var y = i32(grid.y * 2u + iy); //! i32="u32" 2=blockHeight
+            var y = grid.y * 2u + iy; //! 2=blockHeight
             if x >= srcWidth || y >= srcHeight {
                 result[outDex] = identityOp();
             } else {
-                let srcSpot = vec2<i32>(x, y); //! i32="u32"
+                let srcSpot = vec2(x, y); 
                 let texel = textureLoad(srcTexture, srcSpot, 0);
                 let loaded = loadOp(texel);
                 result[outDex] = createOp(loaded);
