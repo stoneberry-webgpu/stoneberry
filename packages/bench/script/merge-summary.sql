@@ -5,6 +5,7 @@
 -- and create one row for each benchmark with twice as many columns
 ALTER TABLE summary ADD column bAvgTime REAL;
 ALTER TABLE summary ADD column bGbPerSec REAL;
+ALTER TABLE summary ADD column bMedianGpuTime REAL;
 ALTER TABLE summary ADD column bGitVersion TEXT;
 ALTER TABLE summary ADD column bUtc INTEGER;
 
@@ -16,6 +17,12 @@ UPDATE summary SET bAvgTime = (
 
 UPDATE summary SET bGbPerSec = (
   SELECT "src GB/sec" FROM summary AS s2
+  WHERE s2.benchmark = summary.benchmark
+  AND s2.gitVersion != summary.gitVersion
+);
+
+UPDATE summary SET bMedianGpuTime = (
+  SELECT "median gpu time (ms)" FROM summary AS s2
   WHERE s2.benchmark = summary.benchmark
   AND s2.gitVersion != summary.gitVersion
 );
