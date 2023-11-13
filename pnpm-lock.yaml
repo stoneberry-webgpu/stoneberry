@@ -5,7 +5,7 @@ settings:
   excludeLinksFromLockfile: false
 
 overrides:
-  thimbleberry: ^0.2.7
+  thimbleberry: ^0.2.8
   react: 17.0.2
   react-dom: 17.0.2
 
@@ -19,8 +19,8 @@ importers:
         specifier: workspace:*
         version: link:../stoneberry
       thimbleberry:
-        specifier: ^0.2.7
-        version: 0.2.7
+        specifier: ^0.2.8
+        version: 0.2.8
     devDependencies:
       '@webgpu/types':
         specifier: ^0.1.32
@@ -96,8 +96,8 @@ importers:
         specifier: workspace:^
         version: link:../stoneberry
       thimbleberry:
-        specifier: ^0.2.7
-        version: 0.2.7
+        specifier: ^0.2.8
+        version: 0.2.8
     devDependencies:
       '@webgpu/types':
         specifier: ^0.1.32
@@ -130,8 +130,8 @@ importers:
         specifier: ^3.1.3
         version: 3.1.3
       thimbleberry:
-        specifier: ^0.2.7
-        version: 0.2.7
+        specifier: ^0.2.8
+        version: 0.2.8
     devDependencies:
       '@typescript-eslint/eslint-plugin':
         specifier: ^5.59.9
@@ -221,8 +221,8 @@ importers:
         specifier: ^3.34.0
         version: 3.34.0
       thimbleberry:
-        specifier: ^0.2.7
-        version: 0.2.7
+        specifier: ^0.2.8
+        version: 0.2.8
     devDependencies:
       '@types/node':
         specifier: ^20.4.4
@@ -16195,8 +16195,8 @@ packages:
       any-promise: 1.3.0
     dev: false
 
-  /thimbleberry@0.2.7:
-    resolution: {integrity: sha512-hWAxJS1TltMdbLy6Y7UqH/plf7+Sru437Lj0ene6FOdmmIDr9cwYEUKJZnZpM2pY5He/N2eY2gnie3DZ+ZrR3g==}
+  /thimbleberry@0.2.8:
+    resolution: {integrity: sha512-9Zy7glz1OfojmB/Gd1H5STQmvej8/wvw1jMliIvp/bBzV6TmNs1jp5kHdwVxSZMlbTVucb4luKRIVcEzqXbwPg==}
     dependencies:
       '@petamoriken/float16': 3.8.4
       '@reactively/core': 0.0.8
