@@ -19,6 +19,9 @@
     "isolatedModules": true,
     "noEmit": true,
     "rootDir": "src",
+    "paths": {
+      "thimbleberry": ["../thimbleberry/src/shader-util"],
+    }
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules"]
