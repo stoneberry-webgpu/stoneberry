@@ -21,6 +21,16 @@ const workgroupThreads= 4; //! 4=workgroupThreads
 
 var <workgroup> work:array<Output, workgroupThreads>; 
 
+// #importReplace reduce-workgroup(work, Output, workgroupThreads)
+fn reduceWorkgroup(localId: u32) {} 
+// #endImport
+
+// #importReplace binaryOp(Output, Input)
+fn binaryOp(a: Output, b: Output) -> Output { }
+fn loadOp(a: Input) -> Output { }
+fn identityOp() -> Output { }
+// #endImport
+
 // 
 // reduce a buffer of values to a single value, returned as the last element of the out array
 // 
@@ -104,16 +114,4 @@ fn reduceSrcBlock(a: array<Output, 4>) -> Output { //! 4=blockArea
         v = binaryOp(v, a[i]);
     }
     return v;
-}
-
-fn binaryOp(a: Output, b: Output) -> Output {
-    return Output(a.sum + b.sum);  //! "return Output(a.sum + b.sum);"=binaryOp
-}
-
-fn loadOp(a: Input) -> Output {
-    return Output(a.sum);  //! "return Output(a.sum);"=loadOp
-}
-
-fn identityOp() -> Output {
-    return Output(0.0); //! "return Output(0.0);"=identityOp
 }
