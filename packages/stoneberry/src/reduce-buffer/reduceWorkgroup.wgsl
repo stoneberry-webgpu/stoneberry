@@ -1,13 +1,7 @@
 // placeholder for typechecking, not exported to output, expected to be defined by caller
 var <workgroup> work:array<Elem, workgroupThreads>; 
 
-// #export reduce-workgroup(work, Elem, threads) 
-
-// #importReplace binaryOp(Elem)
-struct Elem { }
-fn binaryOp(a: Elem, b: Elem) -> Elem {}
-// #importEnd
-
+//#export(work, Elem, threads) template(thimble2)
 fn reduceWorkgroup(localId: u32) {
     let workDex = localId << 1u;
     for (var step = 1u; step < 4u; step <<= 1u) { //#replace 4=threads
@@ -17,3 +11,10 @@ fn reduceWorkgroup(localId: u32) {
         }
     }
 }
+
+//#importReplace binaryOp(Elem)
+struct Elem { }
+fn binaryOp(a: Elem, b: Elem) -> Elem {}
+//#importEnd
+
+//#exportEnd
