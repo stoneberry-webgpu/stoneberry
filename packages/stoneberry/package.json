@@ -59,7 +59,8 @@
     "@reactively/core": "^0.0.8",
     "@reactively/decorate": "^0.0.4",
     "fast-deep-equal": "^3.1.3",
-    "thimbleberry": "^0.2.2"
+    "thimbleberry": "^0.2.2",
+    "wgsl-linker": "^0.1.0"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^5.59.9",
