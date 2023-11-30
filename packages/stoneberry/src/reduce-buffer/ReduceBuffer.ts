@@ -1,5 +1,7 @@
 import { HasReactive, reactively } from "@reactively/decorate";
 import wgsl from "./ReduceBuffer.wgsl?raw";
+import binOpSum from "./binopSum.wgsl?raw";
+import reduceWorkgroup from "./reduceWorkgroup.wgsl?raw";
 import {
   Cache,
   ComposableShader,
@@ -14,6 +16,8 @@ import { BinOpTemplate } from "../util/BinOpTemplate.js";
 import { SlicingResults, inputSlicing } from "../util/InputSlicing.js";
 import { runAndFetchResult } from "../util/RunAndFetch.js";
 import { computePipeline } from "../util/ComputePipeline.js";
+import { ModuleRegistry, linkWgsl } from "wgsl-linker";
+import { thimbTemplate } from "wgsl-linker/replace-template";
 
 export interface BufferReduceParams {
   device: GPUDevice;
@@ -134,7 +138,7 @@ export class ReduceBuffer extends HasReactive implements ComposableShader {
     const timestampWrites = gpuTiming?.timestampWrites(label);
     const passEncoder = commandEncoder.beginComputePass({ timestampWrites });
     passEncoder.label = label;
-    passEncoder.setPipeline(this.pipeline());
+    passEncoder.setPipeline(this.pipeline);
     passEncoder.setBindGroup(0, bindGroup, dynamicOffsets);
     passEncoder.dispatchWorkgroups(dispatch, 1, 1);
     passEncoder.end();
@@ -227,12 +231,18 @@ export class ReduceBuffer extends HasReactive implements ComposableShader {
     return buffer;
   }
 
+  @reactively private get linkedWgsl(): string {
+    const registry = new ModuleRegistry(reduceWorkgroup, binOpSum);
+    registry.registerTemplate(thimbTemplate);
+    return linkWgsl(wgsl, registry);
+  }
+
   /** all dispatches use the same pipeline */
-  @reactively private pipeline(): GPUComputePipeline {
+  @reactively private get pipeline(): GPUComputePipeline {
     const cp = computePipeline(
       {
         device: this.device,
-        wgsl,
+        wgsl: this.linkedWgsl,
         wgslParams: {
           workgroupThreads: this.workgroupLength,
           blockArea: this.blockLength,
@@ -282,7 +292,7 @@ export class ReduceBuffer extends HasReactive implements ComposableShader {
     const uniformSlice = this.inputSlicing.uniformsSliceSize;
     return this.device.createBindGroup({
       label: `${this.label} bufferReduce ${bindLabel}`,
-      layout: this.pipeline().getBindGroupLayout(0),
+      layout: this.pipeline.getBindGroupLayout(0),
       entries: [
         { binding: 0, resource: { buffer: uniforms, size: uniformSlice } },
         { binding: 1, resource: { buffer: src } },
