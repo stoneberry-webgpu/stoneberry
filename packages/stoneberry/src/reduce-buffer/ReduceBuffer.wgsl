@@ -106,7 +106,7 @@ fn reduceWorkgroupToOut(outDex: u32, localId: u32) {
 
 fn binaryOp_0_0(a: Output, b: Output) -> Output {
     // return Output(a.sum + b.sum);
-    return Output(7.0);
+    return Output(7);
 }
 
 // #ximportReplace reduceWorkgroup(work, Output, workgroupThreads)
