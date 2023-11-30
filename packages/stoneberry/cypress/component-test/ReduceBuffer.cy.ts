@@ -11,7 +11,8 @@ import {
 import { maxF32, minMaxPositiveF32, sumF32, sumU32 } from "../../src/util/BinOpTemplate.js";
 import { makeBuffer } from "./util/MakeBuffer";
 
-it("sum, simple api", async () => {
+it.only("sum, simple api", async () => {
+  console.clear();
   await withAsyncUsage(async () => {
     const device = trackUse(await labeledGpuDevice());
     const sourceData = [0, 1, 2, 3, 4, 5, 6, 7];

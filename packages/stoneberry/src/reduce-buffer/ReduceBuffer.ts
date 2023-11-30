@@ -234,7 +234,11 @@ export class ReduceBuffer extends HasReactive implements ComposableShader {
   @reactively private get linkedWgsl(): string {
     const registry = new ModuleRegistry(reduceWorkgroup, binOpSum);
     registry.registerTemplate(thimbTemplate);
-    return linkWgsl(wgsl, registry);
+    const linked = linkWgsl(wgsl, registry);
+    // const lines = linked.split("\n");
+    // const numbered = lines.map((line, i) => (`${i + 1}: ${line}`));
+    // console.log(numbered.join("\n"));
+    return linked;
   }
 
   /** all dispatches use the same pipeline */

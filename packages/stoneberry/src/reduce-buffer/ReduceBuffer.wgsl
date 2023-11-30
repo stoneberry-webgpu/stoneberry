@@ -93,6 +93,26 @@ fn reduceWorkgroupToOut(outDex: u32, localId: u32) {
         out[outDex] = work[0];
     }
 }
+
+// fn reduceWorkgroup_0(localId: u32) {
+//     let workDex = localId << 1u;
+//     for (var step = 1u; step < 4u; step <<= 1u) { //#replace 4=workgroupThreads
+//         workgroupBarrier();
+//         if localId % step == 0u {
+//             work[workDex] = binaryOp(work[workDex], work[workDex + step]);
+//         }
+//     }
+// }
+
+fn binaryOp_0_0(a: Output, b: Output) -> Output {
+    // return Output(a.sum + b.sum);
+    return Output(7.0);
+}
+
+// #ximportReplace reduceWorkgroup(work, Output, workgroupThreads)
+    fn reduceWorkgroup(localId: u32) {}
+// #xendImport
+
 // I tried an alternate pattern in 15169571 that allows the driver to 
 // reuse free threads by coalescing the free thread ids into a contiguous block,
 // but at the cost of some memory coherence. It was slightly slower in limited 
