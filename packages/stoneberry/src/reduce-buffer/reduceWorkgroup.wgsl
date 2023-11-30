@@ -1,7 +1,7 @@
 // placeholder for typechecking
 var <workgroup> work:array<Elem, workgroupThreads>; 
 
-// #template(thimb2)
+// #template thimb2
 
 // #export(work, Elem, threads) 
 fn reduceWorkgroup(localId: u32) {
