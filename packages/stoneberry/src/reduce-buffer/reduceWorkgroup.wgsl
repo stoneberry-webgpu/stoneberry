@@ -1,5 +1,5 @@
 // placeholder for typechecking
-var <workgroup> work:array<Elem, workgroupThreads>; 
+var <workgroup> work:array<Elem, 18>; 
 
 // #template thimb2
 
@@ -15,6 +15,6 @@ fn reduceWorkgroup(localId: u32) {
 }
 
 //#importReplace binaryOp(Elem)
-struct Elem { }
-fn binaryOp(a: Elem, b: Elem) -> Elem {}
+    struct Elem { sum: u32; }
+    fn binaryOp(a: Elem, b: Elem) -> Elem {}
 //#importEnd
