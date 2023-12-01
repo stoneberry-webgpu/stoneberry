@@ -118,10 +118,10 @@ fn reduceSrcBlock(a: array<Output, 4>) -> Output { //! 4=blockArea
     fn binaryOp(a: Output, b: Output) -> Output {}
 // #endImport
 
-fn loadOp(a: Input) -> Output {
-    return Output(a.sum);  //! "return Output(a.sum);"=loadOp
-}
+// #importReplace loadOp(Input, Output)
+    fn loadOp(a: Input) -> Output {}
+// #endImport
 
-fn identityOp() -> Output {
-    return Output(0.0); //! "return Output(0.0);"=identityOp
-}
+// #importReplace identityOp(Output)
+    fn identityOp() -> Output {}
+// #endImport
