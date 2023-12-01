@@ -114,9 +114,9 @@ fn reduceSrcBlock(a: array<Output, 4>) -> Output { //! 4=blockArea
     return v;
 }
 
-fn binaryOp(a: Output, b: Output) -> Output {
-    return Output(a.sum + b.sum);  //! "return Output(a.sum + b.sum);"=binaryOp
-}
+// #importReplace binaryOp(Output)
+    fn binaryOp(a: Output, b: Output) -> Output {}
+// #endImport
 
 fn loadOp(a: Input) -> Output {
     return Output(a.sum);  //! "return Output(a.sum);"=loadOp
