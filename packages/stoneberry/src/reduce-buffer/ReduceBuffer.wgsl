@@ -111,11 +111,10 @@ fn reduceSrcBlock(a: array<Output, 4>) -> Output { //! 4=blockArea
     return v;
 }
 
-
+// #import reduceWorkgroup(work, Output, workgroupThreads)
 // #import binaryOp(Output)
 // #import loadOp(Input, Output)
 // #import identityOp(Output)
-// #import reduceWorkgroup(work, Output, workgroupThreads)
 
 // #if typecheck
 fn binaryOp(a: Output, b: Output) -> Output {}
