@@ -19,7 +19,7 @@ struct Uniforms {
 
 const workgroupThreads= 4; //! 4=workgroupThreads
 
-var <workgroup> work:array<Output, workgroupThreads>; 
+var <workgroup> work: array<Output, workgroupThreads>; 
 
 // 
 // reduce a buffer of values to a single value, returned as the last element of the out array
@@ -44,7 +44,7 @@ fn main(
     reduceBufferToWork(grid.xy, localIndex);
     let outDex = workgroupId.x + u.resultOffset;
     reduceWorkgroup(localIndex);
-    if (localIndex == 0u) {
+    if localIndex == 0u {
         out[outDex] = work[0];
     }
 }
@@ -97,9 +97,6 @@ fn reduceWorkgroupToOut(outDex: u32, localId: u32) {
     }
 }
 
-// #importReplace reduceWorkgroup(work, Output, workgroupThreads)
-    fn reduceWorkgroup(localId: u32) {}
-// #endImport
 
 // I tried an alternate pattern in 15169571 that allows the driver to 
 // reuse free threads by coalescing the free thread ids into a contiguous block,
@@ -114,14 +111,15 @@ fn reduceSrcBlock(a: array<Output, 4>) -> Output { //! 4=blockArea
     return v;
 }
 
-// #importReplace binaryOp(Output)
-    fn binaryOp(a: Output, b: Output) -> Output {}
-// #endImport
 
-// #importReplace loadOp(Input, Output)
-    fn loadOp(a: Input) -> Output {}
-// #endImport
+// #import binaryOp(Output)
+// #import loadOp(Input, Output)
+// #import identityOp(Output)
+// #import reduceWorkgroup(work, Output, workgroupThreads)
 
-// #importReplace identityOp(Output)
-    fn identityOp() -> Output {}
-// #endImport
+// #if typecheck
+fn binaryOp(a: Output, b: Output) -> Output {}
+fn loadOp(a: Input) -> Output {}
+fn identityOp() -> Output {}
+fn reduceWorkgroup(localId: u32) {}
+// #endif
