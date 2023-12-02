@@ -8,8 +8,8 @@ import {
   withBufferCopy,
   withLeakTrack,
 } from "thimbleberry";
-import { maxF32, minMaxPositiveF32 } from "../../src/util/BinOpTemplate.js";
-import { sumF32, sumU32} from "../../src/util/BinOpModules.js";
+import { minMaxPositiveF32 } from "../../src/util/BinOpTemplate.js";
+import { maxF32, sumF32, sumU32 } from "../../src/util/BinOpModules.js";
 import { makeBuffer } from "./util/MakeBuffer";
 
 it("sum, simple api", async () => {
@@ -28,7 +28,7 @@ it("sum, simple api", async () => {
   });
 });
 
-it.only("buffer reduce sum, two dispatches", async () => {
+it("buffer reduce sum, two dispatches", async () => {
   console.clear();
   await withAsyncUsage(async () => {
     const device = trackUse(await labeledGpuDevice());
@@ -62,7 +62,7 @@ it("buffer reduce max, two dispatches", async () => {
       source: makeBuffer(device, sourceData, "source buffer", Float32Array),
       blockLength: 2,
       forceWorkgroupLength: 2,
-      template: maxF32,
+      template2: maxF32,
     });
     const shaderGroup = new ShaderGroup(device, shader);
     shaderGroup.dispatch();
