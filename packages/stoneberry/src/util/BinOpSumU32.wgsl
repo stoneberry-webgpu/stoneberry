@@ -1,13 +1,13 @@
 struct LoadElem {
 // #export LoadElemFields
-    sum: f32,  
-// #endInsert
+    sum: u32,  
+// #endExport
 }
 
 struct Elem { 
 // #export ElemFields
-    sum: f32,  
-// #endInsert
+    sum: u32,  
+// #endExport
 }
 
 // #export(Elem)
@@ -22,5 +22,5 @@ fn loadOp(a: LoadElem) -> Elem {
 
 // #export(Elem)
 fn identityOp() -> Elem {
-    return Elem(0.0);
+    return Elem(0u);
 }
