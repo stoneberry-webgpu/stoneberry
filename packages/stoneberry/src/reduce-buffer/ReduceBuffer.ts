@@ -1,6 +1,4 @@
 import { HasReactive, reactively } from "@reactively/decorate";
-import wgsl from "./ReduceBuffer.wgsl?raw";
-import reduceWorkgroup from "./reduceWorkgroup.wgsl?raw";
 import {
   Cache,
   ComposableShader,
@@ -11,13 +9,14 @@ import {
   reactiveTrackUse,
   trackContext,
 } from "thimbleberry";
-import { BinOpTemplate } from "../util/BinOpTemplate.js";
-import { SlicingResults, inputSlicing } from "../util/InputSlicing.js";
-import { runAndFetchResult } from "../util/RunAndFetch.js";
-import { computePipeline } from "../util/ComputePipeline.js";
 import { ModuleRegistry, linkWgsl } from "wgsl-linker";
 import { thimbTemplate } from "wgsl-linker/replace-template";
 import { BinOpTemplate2 } from "../util/BinOpModules.js";
+import { computePipeline } from "../util/ComputePipeline.js";
+import { SlicingResults, inputSlicing } from "../util/InputSlicing.js";
+import { runAndFetchResult } from "../util/RunAndFetch.js";
+import wgsl from "./ReduceBuffer.wgsl?raw";
+import reduceWorkgroup from "./reduceWorkgroup.wgsl?raw";
 
 export interface BufferReduceParams {
   device: GPUDevice;
