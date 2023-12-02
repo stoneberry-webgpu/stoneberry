@@ -1,6 +1,6 @@
 import { HasReactive, reactively } from "@reactively/decorate";
 import wgsl from "./ReduceBuffer.wgsl?raw";
-import binOpSum from "./binopSum.wgsl?raw";
+import binOpSum from "../util/BinOpSumF32.wgsl?raw";
 import reduceWorkgroup from "./reduceWorkgroup.wgsl?raw";
 import {
   Cache,
