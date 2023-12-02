@@ -1,4 +1,6 @@
 import { applyTemplate, memoizeWithDevice } from "thimbleberry";
+import { ModuleRegistry, linkWgsl } from "wgsl-linker";
+import { thimbTemplate } from "wgsl-linker/replace-template";
 
 export type BindingEntry =
   | Pick<GPUBindGroupLayoutEntry, "buffer">
@@ -18,6 +20,9 @@ export interface ComputePipelineArgs {
 
   /** string substititions for wgsl templating */
   wgslParams?: Record<string, any>;
+  
+  /** registry of modules available for linking */
+  registry?: ModuleRegistry;
 
   /** debug label */
   label?: string;
@@ -37,7 +42,7 @@ export interface ComputePipelineResults {
 export const computePipeline = memoizeWithDevice(makeComputePipeline);
 
 function makeComputePipeline(args: ComputePipelineArgs): ComputePipelineResults {
-  const { device, wgsl, wgslParams = {}, constants } = args;
+  const { device, wgsl, wgslParams = {}, constants, registry } = args;
   const { debugBuffer = false, bindings, label = "computeShader" } = args;
   const entries = bindings.map((binding, i) => ({
     binding: i,
@@ -56,8 +61,11 @@ function makeComputePipeline(args: ComputePipelineArgs): ComputePipelineResults 
     label,
     entries,
   });
+  
+  registry?.registerTemplate(thimbTemplate);
+  const linkedWgsl = registry ? linkWgsl(wgsl, registry, wgslParams) : wgsl;
 
-  const processedWGSL = applyTemplate(wgsl, wgslParams);
+  const processedWGSL = applyTemplate(linkedWgsl, wgslParams);
 
   const lines = processedWGSL.split("\n");
   const numbered = lines.map((line, i) => `${i + 1}: ${line}`);

@@ -230,23 +230,9 @@ export class ReduceBuffer extends HasReactive implements ComposableShader {
     return buffer;
   }
 
-  @reactively private get linkedWgsl(): string {
+  @reactively private get registry(): ModuleRegistry {
     const moduleWgsl = this.template2.wgsl;
-    const registry = new ModuleRegistry(reduceWorkgroup, moduleWgsl);
-    registry.registerTemplate(thimbTemplate);
-    const linked = linkWgsl(wgsl, registry, this.wgslParams);
-    // const lines = linked.split("\n");
-    // const numbered = lines.map((line, i) => (`${i + 1}: ${line}`));
-    // console.log(numbered.join("\n"));
-    return linked;
-  }
-
-  @reactively private get wgslParams(): Record<string, any> {
-    return {
-      workgroupThreads: this.workgroupLength,
-      blockArea: this.blockLength,
-      ...this.template2,
-    };
+    return new ModuleRegistry(reduceWorkgroup, moduleWgsl);
   }
 
   /** all dispatches use the same pipeline */
@@ -254,8 +240,13 @@ export class ReduceBuffer extends HasReactive implements ComposableShader {
     const cp = computePipeline(
       {
         device: this.device,
-        wgsl: this.linkedWgsl,
-        wgslParams: this.wgslParams,
+        wgsl,
+        wgslParams: {
+          workgroupThreads: this.workgroupLength,
+          blockArea: this.blockLength,
+          ...this.template2,
+        },
+        registry: this.registry,
         bindings: [
           { buffer: { type: "uniform", hasDynamicOffset: true } },
           { buffer: { type: "read-only-storage" } },
