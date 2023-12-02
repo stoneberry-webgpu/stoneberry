@@ -1,9 +1,28 @@
+// #if typecheck
+fn reduceWorkgroup(localId: u32) {}
+fn binaryOp(a: Output, b: Output) -> Output {}
+fn loadOp(a: Input) -> Output {}
+fn identityOp() -> Output {}
+// #endif
+
+// #import reduceWorkgroup(work, Output, workgroupThreads)
+// #import binaryOp(Output)
+// #import loadOp(Input, Output)
+// #import identityOp(Output)
+
+
 struct Input { 
-    sum: f32,  //! "sum: f32,"=inputStruct 
+// #import LoadElemFields
+// #if typecheck 
+    sum: f32,   
+// #endif
 }
 
 struct Output { 
-    sum: f32,  //! "sum: f32,"=outputStruct 
+// #import ElemFields
+// #if typecheck 
+    sum: f32,  
+// #endif
 }
 
 struct Uniforms {
@@ -110,15 +129,3 @@ fn reduceSrcBlock(a: array<Output, 4>) -> Output { //! 4=blockArea
     }
     return v;
 }
-
-// #import reduceWorkgroup(work, Output, workgroupThreads)
-// #import binaryOp(Output)
-// #import loadOp(Input, Output)
-// #import identityOp(Output)
-
-// #if typecheck
-fn binaryOp(a: Output, b: Output) -> Output {}
-fn loadOp(a: Input) -> Output {}
-fn identityOp() -> Output {}
-fn reduceWorkgroup(localId: u32) {}
-// #endif
