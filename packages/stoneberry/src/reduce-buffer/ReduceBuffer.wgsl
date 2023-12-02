@@ -1,15 +1,14 @@
+// #import reduceWorkgroup(work, Output, workgroupThreads)
+// #import binaryOp(Output)
+// #import loadOp(Input, Output)
+// #import identityOp(Output)
+
 // #if typecheck
 fn reduceWorkgroup(localId: u32) {}
 fn binaryOp(a: Output, b: Output) -> Output {}
 fn loadOp(a: Input) -> Output {}
 fn identityOp() -> Output {}
 // #endif
-
-// #import reduceWorkgroup(work, Output, workgroupThreads)
-// #import binaryOp(Output)
-// #import loadOp(Input, Output)
-// #import identityOp(Output)
-
 
 struct Input { 
 // #import LoadElemFields
