@@ -1,12 +1,10 @@
 import { ReduceBuffer } from "stoneberry/reduce-buffer";
 import {
   labeledGpuDevice,
-  ShaderGroup,
   trackRelease,
   trackUse,
   withAsyncUsage,
-  withBufferCopy,
-  withLeakTrack,
+  withLeakTrack
 } from "thimbleberry";
 import {
   maxF32,
@@ -23,8 +21,8 @@ it("sum, simple api", async () => {
     const source = makeBuffer(device, sourceData, "source buffer", Uint32Array);
     const shader = new ReduceBuffer({ device, source, template2: sumU32 });
     trackUse(shader);
-
     const result = await shader.reduce();
+
     const expected = sourceData.reduce((a, b) => a + b);
     expect(result).deep.eq([expected]);
     trackRelease(shader);
@@ -66,14 +64,11 @@ it("buffer reduce max, two dispatches", async () => {
       forceWorkgroupLength: 2,
       template2: maxF32,
     });
-    const shaderGroup = new ShaderGroup(device, shader);
-    shaderGroup.dispatch();
 
+    const result = await shader.reduce();
     const expected = sourceData.reduce((a, b) => Math.max(a, b));
 
-    await withBufferCopy(device, shader.result, "f32", data => {
-      expect([...data]).deep.eq([expected]);
-    });
+    expect(result).deep.eq([expected]);
   });
 });
 
@@ -98,15 +93,11 @@ it("buffer reduce min/max, two dispatches", async () => {
       forceWorkgroupLength: 2,
       template2: minMaxPositiveF32,
     });
+    const result = await shader.reduce();
 
-    const shaderGroup = new ShaderGroup(device, shader);
-    shaderGroup.dispatch();
     const min = sourceData.map(([a]) => a).reduce((a, b) => Math.min(a, b));
     const max = sourceData.map(([, b]) => b).reduce((a, b) => Math.max(a, b));
-
-    await withBufferCopy(device, shader.result, "f32", data => {
-      expect([...data]).deep.eq([min, max]);
-    });
+    expect(result).deep.eq([min, max]);
   });
 });
 
