@@ -77,8 +77,7 @@ it("buffer reduce max, two dispatches", async () => {
   });
 });
 
-it.only("buffer reduce min/max, two dispatches", async () => {
-  console.clear();
+it("buffer reduce min/max, two dispatches", async () => {
   await withAsyncUsage(async () => {
     const device = trackUse(await labeledGpuDevice());
 
@@ -119,7 +118,7 @@ it("sourceOffset", async () => {
     const shader = new ReduceBuffer({
       device,
       source,
-      template: sumU32,
+      template2: sumU32,
       sourceOffset: 4,
     });
     trackUse(shader);
@@ -140,7 +139,7 @@ it("2 workgroups > max (1)", async () => {
     const shader = new ReduceBuffer({
       device,
       source,
-      template: sumU32,
+      template2: sumU32,
       forceWorkgroupLength: 2,
       blockLength: 2,
       forceMaxWorkgroups: 1,
@@ -163,7 +162,7 @@ it("4 dispatched workgroups > max (2), 2 threads/workgroup ", async () => {
     const shader = new ReduceBuffer({
       device,
       source,
-      template: sumU32,
+      template2: sumU32,
       forceWorkgroupLength: 2,
       blockLength: 2,
       forceMaxWorkgroups: 2,
