@@ -1,2 +1,2 @@
 export * from "./ReduceBuffer.js";
-export * from "../util/BinOpTemplate.js";
+export * from "../util/BinOpModules.js";
