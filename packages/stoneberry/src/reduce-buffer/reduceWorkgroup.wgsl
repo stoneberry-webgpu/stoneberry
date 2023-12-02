@@ -14,7 +14,9 @@ fn reduceWorkgroup(localId: u32) {
     }
 }
 
-//#importReplace binaryOp(Elem)
-    struct Elem { sum: u32; }
-    fn binaryOp(a: Elem, b: Elem) -> Elem {}
-//#importEnd
+// #import binaryOp(Elem)
+
+// #if typecheck
+struct Elem { sum: u32; }
+fn binaryOp(a: Elem, b: Elem) -> Elem {}
+// #endif
