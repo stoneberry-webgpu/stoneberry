@@ -1,13 +1,13 @@
 struct LoadElem {
 // #export LoadElemFields
     sum: f32,  
-// #endInsert
+// #endExport
 }
 
 struct Elem { 
 // #export ElemFields
     sum: f32,  
-// #endInsert
+// #endExport
 }
 
 // #export(Elem)

@@ -9,10 +9,10 @@ import {
   withLeakTrack,
 } from "thimbleberry";
 import { maxF32, minMaxPositiveF32 } from "../../src/util/BinOpTemplate.js";
-import { sumU32} from "../../src/util/BinOpModules.js";
+import { sumF32, sumU32} from "../../src/util/BinOpModules.js";
 import { makeBuffer } from "./util/MakeBuffer";
 
-it.only("sum, simple api", async () => {
+it("sum, simple api", async () => {
   console.clear();
   await withAsyncUsage(async () => {
     const device = trackUse(await labeledGpuDevice());
@@ -28,7 +28,8 @@ it.only("sum, simple api", async () => {
   });
 });
 
-it("buffer reduce sum, two dispatches", async () => {
+it.only("buffer reduce sum, two dispatches", async () => {
+  console.clear();
   await withAsyncUsage(async () => {
     const device = trackUse(await labeledGpuDevice());
 
@@ -39,7 +40,7 @@ it("buffer reduce sum, two dispatches", async () => {
         source: makeBuffer(device, sourceData, "source buffer", Float32Array),
         blockLength: 2,
         forceWorkgroupLength: 2,
-        template: sumF32,
+        template2: sumF32,
       });
       trackUse(shader);
 
