@@ -7,7 +7,7 @@ import {
   withAsyncUsage,
   withLeakTrack
 } from "thimbleberry";
-import { sumF32 } from "../../src/util/BinOpTemplate.js";
+import { sumF32 } from "../../src/util/BinOpModules.js";
 import { ReduceTexture } from "./../../src/reduce-texture/ReduceTexture";
 import { sumReds } from "./util/Reductions.js";
 

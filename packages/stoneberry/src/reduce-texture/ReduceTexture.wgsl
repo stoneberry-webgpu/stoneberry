@@ -1,7 +1,21 @@
-struct Output { 
-    sum: f32,  //! "sum: f32,"=outputStruct 
-}
+// #import reduceWorkgroup(work, Output, workgroupThreads)
+// #import binaryOp(Output)
+// #ximport loadOp(Input, Output)
+// #import identityOp(Output)
 
+// #if typecheck
+fn reduceWorkgroup(localId: u32) {}
+fn binaryOp(a: Output, b: Output) -> Output {}
+fn identityOp() -> Output {}
+// fn loadOp(a: Input) -> Output {}
+// #endif
+
+struct Output { 
+// #import ElemFields
+// #if typecheck 
+    sum: f32,  
+// #endif
+}
 struct Uniforms {
     resultOffset: u32,        // offset in Output elements to start writing in the results
 }
@@ -30,7 +44,10 @@ fn main(
     reduceSrcToWork(grid.xy, localIndex);
     let workIndex = workgroupId.x + workgroupId.y * numWorkgroups.x;
     let outDex = workIndex + u.resultOffset;
-    reduceWorkgroupToOut(outDex, localIndex);
+    reduceWorkgroup(localIndex);
+    if localIndex == 0u {
+        out[outDex] = work[0];
+    }
 }
 
 fn reduceSrcToWork(grid: vec2<u32>, localIndex: u32) {
@@ -54,27 +71,12 @@ fn fetchSrc(grid: vec2<u32>) -> array<Output, 4> { //! 4=blockArea
             } else {
                 let srcSpot = vec2(x, y);
                 let texel = textureLoad(srcTexture, srcSpot, 0);
-                let loaded = loadOp(texel);
-                result[outDex] = createOp(loaded);
+                result[outDex] = loadOp(texel);
             }
             outDex = outDex + 1u;
         }
     }
     return result;
-}
-
-// TODO use linker to DRY this with ReduceBuffer.wgsl
-fn reduceWorkgroupToOut(outDex: u32, localId: u32) {
-    let workDex = localId << 1u;
-    for (var step = 1u; step < 4u; step <<= 1u) { //! 4=workgroupThreads
-        workgroupBarrier();
-        if localId % step == 0u {
-            work[workDex] = binaryOp(work[workDex], work[workDex + step]);
-        }
-    }
-    if localId == 0u {
-        out[outDex] = work[0];
-    }
 }
 
 // reduce a block of source pixels to a single output structure
@@ -86,18 +88,11 @@ fn reduceBlock(a: array<Output, 4>) -> Output { //! 4=blockArea
     return v;
 }
 
-fn createOp(a: f32) -> Output { //! f32=texelType
-    return Output(a); //! "return Output(a);"=createOp
-}
-
-fn loadOp(a: vec4<f32>) -> f32 { //! f32=texelType f32=texelType
-    return a.r; //! "return a.r;"=loadOp
-}
-
-fn binaryOp(a: Output, b: Output) -> Output {
-    return Output(a.sum + b.sum);  //! "return Output(a.sum + b.sum);"=binaryOp
-}
-
-fn identityOp() -> Output {
-    return Output(0.0); //! "return Output(0.0);"=identityOp
+fn loadOp(a: vec4<f32>) -> Output {
+    let v = a.r;
+    if v > 0.0 {
+        return Output(v, v);
+    } else {
+        return identityOp();
+    }
 }
