@@ -2,11 +2,13 @@
 // #import binaryOp(Output)
 // #ximport loadOp(Input, Output)
 // #import identityOp(Output)
+// #import loadTexel(Output)
 
 // #if typecheck
 fn reduceWorkgroup(localId: u32) {}
 fn binaryOp(a: Output, b: Output) -> Output {}
 fn identityOp() -> Output {}
+fn loadTexel(a: vec4<f32>) -> Output { return Output(1.0); }
 // fn loadOp(a: Input) -> Output {}
 // #endif
 
@@ -16,6 +18,7 @@ struct Output {
     sum: f32,  
 // #endif
 }
+
 struct Uniforms {
     resultOffset: u32,        // offset in Output elements to start writing in the results
 }
@@ -55,7 +58,7 @@ fn reduceSrcToWork(grid: vec2<u32>, localIndex: u32) {
     work[localIndex] = reduceBlock(values);
 }
 
-// LATER try striping/striding to reduce memory bank conflicts
+// fetch a block of data fro the source texture
 fn fetchSrc(grid: vec2<u32>) -> array<Output, 4> { //! 4=blockArea
     var outDex = 0u; // output index
     var result = array<Output, 4>(); //! 4=blockArea
@@ -71,7 +74,7 @@ fn fetchSrc(grid: vec2<u32>) -> array<Output, 4> { //! 4=blockArea
             } else {
                 let srcSpot = vec2(x, y);
                 let texel = textureLoad(srcTexture, srcSpot, 0);
-                result[outDex] = loadOp(texel);
+                result[outDex] = loadTexel(texel);
             }
             outDex = outDex + 1u;
         }
@@ -86,13 +89,4 @@ fn reduceBlock(a: array<Output, 4>) -> Output { //! 4=blockArea
         v = binaryOp(v, a[i]);
     }
     return v;
-}
-
-fn loadOp(a: vec4<f32>) -> Output {
-    let v = a.r;
-    if v > 0.0 {
-        return Output(v, v);
-    } else {
-        return identityOp();
-    }
 }

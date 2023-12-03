@@ -14,8 +14,10 @@ import {
 import { ReduceTextureToBuffer } from "../../src/reduce-texture/ReduceTextureToBuffer.js";
 import { minMaxPositiveF32, sumF32, sumU32 } from "../../src/util/BinOpModules.js";
 import { minMaxPositiveReds, sumReds } from "./util/Reductions.js";
+import { loadTexelCodeGen } from "../../src/util/LoadTemplate.js";
 
-it("reduce texture to buffer, workgroup size = 1", async () => {
+it.only("reduce texture to buffer, workgroup size = 1", async () => {
+  console.clear();
   await withAsyncUsage(async () => {
     const device = await labeledGpuDevice();
     trackUse(device);
@@ -29,7 +31,7 @@ it("reduce texture to buffer, workgroup size = 1", async () => {
         blockSize: [2, 2],
         forceWorkgroupSize: [1, 1],
         reduceTemplate: sumF32,
-        loadTemplate: loadRedComponent,
+        loadTemplate: { wgsl: loadTexelCodeGen("r") },
       });
       trackUse(tr);
       const shaderGroup = new ShaderGroup(device, tr);
@@ -72,7 +74,7 @@ it("reduce texture to buffer, workgroup size = 4", async () => {
   });
 });
 
-it.only("reduce texture to buffer, min/max workgroup size = 4", async () => {
+it("reduce texture to buffer, min/max workgroup size = 4", async () => {
   await withAsyncUsage(async () => {
     const device = await labeledGpuDevice();
     trackUse(device);

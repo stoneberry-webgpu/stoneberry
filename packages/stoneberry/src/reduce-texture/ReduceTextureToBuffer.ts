@@ -132,7 +132,14 @@ export class ReduceTextureToBuffer extends HasReactive implements ComposableShad
   }
 
   @reactively private get registry(): ModuleRegistry {
-    return new ModuleRegistry(reduceWorkgroup, this.reduceTemplate.wgsl);
+    const reg = new ModuleRegistry(reduceWorkgroup, this.reduceTemplate.wgsl);
+    const loadWgsl = this.loadTemplate.wgsl;
+    if (typeof loadWgsl === "string") {
+      reg.registerModules(loadWgsl);
+    } else {
+      reg.registerGenerator("loadTexel", loadWgsl, ["Output"]);
+    }
+    return reg;
   }
 
   @reactively private pipeline(): GPUComputePipeline {

@@ -13,7 +13,7 @@ import { BinOpTemplate2 } from "../util/BinOpModules.js";
 import {
   LoadTemplate,
   LoadableComponent,
-  loaderForComponent,
+  loadTexelCodeGen,
 } from "../util/LoadTemplate.js";
 import { runAndFetchResult } from "../util/RunAndFetch.js";
 import { ReduceTextureToBuffer } from "./ReduceTextureToBuffer.js";
@@ -178,7 +178,8 @@ export class ReduceTexture extends HasReactive implements ComposableShader {
   /** reduction template for loading src data from the texture */
   @reactively private get loadTemplate(): LoadTemplate {
     if (typeof this.loadComponent === "string") {
-      return loaderForComponent(this.loadComponent);
+      const wgsl = loadTexelCodeGen(this.loadComponent);
+      return { wgsl };
     } else {
       return this.loadComponent;
     }
