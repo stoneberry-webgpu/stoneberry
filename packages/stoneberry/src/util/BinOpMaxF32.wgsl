@@ -1,23 +1,23 @@
 struct LoadElem {
 // #export LoadElemFields
-    sum: f32,  
+    max: f32,   
 // #endExport
 }
 
 struct Elem { 
 // #export ElemFields
-    sum: f32,  
+    max: f32,  
 // #endExport
 }
 
 // #export(Elem)
 fn binaryOp(a: Elem, b: Elem) -> Elem {
-    return Elem(max(a.sum, b.sum));
+    return Elem(max(a.max, b.max));
 }
 
 // #export(LoadElem, Elem)
 fn loadOp(a: LoadElem) -> Elem {
-    return Elem(a.sum);  
+    return Elem(a.max);  
 }
 
 // #export(Elem)
