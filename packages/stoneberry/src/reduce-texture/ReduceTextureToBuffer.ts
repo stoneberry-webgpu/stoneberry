@@ -13,13 +13,13 @@ import {
   textureSampleType,
   trackContext,
 } from "thimbleberry";
+import { ModuleRegistry } from "wgsl-linker";
+import reduceWorkgroup from "../reduce-buffer/reduceWorkgroup.wgsl?raw";
 import { BinOpTemplate2 } from "../util/BinOpModules.js";
 import { computePipeline } from "../util/ComputePipeline.js";
 import { maxWorkgroupSize } from "../util/LimitWorkgroupSize.js";
-import { LoadTemplate } from "../util/LoadTemplate.js";
+import { LoadComponent } from "../util/LoadTemplate.js";
 import wgsl from "./ReduceTexture.wgsl?raw";
-import { ModuleRegistry } from "wgsl-linker";
-import reduceWorkgroup from "../reduce-buffer/reduceWorkgroup.wgsl?raw";
 
 export interface TextureToBufferParams {
   device: GPUDevice;
@@ -40,8 +40,8 @@ export interface TextureToBufferParams {
   /** {@inheritDoc ReduceTextureToBuffer#forceWorkgroupSize} */
   forceWorkgroupSize?: Vec2;
 
-  /** {@inheritDoc ReduceTextureToBuffer#loadTemplate} */
-  loadTemplate?: LoadTemplate;
+  /** {@inheritDoc ReduceTextureToBuffer#loadComponent} */
+  loadComponent?: LoadComponent;
 
   /** cache for GPUComputePipeline */
   pipelineCache?: <T extends object>() => Cache<T>;
@@ -69,7 +69,7 @@ export class ReduceTextureToBuffer extends HasReactive implements ComposableShad
   @reactively reduceTemplate!: BinOpTemplate2;
 
   /** macros to select component from vec4 */
-  @reactively loadTemplate!: LoadTemplate;
+  @reactively loadComponent!: LoadComponent;
 
   /** Debug label attached to gpu objects for error reporting */
   @reactively label?: string;
@@ -133,11 +133,11 @@ export class ReduceTextureToBuffer extends HasReactive implements ComposableShad
 
   @reactively private get registry(): ModuleRegistry {
     const reg = new ModuleRegistry(reduceWorkgroup, this.reduceTemplate.wgsl);
-    const loadWgsl = this.loadTemplate.wgsl;
-    if (typeof loadWgsl === "string") {
-      reg.registerModules(loadWgsl);
+    const loadWgsl = this.loadComponent;
+    if (loadWgsl.kind === "template") {
+      reg.registerModules(loadWgsl.wgsl);
     } else {
-      reg.registerGenerator("loadTexel", loadWgsl, ["Output"]);
+      reg.registerGenerator("loadTexel", loadWgsl.fn, ["Output"]);
     }
     return reg;
   }
@@ -157,7 +157,7 @@ export class ReduceTextureToBuffer extends HasReactive implements ComposableShad
           blockHeight: blockSize[1],
           blockArea: blockSize[0] * blockSize[1],
           ...this.reduceTemplate,
-          ...this.loadTemplate,
+          ...this.loadComponent,
         },
         registry: this.registry,
         constants: {

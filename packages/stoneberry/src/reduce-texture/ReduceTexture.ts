@@ -11,9 +11,9 @@ import {
 import { ReduceBuffer } from "../reduce-buffer/ReduceBuffer.js";
 import { BinOpTemplate2 } from "../util/BinOpModules.js";
 import {
-  LoadTemplate,
-  LoadableComponent,
-  loadTexelCodeGen,
+  ComponentName,
+  LoadComponent,
+  loadTexelCodeGen
 } from "../util/LoadTemplate.js";
 import { runAndFetchResult } from "../util/RunAndFetch.js";
 import { ReduceTextureToBuffer } from "./ReduceTextureToBuffer.js";
@@ -42,7 +42,7 @@ export interface ReduceTextureParams {
   reduceTemplate: BinOpTemplate2;
 
   /** load r, g, b, or a, or custom function */
-  loadComponent?: LoadableComponent | LoadTemplate;
+  loadComponent?: ComponentName | LoadComponent;
 
   /** cache for GPUComputePipeline */
   pipelineCache?: <T extends object>() => Cache<T>;
@@ -88,7 +88,7 @@ export class ReduceTexture extends HasReactive implements ComposableShader {
   @reactively reduceTemplate!: BinOpTemplate2;
 
   /** macros to select or synthesize a component from the source texture */
-  @reactively loadComponent!: LoadableComponent | LoadTemplate;
+  @reactively texelComponent!: ComponentName | LoadComponent;
 
   /** Debug label attached to gpu objects for error reporting */
   @reactively label?: string;
@@ -145,7 +145,7 @@ export class ReduceTexture extends HasReactive implements ComposableShader {
       blockSize: this.blockSize,
       forceWorkgroupSize: this.forceWorkgroupSize,
       reduceTemplate: this.reduceTemplate,
-      loadTemplate: this.loadTemplate,
+      loadComponent: this.loadComponent,
       pipelineCache: this.pipelineCache,
       label: this.label,
     });
@@ -176,12 +176,12 @@ export class ReduceTexture extends HasReactive implements ComposableShader {
   }
 
   /** reduction template for loading src data from the texture */
-  @reactively private get loadTemplate(): LoadTemplate {
-    if (typeof this.loadComponent === "string") {
-      const wgsl = loadTexelCodeGen(this.loadComponent);
-      return { wgsl };
+  @reactively private get loadComponent(): LoadComponent {
+    const texelComponent = this.texelComponent;
+    if (typeof texelComponent === "string") {
+      return loadTexelCodeGen(texelComponent);
     } else {
-      return this.loadComponent;
+      return texelComponent;
     }
   }
 }

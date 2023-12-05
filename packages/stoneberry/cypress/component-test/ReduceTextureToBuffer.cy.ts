@@ -1,6 +1,5 @@
 import {
   labeledGpuDevice,
-  loadRedComponent,
   make2dSequence,
   make3dSequence,
   makeTexture,
@@ -9,15 +8,14 @@ import {
   trackUse,
   withAsyncUsage,
   withBufferCopy,
-  withLeakTrack,
+  withLeakTrack
 } from "thimbleberry";
 import { ReduceTextureToBuffer } from "../../src/reduce-texture/ReduceTextureToBuffer.js";
 import { minMaxPositiveF32, sumF32, sumU32 } from "../../src/util/BinOpModules.js";
-import { minMaxPositiveReds, sumReds } from "./util/Reductions.js";
 import { loadTexelCodeGen } from "../../src/util/LoadTemplate.js";
+import { minMaxPositiveReds, sumReds } from "./util/Reductions.js";
 
-it.only("reduce texture to buffer, workgroup size = 1", async () => {
-  console.clear();
+it("reduce texture to buffer, workgroup size = 1", async () => {
   await withAsyncUsage(async () => {
     const device = await labeledGpuDevice();
     trackUse(device);
@@ -31,7 +29,7 @@ it.only("reduce texture to buffer, workgroup size = 1", async () => {
         blockSize: [2, 2],
         forceWorkgroupSize: [1, 1],
         reduceTemplate: sumF32,
-        loadTemplate: { wgsl: loadTexelCodeGen("r") },
+        loadComponent: loadTexelCodeGen("r"),
       });
       trackUse(tr);
       const shaderGroup = new ShaderGroup(device, tr);
@@ -59,7 +57,7 @@ it("reduce texture to buffer, workgroup size = 4", async () => {
         blockSize: [2, 2],
         forceWorkgroupSize: [2, 2], // shader will need reduce buffer to out buffer
         reduceTemplate: sumF32,
-        loadTemplate: loadRedComponent,
+        loadComponent: loadTexelCodeGen("r"),
       });
       trackUse(tr);
       const shaderGroup = new ShaderGroup(device, tr);
@@ -74,7 +72,8 @@ it("reduce texture to buffer, workgroup size = 4", async () => {
   });
 });
 
-it("reduce texture to buffer, min/max workgroup size = 4", async () => {
+it.only("reduce texture to buffer, min/max workgroup size = 4", async () => {
+  console.clear();
   await withAsyncUsage(async () => {
     const device = await labeledGpuDevice();
     trackUse(device);
@@ -88,7 +87,7 @@ it("reduce texture to buffer, min/max workgroup size = 4", async () => {
         blockSize: [2, 2],
         forceWorkgroupSize: [2, 2],
         reduceTemplate: minMaxPositiveF32,
-        loadTemplate: loadRedComponent,
+        loadComponent: loadTexelCodeGen("r"),
       });
       trackUse(tr);
       const shaderGroup = new ShaderGroup(device, tr);
@@ -117,7 +116,7 @@ it("reduce texture to buffer, r32uint", async () => {
         blockSize: [2, 2],
         forceWorkgroupSize: [2, 2],
         reduceTemplate: sumU32,
-        loadTemplate: loadRedComponent,
+        loadComponent: loadTexelCodeGen("r"),
       });
       trackUse(tr);
       const shaderGroup = new ShaderGroup(device, tr);

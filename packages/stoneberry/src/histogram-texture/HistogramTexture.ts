@@ -11,7 +11,7 @@ import {
 import { ReduceBuffer } from "../reduce-buffer/ReduceBuffer.js";
 import {
   LoadTemplate,
-  LoadableComponent,
+  ComponentName,
   loaderForComponent,
 } from "../util/LoadTemplate.js";
 import { runAndFetchResult } from "../util/RunAndFetch.js";
@@ -51,7 +51,7 @@ export interface HistogramTextureParams {
   range?: Vec2;
 
   /** load r, g, b, or a, or custom function */
-  loadComponent?: LoadableComponent | LoadTemplate;
+  loadComponent?: ComponentName | LoadTemplate;
 
   /** cache for GPUComputePipeline */
   pipelineCache?: <T extends object>() => Cache<T>;
@@ -105,7 +105,7 @@ export class HistogramTexture extends HasReactive implements ComposableShader {
   /** macros to select or synthesize a component from the source texture
    * @defaultValue "r"
    */
-  @reactively loadComponent!: LoadableComponent | LoadTemplate;
+  @reactively loadComponent!: ComponentName | LoadTemplate;
 
   /** range of histogram values (or provide minMaxBuffer)
    * @defaultValue [0, 255]
