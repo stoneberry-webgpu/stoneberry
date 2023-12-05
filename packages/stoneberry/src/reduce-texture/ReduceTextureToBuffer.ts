@@ -1,5 +1,6 @@
 import { HasReactive, reactively } from "@reactively/decorate";
 import deepEqual from "fast-deep-equal";
+import type { WgslTexelType } from "thimbleberry";
 import {
   Cache,
   ComposableShader,
@@ -137,7 +138,7 @@ export class ReduceTextureToBuffer extends HasReactive implements ComposableShad
     if (loadWgsl.kind === "template") {
       reg.registerModules(loadWgsl.wgsl);
     } else {
-      reg.registerGenerator("loadTexel", loadWgsl.fn, ["Output"]);
+      reg.registerGenerator("loadTexel", loadWgsl.fn, ["Output", "texelType"]);
     }
     return reg;
   }

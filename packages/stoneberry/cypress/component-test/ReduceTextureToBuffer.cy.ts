@@ -72,8 +72,7 @@ it("reduce texture to buffer, workgroup size = 4", async () => {
   });
 });
 
-it.only("reduce texture to buffer, min/max workgroup size = 4", async () => {
-  console.clear();
+it("reduce texture to buffer, min/max workgroup size = 4", async () => {
   await withAsyncUsage(async () => {
     const device = await labeledGpuDevice();
     trackUse(device);
