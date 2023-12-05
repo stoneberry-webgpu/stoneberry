@@ -16,7 +16,7 @@ import {
 } from "thimbleberry";
 import { HistogramTemplate } from "../util/HistogramTemplate.js";
 import { maxWorkgroupSize } from "../util/LimitWorkgroupSize.js";
-import { LoadTemplate, loadRedComponent } from "../util/LoadTemplate.js";
+import { LoadTemplate} from "../util/LoadTemplate.js";
 import wgsl from "./TextureToHistograms.wgsl?raw";
 import { computePipeline } from "../util/ComputePipeline.js";
 
