@@ -26,16 +26,3 @@ fn loadOp(a: LoadElem) -> Elem {
 fn identityOp() -> Elem {
     return Elem(1e38, -1e38);
 }
-
-
-// #template thimb2
-// #export(Elem)
-// #import identityOp(Elem)
-fn loadTexel(a: vec4<f32>) -> Elem{
-    let v = a.r;        // #replace r=loadComponent
-    if v > 0.0 {
-        return Elem(v, v);
-    } else {
-        return identityOp();
-    }
-}

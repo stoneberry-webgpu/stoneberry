@@ -1,6 +1,5 @@
 import { HasReactive, reactively } from "@reactively/decorate";
 import deepEqual from "fast-deep-equal";
-import type { WgslTexelType } from "thimbleberry";
 import {
   Cache,
   ComposableShader,
@@ -19,7 +18,7 @@ import reduceWorkgroup from "../reduce-buffer/reduceWorkgroup.wgsl?raw";
 import { BinOpTemplate2 } from "../util/BinOpModules.js";
 import { computePipeline } from "../util/ComputePipeline.js";
 import { maxWorkgroupSize } from "../util/LimitWorkgroupSize.js";
-import { LoadComponent } from "../util/LoadTemplate.js";
+import { ComponentName, LoadComponent } from "../util/LoadTemplate.js";
 import wgsl from "./ReduceTexture.wgsl?raw";
 
 export interface TextureToBufferParams {
@@ -44,6 +43,9 @@ export interface TextureToBufferParams {
   /** {@inheritDoc ReduceTextureToBuffer#loadComponent} */
   loadComponent?: LoadComponent;
 
+  /** {@inheritDoc ReduceTextureToBuffer#componentName} */
+  componentName?: ComponentName;
+
   /** cache for GPUComputePipeline */
   pipelineCache?: <T extends object>() => Cache<T>;
 
@@ -56,6 +58,7 @@ const defaults: Partial<TextureToBufferParams> = {
   forceWorkgroupSize: undefined,
   pipelineCache: undefined,
   label: "",
+  componentName: "r",
 };
 
 /** reduce a gpu texture to a buffer by running binary operations over elements.
@@ -71,6 +74,9 @@ export class ReduceTextureToBuffer extends HasReactive implements ComposableShad
 
   /** macros to select component from vec4 */
   @reactively loadComponent!: LoadComponent;
+
+  /** select r, g, b, a*/
+  @reactively componentName!: ComponentName;
 
   /** Debug label attached to gpu objects for error reporting */
   @reactively label?: string;
@@ -133,14 +139,19 @@ export class ReduceTextureToBuffer extends HasReactive implements ComposableShad
   }
 
   @reactively private get registry(): ModuleRegistry {
-    const reg = new ModuleRegistry(reduceWorkgroup, this.reduceTemplate.wgsl);
+    const registry = new ModuleRegistry(reduceWorkgroup, this.reduceTemplate.wgsl);
     const loadWgsl = this.loadComponent;
     if (loadWgsl.kind === "template") {
-      reg.registerModules(loadWgsl.wgsl);
+      registry.registerModules(loadWgsl.wgsl);
     } else {
-      reg.registerGenerator("loadTexel", loadWgsl.fn, ["Output", "texelType"]);
+      registry.registerGenerator(
+        "loadTexel",
+        loadWgsl.fn,
+        ["Output", "texelType"],
+        "ReduceTextureToBuffer"
+      );
     }
-    return reg;
+    return registry;
   }
 
   @reactively private pipeline(): GPUComputePipeline {
@@ -153,6 +164,7 @@ export class ReduceTextureToBuffer extends HasReactive implements ComposableShad
         wgsl,
         wgslParams: {
           texelType: texelLoadType(this.source.format),
+          loadComponentName: this.componentName,
           workgroupThreads: workgroupSize[0] * workgroupSize[1],
           blockWidth: blockSize[0],
           blockHeight: blockSize[1],

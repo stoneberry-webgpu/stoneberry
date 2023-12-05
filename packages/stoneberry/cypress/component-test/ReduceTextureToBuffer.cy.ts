@@ -1,4 +1,5 @@
 import {
+  copyBuffer,
   labeledGpuDevice,
   make2dSequence,
   make3dSequence,
@@ -8,12 +9,12 @@ import {
   trackUse,
   withAsyncUsage,
   withBufferCopy,
-  withLeakTrack
+  withLeakTrack,
 } from "thimbleberry";
 import { ReduceTextureToBuffer } from "../../src/reduce-texture/ReduceTextureToBuffer.js";
-import { minMaxPositiveF32, sumF32, sumU32 } from "../../src/util/BinOpModules.js";
+import { minMaxF32, sumF32, sumU32 } from "../../src/util/BinOpModules.js";
 import { loadTexelCodeGen } from "../../src/util/LoadTemplate.js";
-import { minMaxPositiveReds, sumReds } from "./util/Reductions.js";
+import { minMaxReds, sumReds } from "./util/Reductions.js";
 
 it("reduce texture to buffer, workgroup size = 1", async () => {
   await withAsyncUsage(async () => {
@@ -23,7 +24,7 @@ it("reduce texture to buffer, workgroup size = 1", async () => {
     const srcData = make3dSequence([4, 4]);
     const source = makeTexture(device, srcData, "rgba32float");
     await withLeakTrack(async () => {
-      const tr = new ReduceTextureToBuffer({
+      const rt = new ReduceTextureToBuffer({
         device,
         source,
         blockSize: [2, 2],
@@ -31,14 +32,13 @@ it("reduce texture to buffer, workgroup size = 1", async () => {
         reduceTemplate: sumF32,
         loadComponent: loadTexelCodeGen("r"),
       });
-      trackUse(tr);
-      const shaderGroup = new ShaderGroup(device, tr);
+      trackUse(rt);
+      const shaderGroup = new ShaderGroup(device, rt);
       shaderGroup.dispatch();
 
-      await withBufferCopy(device, tr.reducedResult, "f32", data => {
-        expect([...data]).deep.eq([10, 18, 42, 50]);
-      });
-      trackRelease(tr);
+      const data = await copyBuffer(device, rt.reducedResult, "f32");
+      expect(data).deep.eq([10, 18, 42, 50]);
+      trackRelease(rt);
     });
   });
 });
@@ -85,14 +85,14 @@ it("reduce texture to buffer, min/max workgroup size = 4", async () => {
         source,
         blockSize: [2, 2],
         forceWorkgroupSize: [2, 2],
-        reduceTemplate: minMaxPositiveF32,
-        loadComponent: loadTexelCodeGen("r"),
+        reduceTemplate: minMaxF32,
+        loadComponent: loadTexelCodeGen("r", 2),
       });
       trackUse(tr);
       const shaderGroup = new ShaderGroup(device, tr);
       shaderGroup.dispatch();
 
-      const expected = minMaxPositiveReds(srcData);
+      const expected = minMaxReds(srcData);
       await withBufferCopy(device, tr.reducedResult, "f32", data => {
         expect([...data]).deep.eq(expected);
       });

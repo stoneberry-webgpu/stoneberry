@@ -2,7 +2,7 @@ import { GPUElementFormat } from "thimbleberry";
 import sumF32wgsl from "./BinOpSumF32.wgsl?raw";
 import sumU32wgsl from "./BinOpSumU32.wgsl?raw";
 import maxF32wgsl from "./BinOpMaxF32.wgsl?raw";
-import minMaxPositiveF32wgsl from "./BinOpMinMaxPositiveF32.wgsl?raw";
+import minMaxF32wgsl from "./BinOpMinMaxF32.wgsl?raw";
 
 /** Snippets of wgsl text to substitue in the wgsl shader for given scan type */
 export interface BinOpTemplate2 extends OutputTemplate {
@@ -41,9 +41,9 @@ export const maxF32: BinOpTemplate2 = {
   outputElements: "f32",
 };
 
-export const minMaxPositiveF32: BinOpTemplate2 = {
-  wgsl: minMaxPositiveF32wgsl,
+export const minMaxF32: BinOpTemplate2 = {
+  wgsl: minMaxF32wgsl,
   inputElementSize: 8,
   outputElementSize: 8,
   outputElements: "f32",
-}
+};

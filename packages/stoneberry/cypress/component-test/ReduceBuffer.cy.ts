@@ -8,7 +8,7 @@ import {
 } from "thimbleberry";
 import {
   maxF32,
-  minMaxPositiveF32,
+  minMaxF32,
   sumF32,
   sumU32,
 } from "../../src/util/BinOpModules.js";
@@ -91,7 +91,7 @@ it("buffer reduce min/max, two dispatches", async () => {
       source: makeBuffer(device, sourceData.flat(), "source buffer", Float32Array),
       blockLength: 2,
       forceWorkgroupLength: 2,
-      template2: minMaxPositiveF32,
+      template2: minMaxF32,
     });
     const result = await shader.reduce();
 
