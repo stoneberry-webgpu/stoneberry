@@ -5,7 +5,7 @@ import {
   trackRelease,
   trackUse,
   withAsyncUsage,
-  withLeakTrack
+  withLeakTrack,
 } from "thimbleberry";
 import { sumF32 } from "../../src/util/BinOpModules.js";
 import { ReduceTexture } from "./../../src/reduce-texture/ReduceTexture";
@@ -24,7 +24,7 @@ it("reduce texture, no internal reduction", async () => {
         source,
         blockSize: [2, 2],
         reduceTemplate: sumF32,
-        loadComponent: "r",
+        sourceComponent: "r",
       });
       trackUse(shader);
       const expected = sumReds(srcData);
@@ -51,7 +51,7 @@ it("reduce texture, with buffer reduction", async () => {
         bufferBlockLength: 4,
         forceWorkgroupSize: [2, 2],
         reduceTemplate: sumF32,
-        loadComponent: "r",
+        sourceComponent: "r",
       });
       trackUse(shader);
       const result = await shader.reduce();

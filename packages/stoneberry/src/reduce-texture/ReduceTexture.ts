@@ -10,11 +10,7 @@ import {
 } from "thimbleberry";
 import { ReduceBuffer } from "../reduce-buffer/ReduceBuffer.js";
 import { BinOpTemplate2 } from "../util/BinOpModules.js";
-import {
-  ComponentName,
-  LoadComponent,
-  loadTexelCodeGen
-} from "../util/LoadTemplate.js";
+import { ComponentName, LoadComponent, loadTexelCodeGen } from "../util/LoadTemplate.js";
 import { runAndFetchResult } from "../util/RunAndFetch.js";
 import { ReduceTextureToBuffer } from "./ReduceTextureToBuffer.js";
 
@@ -42,7 +38,7 @@ export interface ReduceTextureParams {
   reduceTemplate: BinOpTemplate2;
 
   /** load r, g, b, or a, or custom function */
-  loadComponent?: ComponentName | LoadComponent;
+  sourceComponent?: ComponentName | LoadComponent;
 
   /** cache for GPUComputePipeline */
   pipelineCache?: <T extends object>() => Cache<T>;
@@ -54,7 +50,7 @@ export interface ReduceTextureParams {
 const defaults: Partial<ReduceTextureParams> = {
   blockSize: [4, 4],
   bufferBlockLength: 16,
-  loadComponent: "r",
+  sourceComponent: "r",
   forceWorkgroupSize: undefined,
   pipelineCache: undefined,
   label: "",
@@ -88,7 +84,7 @@ export class ReduceTexture extends HasReactive implements ComposableShader {
   @reactively reduceTemplate!: BinOpTemplate2;
 
   /** macros to select or synthesize a component from the source texture */
-  @reactively texelComponent!: ComponentName | LoadComponent;
+  @reactively sourceComponent!: ComponentName | LoadComponent;
 
   /** Debug label attached to gpu objects for error reporting */
   @reactively label?: string;
@@ -139,6 +135,8 @@ export class ReduceTexture extends HasReactive implements ComposableShader {
 
   /** shader to reduce the texture to a buffer */
   @reactively private get reduceTexture(): ReduceTextureToBuffer {
+    const componentName =
+      typeof this.sourceComponent === "string" ? this.sourceComponent : "r";
     const shader = new ReduceTextureToBuffer({
       device: this.device,
       source: () => this.source,
@@ -147,6 +145,7 @@ export class ReduceTexture extends HasReactive implements ComposableShader {
       reduceTemplate: this.reduceTemplate,
       loadComponent: this.loadComponent,
       pipelineCache: this.pipelineCache,
+      componentName,
       label: this.label,
     });
     reactiveTrackUse(shader, this.usageContext);
@@ -175,9 +174,9 @@ export class ReduceTexture extends HasReactive implements ComposableShader {
     return this.reduceTexture.resultElems > 1;
   }
 
-  /** reduction template for loading src data from the texture */
+  /** template for loading src data from the texture */
   @reactively private get loadComponent(): LoadComponent {
-    const texelComponent = this.texelComponent;
+    const texelComponent = this.sourceComponent;
     if (typeof texelComponent === "string") {
       return loadTexelCodeGen(texelComponent);
     } else {
