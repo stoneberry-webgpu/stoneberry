@@ -8,8 +8,7 @@ import {
   trackRelease,
   trackUse,
   withAsyncUsage,
-  withBufferCopy,
-  withLeakTrack,
+  withLeakTrack
 } from "thimbleberry";
 import { ReduceTextureToBuffer } from "../../src/reduce-texture/ReduceTextureToBuffer.js";
 import { minMaxF32, sumF32, sumU32 } from "../../src/util/BinOpModules.js";
@@ -64,9 +63,8 @@ it("reduce texture to buffer, workgroup size = 4", async () => {
       shaderGroup.dispatch();
 
       const expectedSum = sumReds(srcData);
-      await withBufferCopy(device, tr.reducedResult, "f32", data => {
-        expect([...data]).deep.eq([expectedSum]);
-      });
+      const data = await copyBuffer(device, tr.reducedResult, "f32");
+      expect(data).deep.eq([expectedSum]);
       trackRelease(tr);
     });
   });
@@ -80,7 +78,7 @@ it("reduce texture to buffer, min/max workgroup size = 4", async () => {
     const srcData = make3dSequence([4, 4]);
     const source = makeTexture(device, srcData, "rgba32float");
     await withLeakTrack(async () => {
-      const tr = new ReduceTextureToBuffer({
+      const rt = new ReduceTextureToBuffer({
         device,
         source,
         blockSize: [2, 2],
@@ -88,15 +86,14 @@ it("reduce texture to buffer, min/max workgroup size = 4", async () => {
         reduceTemplate: minMaxF32,
         loadComponent: loadTexelCodeGen("r", 2),
       });
-      trackUse(tr);
-      const shaderGroup = new ShaderGroup(device, tr);
+      trackUse(rt);
+      const shaderGroup = new ShaderGroup(device, rt);
       shaderGroup.dispatch();
 
       const expected = minMaxReds(srcData);
-      await withBufferCopy(device, tr.reducedResult, "f32", data => {
-        expect([...data]).deep.eq(expected);
-      });
-      trackRelease(tr);
+      const data = await copyBuffer(device, rt.reducedResult, "f32");
+      expect(data).deep.eq(expected);
+      trackRelease(rt);
     });
   });
 });
@@ -109,7 +106,7 @@ it("reduce texture to buffer, r32uint", async () => {
     const srcData = make2dSequence([4, 4]);
     const source = makeTexture(device, srcData, "r32uint");
     await withLeakTrack(async () => {
-      const tr = new ReduceTextureToBuffer({
+      const rt = new ReduceTextureToBuffer({
         device,
         source,
         blockSize: [2, 2],
@@ -117,15 +114,14 @@ it("reduce texture to buffer, r32uint", async () => {
         reduceTemplate: sumU32,
         loadComponent: loadTexelCodeGen("r"),
       });
-      trackUse(tr);
-      const shaderGroup = new ShaderGroup(device, tr);
+      trackUse(rt);
+      const shaderGroup = new ShaderGroup(device, rt);
       shaderGroup.dispatch();
 
       const expected = srcData.flat(2).reduce((a, b) => a + b);
-      await withBufferCopy(device, tr.reducedResult, "u32", data => {
-        expect([...data]).deep.eq([expected]);
-      });
-      trackRelease(tr);
+      const data = await copyBuffer(device, rt.reducedResult, "u32");
+      expect(data).deep.eq([expected]);
+      trackRelease(rt);
     });
   });
 });
