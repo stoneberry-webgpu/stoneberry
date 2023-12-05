@@ -1,6 +1,5 @@
 // #import reduceWorkgroup(work, Output, workgroupThreads)
 // #import binaryOp(Output)
-// #ximport loadOp(Input, Output)
 // #import identityOp(Output)
 // #import loadTexel(Output)
 
@@ -9,7 +8,6 @@ fn reduceWorkgroup(localId: u32) {}
 fn binaryOp(a: Output, b: Output) -> Output {}
 fn identityOp() -> Output {}
 fn loadTexel(a: vec4<f32>) -> Output { return Output(1.0); }
-// fn loadOp(a: Input) -> Output {}
 // #endif
 
 struct Output { 
