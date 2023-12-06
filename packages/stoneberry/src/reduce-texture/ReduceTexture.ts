@@ -10,7 +10,7 @@ import {
 } from "thimbleberry";
 import { ReduceBuffer } from "../reduce-buffer/ReduceBuffer.js";
 import { BinOpTemplate2 } from "../util/BinOpModules.js";
-import { ComponentName, LoadComponent, loadTexelCodeGen } from "../util/LoadTemplate.js";
+import { ComponentName, LoadComponent, texelLoader } from "../util/LoadTemplate.js";
 import { runAndFetchResult } from "../util/RunAndFetch.js";
 import { ReduceTextureToBuffer } from "./ReduceTextureToBuffer.js";
 
@@ -37,7 +37,7 @@ export interface ReduceTextureParams {
   /** {@inheritDoc ReduceTexture#reduceTemplate} */
   reduceTemplate: BinOpTemplate2;
 
-  /** load r, g, b, or a, or custom function */
+  /** {@inheritDoc ReduceTexture#sourceComponent} */
   sourceComponent?: ComponentName | LoadComponent;
 
   /** cache for GPUComputePipeline */
@@ -83,7 +83,7 @@ export class ReduceTexture extends HasReactive implements ComposableShader {
   /** wgsl macros for a binary operation to reduce two elements to one */
   @reactively reduceTemplate!: BinOpTemplate2;
 
-  /** macros to select or synthesize a component from the source texture */
+  /** select or synthesize a component from the source texture */
   @reactively sourceComponent!: ComponentName | LoadComponent;
 
   /** Debug label attached to gpu objects for error reporting */
@@ -176,11 +176,6 @@ export class ReduceTexture extends HasReactive implements ComposableShader {
 
   /** template for loading src data from the texture */
   @reactively private get loadComponent(): LoadComponent {
-    const texelComponent = this.sourceComponent;
-    if (typeof texelComponent === "string") {
-      return loadTexelCodeGen(texelComponent);
-    } else {
-      return texelComponent;
-    }
+    return texelLoader(this.sourceComponent);
   }
 }

@@ -36,3 +36,13 @@ export function loadTexelCodeGen(
   };
   return { kind: "function", fn: loadTexel as CodeGenFn };
 }
+
+export function texelLoader(
+  texelComponent: ComponentName | LoadComponent
+): LoadComponent {
+  if (typeof texelComponent === "string") {
+    return loadTexelCodeGen(texelComponent);
+  } else {
+    return texelComponent;
+  }
+}
