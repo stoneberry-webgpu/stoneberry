@@ -7,6 +7,13 @@
 // . one for the histogram (counts) per bucket
 // . one for the sum per bucket
 // 
+
+// #import loadTexel(u32)
+
+//#if typecheck
+fn loadTexel(a: vec4<u32>) -> u32 { return a.r; }
+// #endif
+
 struct Uniforms {
   unused: u32,
 }
@@ -65,8 +72,8 @@ fn collectBlock(grid: vec2<u32>,
     minValue: u32, //! u32=inputElements
     maxValue: u32) { //! u32=inputElements
     let srcDim = vec2<u32>(
-        u32(textureDimensions(srcTexture).x),
-        u32(textureDimensions(srcTexture).y)
+        textureDimensions(srcTexture).x,
+        textureDimensions(srcTexture).y
     );
     var blockStart = vec2<u32>(grid.x * 4u, grid.y * 4u); //! 4=blockWidth 4=blockHeight
 
@@ -86,7 +93,7 @@ fn collectPixel(spot: vec2<u32>,
     minValue: u32, //! u32=inputElements
     maxValue: u32) { //! u32=inputElements
     let texel = textureLoad(srcTexture, vec2<i32>(spot), 0);
-    let p = loadOp(texel);
+    let p = loadTexel(texel);
     if p >= minValue && checkMax(p, maxValue) {
         let bucket = toBucket(p, minValue, maxValue);
         atomicAdd(&localHistogram[bucket], 1u);
@@ -130,8 +137,4 @@ fn copyToOuput(workIndex: u32) {
         let sum = f32(atomicLoad(&localSum[i])); //! IF bucketSums IF !floatElements
         sumOut[workIndex][i] = u32(sum); //! u32=inputElements IF bucketSums
     }
-}
-
-fn loadOp(a: vec4<u32>) -> u32 { //! u32=inputElements u32=inputElements 
-    return a.r; //! "return a.r;"=loadOp
 }

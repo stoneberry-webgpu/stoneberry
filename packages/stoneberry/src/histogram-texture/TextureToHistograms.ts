@@ -16,9 +16,10 @@ import {
 import { computePipeline } from "../util/ComputePipeline.js";
 import { HistogramTemplate2 } from "../util/HistogramModule.js";
 import { maxWorkgroupSize } from "../util/LimitWorkgroupSize.js";
-import { ComponentName, LoadComponent } from "../util/LoadTemplate.js";
+import { ComponentName, LoadComponent, texelLoader } from "../util/LoadTemplate.js";
 import { BindingEntry } from "./../util/ComputePipeline";
 import wgsl from "./TextureToHistograms.wgsl?raw";
+import { ModuleRegistry } from "wgsl-linker";
 
 export interface TextureToHistogramsParams {
   device: GPUDevice;
@@ -168,6 +169,21 @@ export class TextureToHistograms extends HasReactive implements ComposableShader
     reactiveTrackUse(buffer, this.usageContext);
     return buffer;
   }
+  @reactively private get registry(): ModuleRegistry {
+    const registry = new ModuleRegistry();
+    const loadWgsl = texelLoader(this.sourceComponent);
+    if (loadWgsl.kind === "template") {
+      registry.registerModules(loadWgsl.wgsl);
+    } else {
+      registry.registerGenerator(
+        "loadTexel",
+        loadWgsl.fn,
+        ["Output", "texelType"],
+        "TextureToHistograms"
+      );
+    }
+    return registry;
+  }
 
   @reactively private pipeline(): GPUComputePipeline {
     const sumsBinding: BindingEntry[] = this.bucketSums
@@ -179,6 +195,7 @@ export class TextureToHistograms extends HasReactive implements ComposableShader
       {
         device: this.device,
         wgsl,
+        registry: this.registry,
         wgslParams: {
           texelType: texelLoadType(this.source.format),
           blockWidth: blockSize[0],
