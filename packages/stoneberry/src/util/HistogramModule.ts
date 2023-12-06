@@ -7,14 +7,12 @@ export interface HistogramTemplate2 extends BinOpTemplate2 {
   buckets: number;
 }
 
-export function histogramTemplate(
+export function histogramTemplate(   // TODO rename
   buckets: number,
   elemType: GPUElementFormat
 ): HistogramTemplate2 {
   const params = { buckets, elemType };
   const wgsl = applyTemplate(histogramWgsl, params);
-
-  console.log(wgsl);
 
   return {
     buckets,

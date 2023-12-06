@@ -67,9 +67,9 @@ function makeComputePipeline(args: ComputePipelineArgs): ComputePipelineResults 
 
   const processedWGSL = applyTemplate(linkedWgsl, wgslParams);
 
-  const lines = processedWGSL.split("\n");
-  const numbered = lines.map((line, i) => `${i + 1}: ${line}`);
-  console.log(numbered.join("\n"));
+  // const lines = processedWGSL.split("\n");
+  // const numbered = lines.map((line, i) => `${i + 1}: ${line}`);
+  // console.log(numbered.join("\n"));
 
   const module = device.createShaderModule({
     code: processedWGSL,
