@@ -1,13 +1,13 @@
 // #template thimb2
 struct LoadElem {
 // #export LoadElemFields
-    histogram: array<f32, 128>; // #replace f32=elemType 128=buckets
+    histogram: array<f32, 128>, // #replace f32=elemType 128=buckets
 // #endExport
 }
 
 struct Elem { 
 // #export ElemFields
-    histogram: array<u32, 128>;                       // #replace 128=buckets
+    histogram: array<u32, 128>,                       // #replace 128=buckets
 // #endExport
 }
 
