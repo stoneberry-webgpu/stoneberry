@@ -6,7 +6,7 @@ import {
   withAsyncUsage,
   withLeakTrack,
 } from "thimbleberry";
-import { makeHistogramTemplate, HistogramTexture } from "stoneberry/histogram-texture";
+import { histogramTemplate, HistogramTexture } from "stoneberry/histogram-texture";
 import { makeTexture } from "thimbleberry";
 
 it("histogram texture, no internal reduction", async () => {
@@ -24,8 +24,8 @@ it("histogram texture, no internal reduction", async () => {
         device,
         source,
         blockSize: [2, 2],
-        histogramTemplate: makeHistogramTemplate(4, "u32"),
-        loadComponent: "r",
+        histogramTemplate: histogramTemplate(4, "u32"),
+        sourceComponent: "r",
         range: [1, 10],
       });
       trackUse(shader);
@@ -53,8 +53,8 @@ it("histogram texture, with reduction", async () => {
         source,
         blockSize: [2, 2],
         forceWorkgroupSize: [1, 1],
-        histogramTemplate: makeHistogramTemplate(4, "u32"),
-        loadComponent: "r",
+        histogramTemplate: histogramTemplate(4, "u32"),
+        sourceComponent: "r",
         range: [1, 10],
       });
       trackUse(shader);
@@ -82,8 +82,8 @@ it("histogram texture, with reduction, float", async () => {
         source,
         blockSize: [2, 2],
         forceWorkgroupSize: [1, 1],
-        histogramTemplate: makeHistogramTemplate(4, "f32"),
-        loadComponent: "r",
+        histogramTemplate: histogramTemplate(4, "u32"),
+        sourceComponent: "r",
         range: [1, 10],
       });
       trackUse(shader);
@@ -111,8 +111,8 @@ it("histogram texture, with reduction, r8uint", async () => {
         source,
         blockSize: [2, 2],
         forceWorkgroupSize: [1, 1],
-        histogramTemplate: makeHistogramTemplate(4, "u32"),
-        loadComponent: "r",
+        histogramTemplate: histogramTemplate(4, "u32"),
+        sourceComponent: "r",
         range: [1, 10],
       });
       trackUse(shader);
@@ -140,8 +140,8 @@ it("histogram texture, with reduction, r32sint", async () => {
         source,
         blockSize: [2, 2],
         forceWorkgroupSize: [1, 1],
-        histogramTemplate: makeHistogramTemplate(4, "i32"),
-        loadComponent: "r",
+        histogramTemplate: histogramTemplate(4, "i32"),
+        sourceComponent: "r",
         range: [-10, 10],
       });
       trackUse(shader);
@@ -169,8 +169,8 @@ it("histogram texture, with reduction, with bucketSums", async () => {
         source,
         blockSize: [2, 2],
         forceWorkgroupSize: [1, 1],
-        histogramTemplate: makeHistogramTemplate(4, "u32"),
-        loadComponent: "r",
+        histogramTemplate: histogramTemplate(4, "u32"),
+        sourceComponent: "r",
         range: [1, 10],
         bucketSums: true,
       });

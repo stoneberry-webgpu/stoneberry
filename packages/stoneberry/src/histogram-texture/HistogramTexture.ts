@@ -9,14 +9,13 @@ import {
   trackContext,
 } from "thimbleberry";
 import { ReduceBuffer } from "../reduce-buffer/ReduceBuffer.js";
+import { HistogramTemplate2, histogramTemplate } from "../util/HistogramModule.js";
 import {
-  LoadTemplate,
   ComponentName,
-  loaderForComponent,
+  LoadComponent
 } from "../util/LoadTemplate.js";
 import { runAndFetchResult } from "../util/RunAndFetch.js";
 import { TextureToHistograms } from "./TextureToHistograms.js";
-import { HistogramTemplate, makeHistogramTemplate } from "../util/HistogramTemplate.js";
 
 export interface HistogramTextureParams {
   device: GPUDevice;
@@ -39,7 +38,7 @@ export interface HistogramTextureParams {
   forceWorkgroupSize?: Vec2;
 
   /** {@inheritDoc HistogramTexture#histogramTemplate} */
-  histogramTemplate: HistogramTemplate;
+  histogramTemplate: HistogramTemplate2;
 
   /** {@inheritDoc HistogramTexture#minMaxBuffer} */
   minMaxBuffer?: GPUBuffer;
@@ -50,8 +49,8 @@ export interface HistogramTextureParams {
   /** {@inheritDoc HistogramTexture#range} */
   range?: Vec2;
 
-  /** load r, g, b, or a, or custom function */
-  loadComponent?: ComponentName | LoadTemplate;
+  /** {@inheritDoc HistogramTexture#sourceComponent} */
+  sourceComponent?: ComponentName | LoadComponent;
 
   /** cache for GPUComputePipeline */
   pipelineCache?: <T extends object>() => Cache<T>;
@@ -63,7 +62,7 @@ export interface HistogramTextureParams {
 const defaults: Partial<HistogramTextureParams> = {
   blockSize: [4, 4],
   bufferBlockLength: 8,
-  loadComponent: "r",
+  sourceComponent: "r",
   forceWorkgroupSize: undefined,
   pipelineCache: undefined,
   label: "",
@@ -100,12 +99,12 @@ export class HistogramTexture extends HasReactive implements ComposableShader {
   /** wgsl macros for histogram reduction and histogram size.
    * Typically call `makeHistogramTemplate()`
    */
-  @reactively histogramTemplate!: HistogramTemplate;
+  @reactively histogramTemplate!: HistogramTemplate2;
 
-  /** macros to select or synthesize a component from the source texture
+  /** select or synthesize a component from the source texture 
    * @defaultValue "r"
-   */
-  @reactively loadComponent!: ComponentName | LoadTemplate;
+  */
+  @reactively sourceComponent!: ComponentName | LoadComponent;
 
   /** range of histogram values (or provide minMaxBuffer)
    * @defaultValue [0, 255]
@@ -229,7 +228,7 @@ export class HistogramTexture extends HasReactive implements ComposableShader {
       blockSize: this.blockSize,
       forceWorkgroupSize: this.forceWorkgroupSize,
       histogramTemplate: this.histogramTemplate,
-      loadTemplate: this.loadTemplate,
+      sourceComponent: this.sourceComponent,
       pipelineCache: this.pipelineCache,
       label: this.label,
       minMaxBuffer: this.rangeBuffer,
@@ -250,7 +249,7 @@ export class HistogramTexture extends HasReactive implements ComposableShader {
       label: this.label,
       blockLength: this.bufferBlockLength,
       pipelineCache: this.pipelineCache,
-      template: this.reduceCountsTemplate,
+      template2: this.reduceCountsTemplate,
     });
     reactiveTrackUse(shader, this.usageContext);
 
@@ -268,7 +267,7 @@ export class HistogramTexture extends HasReactive implements ComposableShader {
       label: this.label,
       blockLength: this.bufferBlockLength,
       pipelineCache: this.pipelineCache,
-      template: this.histogramTemplate,
+      template2: this.histogramTemplate,
     });
     reactiveTrackUse(shader, this.usageContext);
 
@@ -276,12 +275,12 @@ export class HistogramTexture extends HasReactive implements ComposableShader {
   }
 
   // histogram counts are always u32, make sure reduction template is u32
-  @reactively private get reduceCountsTemplate(): HistogramTemplate {
+  @reactively private get reduceCountsTemplate(): HistogramTemplate2 {
     const texTemplate = this.histogramTemplate;
     if (texTemplate.outputElements === "u32") {
       return texTemplate;
     } else {
-      return makeHistogramTemplate(texTemplate.buckets, "u32");
+      return histogramTemplate(texTemplate.buckets, "u32");
     }
   }
 
@@ -289,12 +288,4 @@ export class HistogramTexture extends HasReactive implements ComposableShader {
     return this.textureToHistograms.resultElems > 1;
   }
 
-  /** reduction template for loading src data from the texture */
-  @reactively private get loadTemplate(): LoadTemplate {
-    if (typeof this.loadComponent === "string") {
-      return loaderForComponent(this.loadComponent);
-    } else {
-      return this.loadComponent;
-    }
-  }
 }
