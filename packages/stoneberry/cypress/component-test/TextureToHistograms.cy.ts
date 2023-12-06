@@ -7,16 +7,16 @@ import {
   trackUse,
   withAsyncUsage,
 } from "thimbleberry";
-import { makeHistogramTemplate } from "stoneberry/histogram-texture";
 import { makeBuffer } from "./util/MakeBuffer";
 import { TextureToHistograms } from "../../src/histogram-texture/TextureToHistograms.js";
+import { histogramTemplate } from "../../src/util/HistogramModule.js";
 
 it("texture to one histogram, one thread", async () => {
   await withAsyncUsage(async () => {
     const device = trackUse(await labeledGpuDevice());
     const minMaxBuffer = makeBuffer(device, [1, 4], "minmax", Uint32Array);
     const histogramSize = 4;
-    const template = makeHistogramTemplate(histogramSize, "u32");
+    const template = histogramTemplate(histogramSize, "u32");
     const sourceData = [
       [1, 1],
       [2, 3],
@@ -48,7 +48,7 @@ it("texture to one histograms, two threads", async () => {
     const device = trackUse(await labeledGpuDevice());
     const minMaxBuffer = makeBuffer(device, [1, 4], "minmax", Uint32Array);
     const histogramSize = 4;
-    const template = makeHistogramTemplate(histogramSize, "u32");
+    const template = histogramTemplate(histogramSize, "u32");
     const sourceData = [
       [1, 1, 3, 4],
       [2, 3, 4, 4],
@@ -82,7 +82,7 @@ it("texture to two histograms, two dispatches", async () => {
     const device = trackUse(await labeledGpuDevice());
     const minMaxBuffer = makeBuffer(device, [1, 4], "minmax", Uint32Array);
     const histogramSize = 4;
-    const template = makeHistogramTemplate(histogramSize, "u32");
+    const template = histogramTemplate(histogramSize, "u32");
     const sourceData = [
       [1, 1, 3, 4],
       [2, 3, 4, 4],
@@ -116,7 +116,7 @@ it("texture to one histogram, no sums", async () => {
     const device = trackUse(await labeledGpuDevice());
     const minMaxBuffer = makeBuffer(device, [1, 4], "minmax", Uint32Array);
     const histogramSize = 4;
-    const template = makeHistogramTemplate(histogramSize, "u32");
+    const template = histogramTemplate(histogramSize, "u32");
     const sourceData = [
       [1, 1],
       [2, 3],
@@ -146,7 +146,7 @@ it("texture to one histogram, saturateMax", async () => {
     const device = trackUse(await labeledGpuDevice());
     const minMaxBuffer = makeBuffer(device, [1, 4], "minmax", Uint32Array);
     const histogramSize = 4;
-    const template = makeHistogramTemplate(histogramSize, "u32");
+    const template = histogramTemplate(histogramSize, "u32");
     const sourceData = [
       [1, 1],
       [2, 10],
@@ -177,7 +177,7 @@ it("texture to one histogram, no saturateMax", async () => {
     const device = trackUse(await labeledGpuDevice());
     const minMaxBuffer = makeBuffer(device, [1, 4], "minmax", Uint32Array);
     const histogramSize = 4;
-    const template = makeHistogramTemplate(histogramSize, "u32");
+    const template = histogramTemplate(histogramSize, "u32");
     const sourceData = [
       [1, 1],
       [2, 10],

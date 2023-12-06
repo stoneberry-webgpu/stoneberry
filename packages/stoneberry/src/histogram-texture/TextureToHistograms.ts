@@ -1,4 +1,3 @@
-import { BindingEntry } from "./../util/ComputePipeline";
 import { HasReactive, reactively } from "@reactively/decorate";
 import deepEqual from "fast-deep-equal";
 import {
@@ -14,11 +13,12 @@ import {
   textureSampleType,
   trackContext,
 } from "thimbleberry";
-import { HistogramTemplate } from "../util/HistogramTemplate.js";
-import { maxWorkgroupSize } from "../util/LimitWorkgroupSize.js";
-import { LoadTemplate} from "../util/LoadTemplate.js";
-import wgsl from "./TextureToHistograms.wgsl?raw";
 import { computePipeline } from "../util/ComputePipeline.js";
+import { HistogramTemplate2 } from "../util/HistogramModule.js";
+import { maxWorkgroupSize } from "../util/LimitWorkgroupSize.js";
+import { ComponentName, LoadComponent } from "../util/LoadTemplate.js";
+import { BindingEntry } from "./../util/ComputePipeline";
+import wgsl from "./TextureToHistograms.wgsl?raw";
 
 export interface TextureToHistogramsParams {
   device: GPUDevice;
@@ -39,7 +39,7 @@ export interface TextureToHistogramsParams {
   minMaxBuffer: ValueOrFn<GPUBuffer>;
 
   /** {@inheritDoc TextureToHistograms#histogramTemplate} */
-  histogramTemplate: HistogramTemplate;
+  histogramTemplate: HistogramTemplate2;
 
   /** {@inheritDoc TextureToHistograms#blockSize} */
   blockSize?: Vec2;
@@ -47,8 +47,8 @@ export interface TextureToHistogramsParams {
   /** {@inheritDoc TextureToHistograms#forceWorkgroupSize} */
   forceWorkgroupSize?: Vec2;
 
-  /** {@inheritDoc TextureToHistograms#loadTemplate} */
-  loadTemplate?: LoadTemplate;
+  /** {@inheritDoc TextureToHistograms#sourceComponent} */
+  sourceComponent?: ComponentName | LoadComponent;
 
   /** cache for GPUComputePipeline */
   pipelineCache?: <T extends object>() => Cache<T>;
@@ -67,7 +67,7 @@ const defaults: Partial<TextureToHistogramsParams> = {
   blockSize: [4, 4],
   forceWorkgroupSize: undefined,
   pipelineCache: undefined,
-  loadTemplate: loadRedComponent,
+  sourceComponent: "r",
   bucketSums: false,
   saturateMax: false,
   label: "",
@@ -87,10 +87,10 @@ export class TextureToHistograms extends HasReactive implements ComposableShader
   @reactively minMaxBuffer!: GPUBuffer;
 
   /** macros to customize wgsl shader for size of data and size of histogram */
-  @reactively histogramTemplate!: HistogramTemplate;
+  @reactively histogramTemplate!: HistogramTemplate2;
 
-  /** macros to select component from vec4 */
-  @reactively loadTemplate!: LoadTemplate;
+  /** select or synthesize a component (e.g. r,g,b,a) from the source texture */
+  @reactively sourceComponent!: ComponentName | LoadComponent;
 
   /** calculate sums for each bucket */
   @reactively bucketSums!: boolean;
@@ -187,8 +187,7 @@ export class TextureToHistograms extends HasReactive implements ComposableShader
           bucketSums: this.bucketSums,
           saturateMax: this.saturateMax,
           floatElements: this.histogramTemplate.outputElements === "f32",
-          ...this.histogramTemplate,
-          ...this.loadTemplate,
+          ...this.histogramTemplate, // TODO do we need all this?
           inputElements: this.histogramTemplate.outputElements,
         },
         constants: {
