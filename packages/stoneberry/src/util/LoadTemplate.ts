@@ -28,11 +28,17 @@ export function loadTexelCodeGen(
   elemParamCount = 1
 ): LoadCodeGen {
   const loadTexel = (params: { Output: string; texelType: GPUElementFormat }): string => {
-    const { Output: output = "Elem", texelType = "texelType" } = params;
-    const args = mapN(elemParamCount, () => `a.${component}`).join(", ");
-    return `fn loadTexel(a: vec4<${texelType}>) -> ${output} { 
-      return ${output}(${args});
-    }`;
+    const { Output: output, texelType = "texelType" } = params;
+    if (output) {
+      const args = mapN(elemParamCount, () => `a.${component}`).join(", ");
+      return `fn loadTexel(a: vec4<${texelType}>) -> ${output} { 
+        return ${output}(${args});
+      }`;
+    } else {
+      return `fn loadTexel(a: vec4<${texelType}>) -> ${texelType} { 
+        return a.${component};
+      }`;
+    }
   };
   return { kind: "function", fn: loadTexel as CodeGenFn };
 }
