@@ -1,4 +1,5 @@
-import { makeHistogramTemplate } from "stoneberry/histogram-texture";
+import { histogramTemplate } from "stoneberry/histogram-texture";
+import { ReduceBuffer } from "stoneberry/reduce-buffer";
 import {
   labeledGpuDevice,
   mapN,
@@ -6,7 +7,6 @@ import {
   trackUse,
   withAsyncUsage,
 } from "thimbleberry";
-import { ReduceBuffer } from "stoneberry/reduce-buffer";
 import { makeBuffer } from "./util/MakeBuffer";
 
 it("reduce 2 histograms within one src block", async () => {
@@ -17,8 +17,8 @@ it("reduce 2 histograms within one src block", async () => {
     const sourceData = [...histA, ...histB];
     const source = makeBuffer(device, sourceData, "source buffer", Uint32Array);
     const histogramSize = 4;
-    const template = makeHistogramTemplate(histogramSize, "u32");
-    const shader = new ReduceBuffer({ device, source, template });
+    const template2 = histogramTemplate(histogramSize, "u32");
+    const shader = new ReduceBuffer({ device, source, template2 });
     trackUse(shader);
 
     const result = await shader.reduce();
@@ -35,11 +35,11 @@ it("reduce histograms across workgroup threads", async () => {
     const sourceData = histograms.flat(2);
     const source = makeBuffer(device, sourceData, "source buffer", Uint32Array);
     const histogramSize = 4;
-    const template = makeHistogramTemplate(histogramSize, "u32");
+    const template2 = histogramTemplate(histogramSize, "u32");
     const shader = new ReduceBuffer({
       device,
       source,
-      template,
+      template2,
       blockLength: 2,
     });
     trackUse(shader);
@@ -58,11 +58,11 @@ it("reduce histograms across workgroups (2nd layer)", async () => {
     const sourceData = histograms.flat(2);
     const source = makeBuffer(device, sourceData, "source buffer", Uint32Array);
     const histogramSize = 4;
-    const template = makeHistogramTemplate(histogramSize, "u32");
+    const template2 = histogramTemplate(histogramSize, "u32");
     const shader = new ReduceBuffer({
       device,
       source,
-      template,
+      template2,
       forceWorkgroupLength: 2,
       blockLength: 2,
     });
