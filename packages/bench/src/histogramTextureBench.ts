@@ -1,4 +1,4 @@
-import { HistogramTexture, makeHistogramTemplate } from "stoneberry/histogram-texture";
+import { HistogramTexture, histogramTemplate } from "stoneberry/histogram-texture";
 import { ShaderAndSize, Vec2, mapN, textureFromArray } from "thimbleberry";
 
 export function histogramTextureBench(device: GPUDevice, size: Vec2): ShaderAndSize {
@@ -11,7 +11,7 @@ export function histogramTextureBench(device: GPUDevice, size: Vec2): ShaderAndS
     source,
     blockSize: [2, 2],
     bufferBlockLength: 4,
-    histogramTemplate: makeHistogramTemplate(64, "u32"),
+    histogramTemplate: histogramTemplate(64),
   });
 
   return { shader, srcSize: size[0] * size[1] * 4 };
