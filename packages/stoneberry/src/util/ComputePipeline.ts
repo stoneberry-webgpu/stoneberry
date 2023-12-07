@@ -20,7 +20,7 @@ export interface ComputePipelineArgs {
 
   /** string substititions for wgsl templating */
   wgslParams?: Record<string, any>;
-  
+
   /** registry of modules available for linking */
   registry?: ModuleRegistry;
 
@@ -32,6 +32,9 @@ export interface ComputePipelineArgs {
 
   /** constants for wgsl override variables */
   constants?: Record<string, GPUPipelineConstantValue>;
+
+  /** (for debug) log the linked shader to the javascript console */
+  logShader?: boolean;
 }
 
 export interface ComputePipelineResults {
@@ -42,7 +45,7 @@ export interface ComputePipelineResults {
 export const computePipeline = memoizeWithDevice(makeComputePipeline);
 
 function makeComputePipeline(args: ComputePipelineArgs): ComputePipelineResults {
-  const { device, wgsl, wgslParams = {}, constants, registry } = args;
+  const { device, wgsl, wgslParams = {}, constants, registry, logShader } = args;
   const { debugBuffer = false, bindings, label = "computeShader" } = args;
   const entries = bindings.map((binding, i) => ({
     binding: i,
@@ -61,15 +64,17 @@ function makeComputePipeline(args: ComputePipelineArgs): ComputePipelineResults 
     label,
     entries,
   });
-  
+
   registry?.registerTemplate(thimbTemplate);
   const linkedWgsl = registry ? linkWgsl(wgsl, registry, wgslParams) : wgsl;
 
   const processedWGSL = applyTemplate(linkedWgsl, wgslParams);
 
-  const lines = processedWGSL.split("\n");
-  const numbered = lines.map((line, i) => `${i + 1}: ${line}`);
-  console.log(numbered.join("\n"));
+  if (logShader) {
+    const lines = processedWGSL.split("\n");
+    const numbered = lines.map((line, i) => `${i + 1}: ${line}`);
+    console.log(numbered.join("\n"));
+  }
 
   const module = device.createShaderModule({
     code: processedWGSL,
