@@ -6,11 +6,11 @@ import {
   trackContext,
   trackUse,
 } from "thimbleberry";
-import { BinOpTemplate, sumU32 } from "../util/BinOpTemplate.js";
 import { runAndFetchResult } from "../util/RunAndFetch.js";
 import { Cache, ComposableShader, ValueOrFn } from "../util/Util.js";
 import { ApplyScanBlocks } from "./ApplyScanBlocks.js";
 import { WorkgroupScan } from "./WorkgroupScan.js";
+import { BinOpTemplate2, sumU32 } from "../util/BinOpModules.js";
 
 /** Parameters to construct a {@link PrefixScan} instance.  */
 export interface PrefixScanArgs {
@@ -25,7 +25,7 @@ export interface PrefixScanArgs {
   source: ValueOrFn<GPUBuffer>;
 
   /** {@inheritDoc PrefixScan#template} */
-  template?: BinOpTemplate;
+  template?: BinOpTemplate2;
 
   /** {@inheritDoc PrefixScan#exclusive} */
   exclusive?: boolean;
@@ -81,7 +81,7 @@ const defaults: Partial<PrefixScanArgs> = {
  */
 export class PrefixScan<T = number> extends HasReactive implements ComposableShader {
   /** customize the type of scan (e.g. prefix sum on 32 bit floats) */
-  @reactively template!: BinOpTemplate;
+  @reactively template!: BinOpTemplate2;
 
   /** Source data to be scanned */
   @reactively source!: GPUBuffer;
