@@ -8,7 +8,7 @@ fn binaryOp(a: Output, b: Output) -> Output { return Output(0); }
 struct Output { 
 // #import ElemFields
 // #if typecheck
-    sum: u32,  //! "sum: u32,"=outputStruct 
+    sum: u32,
 // #endif
 }
 

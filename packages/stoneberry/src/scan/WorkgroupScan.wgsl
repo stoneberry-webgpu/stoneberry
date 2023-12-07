@@ -25,6 +25,7 @@
 // summation of the first and last layers is handled separately because they read/write 
 //   between storage and workgroup memory.
 
+// #template thimb2
 
 // #import loadOp(Input, Output)
 // #import identityOp(Output)
@@ -61,10 +62,12 @@ struct Uniforms {
 @group(0) @binding(0) var<uniform> u: Uniforms;                           // uniforms
 @group(0) @binding(1) var<storage, read> src: array<Input>;               // input source values
 @group(0) @binding(2) var<storage, read_write> prefixScan: array<Output>; // output prefix scan
-@group(0) @binding(3) var<storage, read_write> blockSum: array<Output>;   // output block sums //! IF blockSums
+// #if blockSums
+@group(0) @binding(3) var<storage, read_write> blockSum: array<Output>;   // output block sums 
+// #endif
 @group(0) @binding(11) var<storage, read_write> debug: array<f32>;        // buffer to hold debug values
 
-const workgroupSizeX = 4u;      //! 4=workgroupSizeX
+const workgroupSizeX = 4u;      // #replace 4=workgroupSizeX
 
 const srcElems = workgroupSizeX * 2u; 
 
@@ -160,13 +163,13 @@ fn sumFinalLayer(localX: u32, destDex: u32, workGridX: u32, aIn: bool) {
             sumFinalLayerB(localX, destDex, workGridX);
         }
     } else {
-        if (destDex == 0u) {
+        if destDex == 0u {
             prefixScan[0] = u.initialValue;
         }
         if aIn {
-            sumFinalLayerA(localX, destDex+1u, workGridX);
+            sumFinalLayerA(localX, destDex + 1u, workGridX);
         } else {
-            sumFinalLayerB(localX, destDex+1u, workGridX);
+            sumFinalLayerB(localX, destDex + 1u, workGridX);
         }
     }
 }
@@ -185,9 +188,11 @@ fn sumFinalLayerA(localX: u32, destDex: u32, workGridX: u32) {
         }
         prefixScan[destDex] = result;
 
-        if localX == workgroupSizeX - 1u || destDex == arrayLength(&src) - 1u { //! IF blockSums
-            blockSum[workGridX] = result;                                       //! IF blockSums
-        }                                                                       //! IF blockSums
+// #if blockSums
+        if localX == workgroupSizeX - 1u || destDex == arrayLength(&src) - 1u {
+            blockSum[workGridX] = result;
+        }                                                                     
+// #endif
     }
 }
 
@@ -206,8 +211,10 @@ fn sumFinalLayerB(localX: u32, destDex: u32, workGridX: u32) {
         }
         prefixScan[destDex] = result;
 
-        if localX == workgroupSizeX - 1u || destDex == arrayLength(&src) - 1u { //! IF blockSums
-            blockSum[workGridX] = result;                                       //! IF blockSums
-        }                                                                       //! IF blockSums
+// #if blockSums
+        if localX == workgroupSizeX - 1u || destDex == arrayLength(&src) - 1u {
+            blockSum[workGridX] = result;
+        }                                                                     
+// #endif
     }
 }
