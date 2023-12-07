@@ -1,4 +1,4 @@
-import { applyTemplate, memoizeWithDevice } from "thimbleberry";
+import { memoizeWithDevice } from "thimbleberry";
 import { ModuleRegistry, linkWgsl } from "wgsl-linker";
 import { thimbTemplate } from "wgsl-linker/replace-template";
 
@@ -68,16 +68,14 @@ function makeComputePipeline(args: ComputePipelineArgs): ComputePipelineResults 
   registry?.registerTemplate(thimbTemplate);
   const linkedWgsl = registry ? linkWgsl(wgsl, registry, wgslParams) : wgsl;
 
-  const processedWGSL = applyTemplate(linkedWgsl, wgslParams); // TODO get rid of this
-
   if (logShader) {
-    const lines = processedWGSL.split("\n");
+    const lines = linkedWgsl.split("\n");
     const numbered = lines.map((line, i) => `${i + 1}: ${line}`);
     console.log(numbered.join("\n"));
   }
 
   const module = device.createShaderModule({
-    code: processedWGSL,
+    code: linkedWgsl,
   });
 
   const pipeline = device.createComputePipeline({
