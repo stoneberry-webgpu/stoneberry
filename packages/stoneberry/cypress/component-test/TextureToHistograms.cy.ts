@@ -199,3 +199,30 @@ it("texture to one histogram, no saturateMax", async () => {
     trackRelease(shader);
   });
 });
+
+it("texture to one histogram, float texture", async () => {
+  await withAsyncUsage(async () => {
+    const device = trackUse(await labeledGpuDevice());
+    const histogramSize = 4;
+    const sourceData = [
+      [1, 1],
+      [2, 3],
+    ];
+    const source = makeTexture(device, sourceData, "r32float");
+    const shader = new TextureToHistograms({
+      device,
+      source,
+      minMaxBuffer: makeBuffer(device, [1, 4], "minmax", Float32Array),
+      histogramTemplate: histogramTemplate(histogramSize),
+    });
+    trackUse(shader);
+
+    const group = new ShaderGroup(device, shader);
+    group.dispatch();
+
+    const counts = await copyBuffer(device, shader.histogramsResult, "u32");
+    expect(counts).deep.equals([2, 1, 1, 0]);
+
+    trackRelease(shader);
+  });
+});
