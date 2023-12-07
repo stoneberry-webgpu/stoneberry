@@ -6,14 +6,12 @@ import {
   Vec2,
   assignParams,
   reactiveTrackUse,
+  texelLoadType,
   trackContext,
 } from "thimbleberry";
 import { ReduceBuffer } from "../reduce-buffer/ReduceBuffer.js";
 import { HistogramTemplate2 } from "../util/HistogramModule.js";
-import {
-  ComponentName,
-  LoadComponent
-} from "../util/LoadTemplate.js";
+import { ComponentName, LoadComponent } from "../util/LoadTemplate.js";
 import { runAndFetchResult } from "../util/RunAndFetch.js";
 import { TextureToHistograms } from "./TextureToHistograms.js";
 
@@ -101,9 +99,9 @@ export class HistogramTexture extends HasReactive implements ComposableShader {
    */
   @reactively histogramTemplate!: HistogramTemplate2;
 
-  /** select or synthesize a component from the source texture 
+  /** select or synthesize a component from the source texture
    * @defaultValue "r"
-  */
+   */
   @reactively sourceComponent!: ComponentName | LoadComponent;
 
   /** range of histogram values (or provide minMaxBuffer)
@@ -184,7 +182,7 @@ export class HistogramTexture extends HasReactive implements ComposableShader {
       const buffer = this.createdRangeBuffer;
 
       let data: Uint32Array | Float32Array;
-      if (this.histogramTemplate.outputElements === "f32") {
+      if (texelLoadType(this.source.format) === "f32") {
         data = new Float32Array(elems);
       } else {
         data = new Uint32Array(elems);

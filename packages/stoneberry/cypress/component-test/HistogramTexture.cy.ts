@@ -66,8 +66,7 @@ it("histogram texture, with reduction", async () => {
   });
 });
 
-it.only("histogram texture, with reduction, float", async () => {
-  console.clear();
+it("histogram texture, with reduction, float", async () => {
   await withAsyncUsage(async () => {
     const device = await labeledGpuDevice();
     trackUse(device);
