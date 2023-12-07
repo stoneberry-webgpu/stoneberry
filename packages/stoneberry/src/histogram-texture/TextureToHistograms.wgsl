@@ -7,9 +7,9 @@
 // . one for the histogram (counts) per bucket
 // . one for the sum per bucket
 // 
+// #template thimb2
 
 // #import loadTexel
-// #template thimb2
 
 //#if typecheck
 fn loadTexel(a: vec4<u32>) -> u32 { return a.r; }
@@ -27,8 +27,10 @@ struct Range {
 @group(0) @binding(0) var<uniform> u: Uniforms;
 @group(0) @binding(1) var srcTexture: texture_2d<u32>; // source data // #replace u32=texelType
 @group(0) @binding(2) var<storage, read> maxBuffer: array<Range>; 
-@group(0) @binding(3) var<storage, read_write> histogramOut: array<array<u32, 128>>; //! 128=buckets
-@group(0) @binding(4) var<storage, read_write> sumOut: array<array<u32, 128>>; //! u32=texelType 128=buckets IF bucketSums
+@group(0) @binding(3) var<storage, read_write> histogramOut: array<array<u32, 128>>; // #replace 128=buckets
+// #if bucketSums
+@group(0) @binding(4) var<storage, read_write> sumOut: array<array<u32, 128>>; //#replace u32=texelType 128=buckets 
+// #endif
 @group(0) @binding(11) var<storage, read_write> debug: array<f32>; // buffer to hold debug values
 
 override workgroupSizeX = 4;      
@@ -42,7 +44,9 @@ var <private>toUIntRange: f32 = 1.0;
 
 // we accumulate bucket totals in workgroup memory and then copy the local buckets to global memory
 var<workgroup> localHistogram: array<atomic<u32>, numBuckets>;
-var<workgroup> localSum: array<atomic<u32>, numBuckets>; //! u32=texelType IF bucketSums 
+// #if bucketSums
+var<workgroup> localSum: array<atomic<u32>, numBuckets>; // #replace u32=texelType 
+// #endif
 
 @compute 
 @workgroup_size(workgroupSizeX, workgroupSizeY, 1) 
@@ -76,7 +80,7 @@ fn collectBlock(grid: vec2<u32>,
         textureDimensions(srcTexture).x,
         textureDimensions(srcTexture).y
     );
-    var blockStart = vec2<u32>(grid.x * 4u, grid.y * 4u); //! 4=blockWidth 4=blockHeight
+    var blockStart = vec2<u32>(grid.x * 4u, grid.y * 4u); // #replace 4=blockWidth 4=blockHeight
 
     // LATER try striding/striping, should reduce memory bank conflicts
     for (var x = 0u; x < 4u; x++) { //! 4=blockWidth
@@ -103,8 +107,12 @@ fn collectPixel(spot: vec2<u32>,
         // (only integer values can be stored in atomic variables)
         // so conceptually we multiply by 2^32-1 and divide by max
         // (actually, we use a number that is less than 2^32-1 to avoid overflow)
+// #xif bucketSums
+// #xif floatElements
         atomicAdd(&localSum[bucket], u32(f32(p) * toUIntRange)); //! IF bucketSums IF floatElements
         atomicAdd(&localSum[bucket], p); //! IF bucketSums IF !floatElements
+// #xendif
+// #xendif
     }
 }
 
