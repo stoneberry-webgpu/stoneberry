@@ -60,8 +60,10 @@ fn main(
     let minValue = u32(minMax.min); // #replace u32=texelType
     let maxValue = u32(minMax.max); // #replace u32=texelType
     valueRange = f32(maxValue) - f32(minValue);
-    let largeU32 = 1000.0 * 1000.0 * 1000.0; // near to max u32 (4 billion), with some room for overflow //! IF floatElements
-    toUIntRange = largeU32 / f32(maxValue);    // conversion factor to convert a density value to a u32 //! IF floatElements
+// #if floatElements
+    let largeU32 = 1000.0 * 1000.0 * 1000.0; // near to max u32 (4 billion), with some room for overflow 
+    toUIntRange = largeU32 / f32(maxValue);    // conversion factor to convert a density value to a u32 
+//#endif
 
     collectBlock(grid.xy, minValue, maxValue);
     workgroupBarrier();
@@ -83,8 +85,8 @@ fn collectBlock(grid: vec2<u32>,
     var blockStart = vec2<u32>(grid.x * 4u, grid.y * 4u); // #replace 4=blockWidth 4=blockHeight
 
     // LATER try striding/striping, should reduce memory bank conflicts
-    for (var x = 0u; x < 4u; x++) { //! 4=blockWidth
-        for (var y = 0u; y < 4u; y++) { //! 4=blockHeight
+    for (var x = 0u; x < 4u; x++) { // #replace 4=blockWidth
+        for (var y = 0u; y < 4u; y++) { // #replace 4=blockHeight
             let spot = blockStart + vec2<u32>(x, y);
             if spot.x < srcDim.x && spot.y < srcDim.y {
                 collectPixel(spot, minValue, maxValue);
