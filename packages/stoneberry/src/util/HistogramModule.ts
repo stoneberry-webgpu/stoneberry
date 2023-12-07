@@ -1,7 +1,6 @@
-import { GPUElementFormat } from "thimbleberry";
+import { applyTemplate } from "wgsl-linker/replace-template";
 import { BinOpTemplate2 } from "./BinOpModules.js";
 import histogramWgsl from "./HistogramOps.wgsl?raw";
-import { applyTemplate } from "wgsl-linker/replace-template";
 
 export interface HistogramTemplate2 extends BinOpTemplate2 {
   buckets: number;
@@ -9,9 +8,8 @@ export interface HistogramTemplate2 extends BinOpTemplate2 {
 
 export function histogramTemplate(   // TODO rename
   buckets: number,
-  elemType: GPUElementFormat
 ): HistogramTemplate2 {
-  const params = { buckets, elemType };
+  const params = { buckets };
   const wgsl = applyTemplate(histogramWgsl, params);
 
   return {

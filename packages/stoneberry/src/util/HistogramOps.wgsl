@@ -1,7 +1,7 @@
 // #template thimb2
 struct LoadElem {
 // #export LoadElemFields
-    histogram: array<f32, 128>, // #replace f32=elemType 128=buckets
+    histogram: array<u32, 128>,                       // #replace 128=buckets
 // #endExport
 }
 
@@ -27,5 +27,5 @@ fn loadOp(a: LoadElem) -> Elem {
 
 // #export(Elem)
 fn identityOp() -> Elem {
-    return Elem(array<f32,128>());                      // #replace f32=elemType 128=buckets
+    return Elem(array<u32,128>());                    // #replace 128=buckets
 }

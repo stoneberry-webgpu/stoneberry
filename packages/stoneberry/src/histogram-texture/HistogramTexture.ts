@@ -9,7 +9,7 @@ import {
   trackContext,
 } from "thimbleberry";
 import { ReduceBuffer } from "../reduce-buffer/ReduceBuffer.js";
-import { HistogramTemplate2, histogramTemplate } from "../util/HistogramModule.js";
+import { HistogramTemplate2 } from "../util/HistogramModule.js";
 import {
   ComponentName,
   LoadComponent
@@ -249,7 +249,7 @@ export class HistogramTexture extends HasReactive implements ComposableShader {
       label: this.label,
       blockLength: this.bufferBlockLength,
       pipelineCache: this.pipelineCache,
-      template2: this.reduceCountsTemplate,
+      template2: this.histogramTemplate,
     });
     reactiveTrackUse(shader, this.usageContext);
 
@@ -272,16 +272,6 @@ export class HistogramTexture extends HasReactive implements ComposableShader {
     reactiveTrackUse(shader, this.usageContext);
 
     return shader;
-  }
-
-  // histogram counts are always u32, make sure reduction template is u32
-  @reactively private get reduceCountsTemplate(): HistogramTemplate2 {
-    const texTemplate = this.histogramTemplate;
-    if (texTemplate.outputElements === "u32") {
-      return texTemplate;
-    } else {
-      return histogramTemplate(texTemplate.buckets, "u32");
-    }
   }
 
   @reactively private get reduceBufferNeeded(): boolean {

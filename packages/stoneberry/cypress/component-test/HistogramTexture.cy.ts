@@ -24,7 +24,7 @@ it("histogram texture, no internal reduction", async () => {
         device,
         source,
         blockSize: [2, 2],
-        histogramTemplate: histogramTemplate(4, "u32"),
+        histogramTemplate: histogramTemplate(4),
         sourceComponent: "r",
         range: [1, 10],
       });
@@ -53,7 +53,7 @@ it("histogram texture, with reduction", async () => {
         source,
         blockSize: [2, 2],
         forceWorkgroupSize: [1, 1],
-        histogramTemplate: histogramTemplate(4, "u32"),
+        histogramTemplate: histogramTemplate(4),
         sourceComponent: "r",
         range: [1, 10],
       });
@@ -66,7 +66,8 @@ it("histogram texture, with reduction", async () => {
   });
 });
 
-it("histogram texture, with reduction, float", async () => {
+it.only("histogram texture, with reduction, float", async () => {
+  console.clear();
   await withAsyncUsage(async () => {
     const device = await labeledGpuDevice();
     trackUse(device);
@@ -82,7 +83,7 @@ it("histogram texture, with reduction, float", async () => {
         source,
         blockSize: [2, 2],
         forceWorkgroupSize: [1, 1],
-        histogramTemplate: histogramTemplate(4, "u32"),
+        histogramTemplate: histogramTemplate(4),
         sourceComponent: "r",
         range: [1, 10],
       });
@@ -111,7 +112,7 @@ it("histogram texture, with reduction, r8uint", async () => {
         source,
         blockSize: [2, 2],
         forceWorkgroupSize: [1, 1],
-        histogramTemplate: histogramTemplate(4, "u32"),
+        histogramTemplate: histogramTemplate(4),
         sourceComponent: "r",
         range: [1, 10],
       });
@@ -140,7 +141,7 @@ it("histogram texture, with reduction, r32sint", async () => {
         source,
         blockSize: [2, 2],
         forceWorkgroupSize: [1, 1],
-        histogramTemplate: histogramTemplate(4, "i32"),
+        histogramTemplate: histogramTemplate(4),
         sourceComponent: "r",
         range: [-10, 10],
       });
@@ -169,7 +170,7 @@ it("histogram texture, with reduction, with bucketSums", async () => {
         source,
         blockSize: [2, 2],
         forceWorkgroupSize: [1, 1],
-        histogramTemplate: histogramTemplate(4, "u32"),
+        histogramTemplate: histogramTemplate(4),
         sourceComponent: "r",
         range: [1, 10],
         bucketSums: true,

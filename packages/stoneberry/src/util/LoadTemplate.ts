@@ -29,16 +29,19 @@ export function loadTexelCodeGen(
 ): LoadCodeGen {
   const loadTexel = (params: { Output: string; texelType: GPUElementFormat }): string => {
     const { Output: output, texelType = "texelType" } = params;
+    let result: string;
     if (output) {
       const args = mapN(elemParamCount, () => `a.${component}`).join(", ");
-      return `fn loadTexel(a: vec4<${texelType}>) -> ${output} { 
+      result = `fn loadTexel(a: vec4<${texelType}>) -> ${output} { 
         return ${output}(${args});
       }`;
     } else {
-      return `fn loadTexel(a: vec4<${texelType}>) -> ${texelType} { 
+      result = `fn loadTexel(a: vec4<${texelType}>) -> ${texelType} { 
         return a.${component};
       }`;
     }
+    // console.log(result);
+    return result;
   };
   return { kind: "function", fn: loadTexel as CodeGenFn };
 }
