@@ -36,8 +36,8 @@ struct Range {
 override workgroupSizeX = 4;      
 override workgroupSizeY = 4;      
 override numBuckets = 10u;      
-const numBucketsFloat= f32(100);  //! 100=buckets 
-const maxBucket = i32(100u - 1u);  //! 100=buckets
+const numBucketsFloat= f32(100);  // #replace 100=buckets 
+const maxBucket = i32(100u - 1u);  // #replace 100=buckets
 
 var <private>valueRange: f32;
 var <private>toUIntRange: f32 = 1.0;
@@ -107,19 +107,22 @@ fn collectPixel(spot: vec2<u32>,
         // (only integer values can be stored in atomic variables)
         // so conceptually we multiply by 2^32-1 and divide by max
         // (actually, we use a number that is less than 2^32-1 to avoid overflow)
-// #xif bucketSums
-// #xif floatElements
-        atomicAdd(&localSum[bucket], u32(f32(p) * toUIntRange)); //! IF bucketSums IF floatElements
-        atomicAdd(&localSum[bucket], p); //! IF bucketSums IF !floatElements
-// #xendif
-// #xendif
+// #if bucketSums
+// #if floatElements
+        atomicAdd(&localSum[bucket], u32(f32(p) * toUIntRange)); 
+// #else
+        atomicAdd(&localSum[bucket], p); 
+// #endif
+// #endif
     }
 }
 
 fn checkMax(p: u32, max: u32) -> bool { // #replace u32=texelType u32=texelType
-    if p > max {        //! IF !saturateMax
-        return false;   //! IF !saturateMax
-    }                   //! IF !saturateMax
+// #if !saturateMax
+    if p > max {
+        return false;
+    }
+// #endif
     return true;
 }
 
@@ -136,11 +139,18 @@ fn toBucket(p: u32, min: u32, max: u32) -> i32 { // #replace u32=texelType u32=t
 }
 
 // copy the workgroup local histogram array to the output buffer
-fn copyToOuput(workIndex: u32) {
+fn copyToOuput(workIndex: u32) { 
     for (var i = 0u; i < numBuckets; i++) {
         histogramOut[workIndex][i] = atomicLoad(&localHistogram[i]);
-        let sum = f32(atomicLoad(&localSum[i])) / toUIntRange; //! IF bucketSums IF floatElements
-        let sum = f32(atomicLoad(&localSum[i])); //! IF bucketSums IF !floatElements
-        sumOut[workIndex][i] = u32(sum); //! u32=texelType IF bucketSums
+
+// #if bucketSums
+//   #if floatElements
+        let sum = f32(atomicLoad(&localSum[i])) / toUIntRange; 
+//   #else
+        let sum = f32(atomicLoad(&localSum[i])); 
+//   #endif
+        sumOut[workIndex][i] = u32(sum); 
+// #endif
+
     }
 }
