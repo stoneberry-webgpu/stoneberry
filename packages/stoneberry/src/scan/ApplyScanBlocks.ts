@@ -7,11 +7,12 @@ import {
   reactiveTrackUse,
   trackContext,
 } from "thimbleberry";
-import { BinOpTemplate, sumU32 } from "../util/BinOpTemplate.js";
 import { computePipeline } from "../util/ComputePipeline.js";
 import { calcDispatchSizes } from "../util/DispatchSizes.js";
 import { Cache, ComposableShader } from "../util/Util.js";
 import wgsl from "./ApplyScanBlocks.wgsl?raw";
+import { BinOpTemplate2, sumU32 } from "../util/BinOpModules.js";
+import { ModuleRegistry } from "wgsl-linker";
 
 /** @internal */
 export interface ApplyScanBlocksArgs {
@@ -21,7 +22,7 @@ export interface ApplyScanBlocksArgs {
   forceWorkgroupLength?: number;
   forceMaxWorkgroups?: number | undefined;
   label?: string;
-  template?: BinOpTemplate;
+  template?: BinOpTemplate2;
   exclusiveLarge?: boolean;
   initialValue?: number;
   partialScanOffset?: number;
@@ -48,7 +49,7 @@ export class ApplyScanBlocks extends HasReactive implements ComposableShader {
   @reactively partialScan!: GPUBuffer;
   @reactively blockSums!: GPUBuffer;
   @reactively forceWorkgroupLength?: number;
-  @reactively template!: BinOpTemplate;
+  @reactively template!: BinOpTemplate2;
   @reactively label!: string;
   @reactively exclusiveLarge!: boolean;
   @reactively initialValue!: number;
@@ -100,6 +101,11 @@ export class ApplyScanBlocks extends HasReactive implements ComposableShader {
   @reactively private get maxWorkgroups(): number {
     return this.forceMaxWorkgroups ?? this.device.limits.maxComputeWorkgroupsPerDimension;
   }
+  
+  
+  @reactively private get registry(): ModuleRegistry {
+    return new ModuleRegistry(this.template.wgsl);
+  }
 
   @reactively private get pipeline(): GPUComputePipeline {
     const compute = computePipeline(
@@ -107,6 +113,7 @@ export class ApplyScanBlocks extends HasReactive implements ComposableShader {
         device: this.device,
         label: this.label,
         wgsl,
+        registry: this.registry,
         wgslParams: {
           workgroupSizeX: this.workgroupLength,
           ...this.template,

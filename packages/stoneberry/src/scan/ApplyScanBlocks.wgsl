@@ -1,5 +1,15 @@
+// #template thimb2
+
+// #import binaryOp(Output)
+// #if typecheck
+fn binaryOp(a: Output, b: Output) -> Output { return Output(0); }
+// #endif
+
 struct Output { 
+// #import ElemFields
+// #if typecheck
     sum: u32,  //! "sum: u32,"=outputStruct 
+// #endif
 }
 
 struct Uniforms {
@@ -16,7 +26,7 @@ struct Uniforms {
 @group(0) @binding(3) var<storage, read_write> prefixScan: array<Output>; // output prefix scan
 @group(0) @binding(11) var<storage, read_write> debug: array<f32>;        // buffer to hold debug values
 
-const workgroupSizeX = 4u;      //! 4=workgroupSizeX
+const workgroupSizeX = 4u;      // #replace 4=workgroupSizeX
 
 // apply block sums to partial scan results
 @compute
@@ -25,14 +35,14 @@ fn main(
     @builtin(global_invocation_id) grid: vec3<u32>,
     @builtin(workgroup_id) workGrid: vec3<u32>,
 ) {
-    var destDex:u32 = grid.x + u.scanOffset;
+    var destDex: u32 = grid.x + u.scanOffset;
     if u.exclusiveSmall != 0u {
         destDex += 1u;
         if grid.x == 0u {
             prefixScan[u.scanOffset] = u.initialValue;
         }
     }
-    if (destDex < arrayLength(&prefixScan)) {
+    if destDex < arrayLength(&prefixScan) {
         let sourceDex = grid.x + u.partialScanOffset;
         if workGrid.x == 0u && u.blockSumsOffset == 0u { 
             // if blocksumsOffset is 0, we are in the first dispatch
@@ -44,8 +54,4 @@ fn main(
             prefixScan[destDex] = binaryOp(a, b);
         }
     }
-}
-
-fn binaryOp(a: Output, b: Output) -> Output {
-    return Output(a.sum + b.sum);  //! "return Output(a.sum + b.sum);"=binaryOp
 }
