@@ -1,2 +1,2 @@
 export * from "./PrefixScan.js";
-export * from "../util/BinOpTemplate.js";
+export * from "../util/BinOpModules.js";

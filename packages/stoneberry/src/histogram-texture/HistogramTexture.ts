@@ -95,7 +95,7 @@ export class HistogramTexture extends HasReactive implements ComposableShader {
   @reactively bufferBlockLength!: number | undefined;
 
   /** wgsl macros for histogram reduction and histogram size.
-   * Typically call `makeHistogramTemplate()`
+   * Typically call `histogramTemplate()`
    */
   @reactively histogramTemplate!: HistogramTemplate2;
 

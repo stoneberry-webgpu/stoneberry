@@ -1,2 +1,2 @@
 export * from "./ReduceTexture.js";
-export * from "../util/BinOpTemplate.js";
+export * from "../util/BinOpModules.js";
