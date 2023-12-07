@@ -68,7 +68,7 @@ function makeComputePipeline(args: ComputePipelineArgs): ComputePipelineResults 
   registry?.registerTemplate(thimbTemplate);
   const linkedWgsl = registry ? linkWgsl(wgsl, registry, wgslParams) : wgsl;
 
-  const processedWGSL = applyTemplate(linkedWgsl, wgslParams);
+  const processedWGSL = applyTemplate(linkedWgsl, wgslParams); // TODO get rid of this
 
   if (logShader) {
     const lines = processedWGSL.split("\n");
