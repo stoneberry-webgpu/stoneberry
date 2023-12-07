@@ -7,11 +7,12 @@ import {
   reactiveTrackUse,
   trackContext,
 } from "thimbleberry";
-import { BinOpTemplate, sumU32 } from "../util/BinOpTemplate.js";
 import { BindingEntry, computePipeline } from "../util/ComputePipeline.js";
 import { calcDispatchSizes } from "../util/DispatchSizes.js";
 import { Cache, ComposableShader, ValueOrFn } from "../util/Util.js";
-import wgsl from "./WorkgroupScan.wgsl?raw";
+import workgroupScanWgsl from "./WorkgroupScan.wgsl?raw";
+import { ModuleRegistry } from "wgsl-linker";
+import { BinOpTemplate2, sumU32 } from "../util/BinOpModules.js";
 
 /** @internal */
 export interface WorkgroupScanArgs {
@@ -21,7 +22,7 @@ export interface WorkgroupScanArgs {
   forceWorkgroupLength?: ValueOrFn<number>;
   forceMaxWorkgroups?: ValueOrFn<number | undefined>;
   label?: ValueOrFn<string>;
-  template?: ValueOrFn<BinOpTemplate>;
+  template?: ValueOrFn<BinOpTemplate2>;
   exclusiveSmall?: boolean;
   initialValue?: ValueOrFn<number>;
   sourceOffset?: ValueOrFn<number>;
@@ -60,7 +61,7 @@ export class WorkgroupScan extends HasReactive implements ComposableShader {
   @reactively source!: GPUBuffer;
 
   /** macros to customize wgsl shader for size of data and type of scan */
-  @reactively template!: BinOpTemplate;
+  @reactively template!: BinOpTemplate2;
 
   /** emit the final value of each block into a separate output buffer. (true) */
   @reactively emitBlockSums!: boolean;
@@ -154,6 +155,10 @@ export class WorkgroupScan extends HasReactive implements ComposableShader {
     return this.forceMaxWorkgroups ?? this.device.limits.maxComputeWorkgroupsPerDimension;
   }
 
+  @reactively private get registry(): ModuleRegistry {
+    return new ModuleRegistry(this.template.wgsl);
+  }
+
   @reactively private get pipeline(): GPUComputePipeline {
     const sumsBinding: BindingEntry[] = this.emitBlockSums
       ? [{ buffer: { type: "storage" } }]
@@ -163,7 +168,8 @@ export class WorkgroupScan extends HasReactive implements ComposableShader {
       {
         device: this.device,
         label: this.label,
-        wgsl,
+        wgsl: workgroupScanWgsl,
+        registry: this.registry,
         wgslParams: {
           ...this.template,
           workgroupSizeX: this.workgroupLength,

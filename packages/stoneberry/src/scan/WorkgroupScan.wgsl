@@ -25,12 +25,29 @@
 // summation of the first and last layers is handled separately because they read/write 
 //   between storage and workgroup memory.
 
+
+// #import loadOp(Input, Output)
+// #import identityOp(Output)
+// #import binaryOp(Output)
+
+// #if typecheck
+fn loadOp(a: Input) -> Output { return Output(a.sum);  }
+fn identityOp() -> Output { return Output(0); }
+fn binaryOp(a: Output, b: Output) -> Output { return Output(0);  }
+// #endif
+
 struct Input { 
-    sum: u32,  //! "sum: u32,"=inputStruct 
+// #import LoadElemFields
+// #if typecheck
+    sum: u32,  
+// #endif
 }
 
 struct Output { 
-    sum: u32,  //! "sum: u32,"=outputStruct 
+// #import ElemFields
+// #if typecheck
+    sum: u32,  
+// #endif
 }
 
 struct Uniforms {
@@ -193,16 +210,4 @@ fn sumFinalLayerB(localX: u32, destDex: u32, workGridX: u32) {
             blockSum[workGridX] = result;                                       //! IF blockSums
         }                                                                       //! IF blockSums
     }
-}
-
-fn loadOp(a: Input) -> Output {
-    return Output(a.sum);  //! "return Output(a.sum);"=loadOp
-}
-
-fn identityOp() -> Output {
-    return Output(0); //! "return Output(0);"=identityOp
-}
-
-fn binaryOp(a: Output, b: Output) -> Output {
-    return Output(a.sum + b.sum);  //! "return Output(a.sum + b.sum);"=binaryOp
 }
