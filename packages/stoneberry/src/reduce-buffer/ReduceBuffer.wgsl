@@ -1,3 +1,4 @@
+// #template thimb2
 // #import reduceWorkgroup(work, Output, workgroupThreads)
 // #import binaryOp(Output)
 // #import loadOp(Input, Output)
@@ -35,7 +36,7 @@ struct Uniforms {
 @group(0) @binding(11) var<storage, read_write> debug: array<f32>; // buffer to hold debug values
 
 
-const workgroupThreads= 4; //! 4=workgroupThreads
+const workgroupThreads= 4; // #replace 4=workgroupThreads
 
 var <workgroup> work: array<Output, workgroupThreads>; 
 
@@ -79,11 +80,11 @@ fn reduceBufferToWork(grid: vec2<u32>, localId: u32) {
 // Current benchmarks are near the practical limit on memory bandwidth on my m1max 
 // theoretical limit is 400gb/sec, practical reports of 330 gb/sec for native apps,
 // and we're at 320 gb/sec.
-fn fetchSrcBuffer(gridX: u32) -> array<Output, 4> {  //! 4=blockArea
-    let start = u.sourceOffset + (gridX * 4u); //! 4=blockArea
+fn fetchSrcBuffer(gridX: u32) -> array<Output, 4> {  // #replace 4=blockArea
+    let start = u.sourceOffset + (gridX * 4u); // #replace 4=blockArea
     let end = arrayLength(&src);
-    var a = array<Output,4>(); //! 4=blockArea
-    for (var i = 0u; i < 4u; i = i + 1u) { //! 4=blockArea
+    var a = array<Output,4>(); // #replace 4=blockArea
+    for (var i = 0u; i < 4u; i = i + 1u) { // #replace 4=blockArea
         var idx = i + start;
         if idx < end {
             a[i] = loadOp(src[idx]);
@@ -104,7 +105,7 @@ fn fetchSrcBuffer(gridX: u32) -> array<Output, 4> {  //! 4=blockArea
 //             ...
 fn reduceWorkgroupToOut(outDex: u32, localId: u32) {
     let workDex = localId << 1u;
-    for (var step = 1u; step < 4u; step <<= 1u) { //! 4=workgroupThreads
+    for (var step = 1u; step < 4u; step <<= 1u) { // #replace 4=workgroupThreads
         workgroupBarrier();
         if localId % step == 0u {
             work[workDex] = binaryOp(work[workDex], work[workDex + step]);
@@ -121,9 +122,9 @@ fn reduceWorkgroupToOut(outDex: u32, localId: u32) {
 // but at the cost of some memory coherence. It was slightly slower in limited 
 // benchmarking on an M1Max, but worth exploring further.
 
-fn reduceSrcBlock(a: array<Output, 4>) -> Output { //! 4=blockArea
+fn reduceSrcBlock(a: array<Output, 4>) -> Output { // #replace 4=blockArea
     var v = a[0];
-    for (var i = 1u; i < 4u; i = i + 1u) { //! 4=blockArea
+    for (var i = 1u; i < 4u; i = i + 1u) { // #replace 4=blockArea
         v = binaryOp(v, a[i]);
     }
     return v;
