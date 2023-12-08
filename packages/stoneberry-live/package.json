@@ -36,7 +36,7 @@
     "stoneberry": "workspace:^",
     "stoneberry-examples": "workspace:*",
     "sucrase": "^3.34.0",
-    "thimbleberry": "^0.2.2"
+    "thimbleberry": "^0.2.9"
   },
   "peerDependencies": {
     "react": ">=17",

@@ -14,8 +14,6 @@
   },
   "pnpm": {
     "overrides": {
-      "wgsl-linker": "link:../thimbleberry/packages/linker",
-      "thimbleberry": "link:../thimbleberry",
       "react": "17.0.2",
       "react-dom": "17.0.2"
     }

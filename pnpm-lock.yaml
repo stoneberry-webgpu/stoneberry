@@ -5,8 +5,6 @@ settings:
   excludeLinksFromLockfile: false
 
 overrides:
-  wgsl-linker: link:../thimbleberry/packages/linker
-  thimbleberry: link:../thimbleberry
   react: 17.0.2
   react-dom: 17.0.2
 
@@ -20,8 +18,8 @@ importers:
         specifier: workspace:*
         version: link:../stoneberry
       thimbleberry:
-        specifier: link:../../../thimbleberry
-        version: link:../../../thimbleberry
+        specifier: ^0.2.9
+        version: 0.2.9
     devDependencies:
       '@webgpu/types':
         specifier: ^0.1.32
@@ -97,8 +95,8 @@ importers:
         specifier: workspace:^
         version: link:../stoneberry
       thimbleberry:
-        specifier: link:../../../thimbleberry
-        version: link:../../../thimbleberry
+        specifier: ^0.2.9
+        version: 0.2.9
     devDependencies:
       '@webgpu/types':
         specifier: ^0.1.32
@@ -131,11 +129,11 @@ importers:
         specifier: ^3.1.3
         version: 3.1.3
       thimbleberry:
-        specifier: link:../../../thimbleberry
-        version: link:../../../thimbleberry
+        specifier: ^0.2.9
+        version: 0.2.9
       wgsl-linker:
-        specifier: link:../../../thimbleberry/packages/linker
-        version: link:../../../thimbleberry/packages/linker
+        specifier: ^0.2.0
+        version: 0.2.0
     devDependencies:
       '@typescript-eslint/eslint-plugin':
         specifier: ^5.59.9
@@ -225,8 +223,8 @@ importers:
         specifier: ^3.34.0
         version: 3.34.0
       thimbleberry:
-        specifier: link:../../../thimbleberry
-        version: link:../../../thimbleberry
+        specifier: ^0.2.9
+        version: 0.2.9
     devDependencies:
       '@types/node':
         specifier: ^20.4.4
@@ -5115,6 +5113,10 @@ packages:
       '@nodelib/fs.scandir': 2.1.5
       fastq: 1.15.0
 
+  /@petamoriken/float16@3.8.4:
+    resolution: {integrity: sha512-kB+NJ5Br56ZhElKsf0pM7/PQfrDdDVMRz8f0JM6eVOGE+L89z9hwcst9QvWBBnazzuqGTGtPsJNZoQ1JdNiGSQ==}
+    dev: false
+
   /@pkgjs/parseargs@0.11.0:
     resolution: {integrity: sha512-+1VkjdD0QBLPodGrJUeqarH8VAIvQODIbwh9XpP5Syisf7YoQgsJKPNFoqqLQlu+VQ/tVSshMR6loPMn8U+dPg==}
     engines: {node: '>=14'}
@@ -6760,7 +6762,6 @@ packages:
 
   /berry-pretty@0.0.4:
     resolution: {integrity: sha512-vgzAZsecAZ6MTAUsw2O6QdVDlrqRdnOoouY9V876Tgp1EC3jKE+Xqu9P7uGW0vF7JFGlyLnrVVWKmnPHMczHOQ==}
-    dev: true
 
   /big-integer@1.6.51:
     resolution: {integrity: sha512-GPEid2Y9QU1Exl1rpO9B2IPJGHPSupF5GnVIP0blYvNOMer2bTvSWs1jGOUg04hTmu67nmLsQ9TBo1puaotBHg==}
@@ -16196,6 +16197,16 @@ packages:
       any-promise: 1.3.0
     dev: false
 
+  /thimbleberry@0.2.9:
+    resolution: {integrity: sha512-m1vB5d3VunjmaoDFk5e7YDm+EI1GIHdWyJgh9ELbfGuArb49mr3mXqARoEbUKwKEMnIs+Kc+aikIfgQ2VQKeYg==}
+    dependencies:
+      '@petamoriken/float16': 3.8.4
+      '@reactively/core': 0.0.8
+      '@reactively/decorate': 0.0.4
+      berry-pretty: 0.0.4
+      fast-deep-equal: 3.1.3
+    dev: false
+
   /throttleit@1.0.0:
     resolution: {integrity: sha512-rkTVqu6IjfQ/6+uNuuc3sZek4CEYxTJom3IktzgdSxcZqdARuebbA/f4QmAxMQIxqq9ZLEUkSYqvuk1I6VKq4g==}
     dev: true
@@ -17413,6 +17424,10 @@ packages:
   /websocket-extensions@0.1.4:
     resolution: {integrity: sha512-OqedPIGOfsDlo31UNwYbCFMSaO9m9G/0faIHj5/dZFDMFqPTcx6UwqyOy3COEaEOg/9VsGIpdqn62W5KhoKSpg==}
     engines: {node: '>=0.8.0'}
+
+  /wgsl-linker@0.2.0:
+    resolution: {integrity: sha512-ewhKrHgX6qSojIg0Y+1E6wwSsgv0QXD5Ri/vT+Xps5bIeBaIH789lE+Vnkt2Uery/hLrTtCzc72466aPIBhPog==}
+    dev: false
 
   /whatwg-url@5.0.0:
     resolution: {integrity: sha512-saE57nupxk6v3HY35+jzBwYa0rKSy0XR8JSxZPwgLr7ys0IBzhGviA1/TUGJLmSVqs8pb9AnvICXEuOHLprYTw==}
