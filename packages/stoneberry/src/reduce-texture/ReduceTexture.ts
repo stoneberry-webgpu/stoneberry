@@ -9,7 +9,7 @@ import {
   trackContext,
 } from "thimbleberry";
 import { ReduceBuffer } from "../reduce-buffer/ReduceBuffer.js";
-import { BinOpTemplate2 } from "../util/BinOpModules.js";
+import { BinOpModule } from "../util/BinOpModules.js";
 import { ComponentName, LoadComponent, texelLoader } from "../util/LoadTemplate.js";
 import { runAndFetchResult } from "../util/RunAndFetch.js";
 import { ReduceTextureToBuffer } from "./ReduceTextureToBuffer.js";
@@ -35,7 +35,7 @@ export interface ReduceTextureParams {
   forceWorkgroupSize?: Vec2;
 
   /** {@inheritDoc ReduceTexture#reduceTemplate} */
-  reduceTemplate: BinOpTemplate2;
+  reduceTemplate: BinOpModule;
 
   /** {@inheritDoc ReduceTexture#sourceComponent} */
   sourceComponent?: ComponentName | LoadComponent;
@@ -81,7 +81,7 @@ export class ReduceTexture extends HasReactive implements ComposableShader {
   @reactively forceWorkgroupSize!: Vec2 | undefined;
 
   /** wgsl macros for a binary operation to reduce two elements to one */
-  @reactively reduceTemplate!: BinOpTemplate2;
+  @reactively reduceTemplate!: BinOpModule;
 
   /** select or synthesize a component from the source texture */
   @reactively sourceComponent!: ComponentName | LoadComponent;

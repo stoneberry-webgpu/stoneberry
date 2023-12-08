@@ -1,8 +1,8 @@
 import { applyTemplate } from "wgsl-linker/replace-template";
-import { BinOpTemplate2 } from "./BinOpModules.js";
+import { BinOpModule } from "./BinOpModules.js";
 import histogramWgsl from "./HistogramOps.wgsl?raw";
 
-export interface HistogramTemplate2 extends BinOpTemplate2 {
+export interface HistogramTemplate2 extends BinOpModule {
   buckets: number;
 }
 

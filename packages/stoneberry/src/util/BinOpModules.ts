@@ -5,7 +5,7 @@ import maxF32wgsl from "./BinOpMaxF32.wgsl?raw";
 import minMaxF32wgsl from "./BinOpMinMaxF32.wgsl?raw";
 
 /** Snippets of wgsl text to substitue in the wgsl shader for given scan type */
-export interface BinOpTemplate2 extends OutputTemplate {
+export interface BinOpModule {
   wgsl: string;
 
   /** size of output structure in bytes */
@@ -13,35 +13,33 @@ export interface BinOpTemplate2 extends OutputTemplate {
 
   /** size of input structure in bytes */
   inputElementSize: number;
-}
 
-export interface OutputTemplate {
   /** format of output elements, required for copying results back to cpu */
   outputElements?: GPUElementFormat;
 }
 
-export const sumU32: BinOpTemplate2 = {
+export const sumU32: BinOpModule = {
   wgsl: sumU32wgsl,
   outputElementSize: 4,
   inputElementSize: 4,
   outputElements: "u32",
 };
 
-export const sumF32: BinOpTemplate2 = {
+export const sumF32: BinOpModule = {
   wgsl: sumF32wgsl,
   inputElementSize: 4,
   outputElementSize: 4,
   outputElements: "f32",
 };
 
-export const maxF32: BinOpTemplate2 = {
+export const maxF32: BinOpModule = {
   wgsl: maxF32wgsl,
   inputElementSize: 4,
   outputElementSize: 4,
   outputElements: "f32",
 };
 
-export const minMaxF32: BinOpTemplate2 = {
+export const minMaxF32: BinOpModule = {
   wgsl: minMaxF32wgsl,
   inputElementSize: 8,
   outputElementSize: 8,

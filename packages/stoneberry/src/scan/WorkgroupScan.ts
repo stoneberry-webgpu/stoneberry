@@ -12,7 +12,7 @@ import { calcDispatchSizes } from "../util/DispatchSizes.js";
 import { Cache, ComposableShader, ValueOrFn } from "../util/Util.js";
 import workgroupScanWgsl from "./WorkgroupScan.wgsl?raw";
 import { ModuleRegistry } from "wgsl-linker";
-import { BinOpTemplate2, sumU32 } from "../util/BinOpModules.js";
+import { BinOpModule, sumU32 } from "../util/BinOpModules.js";
 
 /** @internal */
 export interface WorkgroupScanArgs {
@@ -22,7 +22,7 @@ export interface WorkgroupScanArgs {
   forceWorkgroupLength?: ValueOrFn<number>;
   forceMaxWorkgroups?: ValueOrFn<number | undefined>;
   label?: ValueOrFn<string>;
-  template?: ValueOrFn<BinOpTemplate2>;
+  template?: ValueOrFn<BinOpModule>;
   exclusiveSmall?: boolean;
   initialValue?: ValueOrFn<number>;
   sourceOffset?: ValueOrFn<number>;
@@ -61,7 +61,7 @@ export class WorkgroupScan extends HasReactive implements ComposableShader {
   @reactively source!: GPUBuffer;
 
   /** macros to customize wgsl shader for size of data and type of scan */
-  @reactively template!: BinOpTemplate2;
+  @reactively template!: BinOpModule;
 
   /** emit the final value of each block into a separate output buffer. (true) */
   @reactively emitBlockSums!: boolean;

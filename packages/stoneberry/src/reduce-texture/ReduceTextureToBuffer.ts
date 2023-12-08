@@ -15,7 +15,7 @@ import {
 } from "thimbleberry";
 import { ModuleRegistry } from "wgsl-linker";
 import reduceWorkgroup from "../reduce-buffer/reduceWorkgroup.wgsl?raw";
-import { BinOpTemplate2 } from "../util/BinOpModules.js";
+import { BinOpModule } from "../util/BinOpModules.js";
 import { computePipeline } from "../util/ComputePipeline.js";
 import { maxWorkgroupSize } from "../util/LimitWorkgroupSize.js";
 import { ComponentName, LoadComponent } from "../util/LoadTemplate.js";
@@ -32,7 +32,7 @@ export interface TextureToBufferParams {
   source: ValueOrFn<GPUTexture>;
 
   /** {@inheritDoc ReduceTextureToBuffer#reduceTemplate} */
-  reduceTemplate: BinOpTemplate2;
+  reduceTemplate: BinOpModule;
 
   /** {@inheritDoc ReduceTextureToBuffer#blockSize} */
   blockSize?: Vec2;
@@ -70,7 +70,7 @@ export class ReduceTextureToBuffer extends HasReactive implements ComposableShad
   @reactively source!: GPUTexture;
 
   /** macros to customize wgsl shader for size of data and type of reduce*/
-  @reactively reduceTemplate!: BinOpTemplate2;
+  @reactively reduceTemplate!: BinOpModule;
 
   /** macros to select component from vec4 */
   @reactively loadComponent!: LoadComponent;

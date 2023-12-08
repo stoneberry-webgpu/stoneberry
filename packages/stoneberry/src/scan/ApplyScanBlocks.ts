@@ -11,7 +11,7 @@ import { computePipeline } from "../util/ComputePipeline.js";
 import { calcDispatchSizes } from "../util/DispatchSizes.js";
 import { Cache, ComposableShader } from "../util/Util.js";
 import wgsl from "./ApplyScanBlocks.wgsl?raw";
-import { BinOpTemplate2, sumU32 } from "../util/BinOpModules.js";
+import { BinOpModule, sumU32 } from "../util/BinOpModules.js";
 import { ModuleRegistry } from "wgsl-linker";
 
 /** @internal */
@@ -22,7 +22,7 @@ export interface ApplyScanBlocksArgs {
   forceWorkgroupLength?: number;
   forceMaxWorkgroups?: number | undefined;
   label?: string;
-  template?: BinOpTemplate2;
+  template?: BinOpModule;
   exclusiveLarge?: boolean;
   initialValue?: number;
   partialScanOffset?: number;
@@ -49,7 +49,7 @@ export class ApplyScanBlocks extends HasReactive implements ComposableShader {
   @reactively partialScan!: GPUBuffer;
   @reactively blockSums!: GPUBuffer;
   @reactively forceWorkgroupLength?: number;
-  @reactively template!: BinOpTemplate2;
+  @reactively template!: BinOpModule;
   @reactively label!: string;
   @reactively exclusiveLarge!: boolean;
   @reactively initialValue!: number;

@@ -10,7 +10,7 @@ import {
   trackContext,
 } from "thimbleberry";
 import { ModuleRegistry } from "wgsl-linker";
-import { BinOpTemplate2 } from "../util/BinOpModules.js";
+import { BinOpModule } from "../util/BinOpModules.js";
 import { computePipeline } from "../util/ComputePipeline.js";
 import { SlicingResults, inputSlicing } from "../util/InputSlicing.js";
 import { runAndFetchResult } from "../util/RunAndFetch.js";
@@ -43,7 +43,7 @@ export interface BufferReduceParams {
   forceMaxWorkgroups?: number | undefined;
 
   /** {@inheritDoc ReduceBuffer#template2} */
-  template2: BinOpTemplate2;
+  template2: BinOpModule;
 
   /** cache for GPUComputePipeline */
   pipelineCache?: <T extends object>() => Cache<T>;
@@ -73,7 +73,7 @@ export class ReduceBuffer extends HasReactive implements ComposableShader {
   @reactively source!: GPUBuffer;
 
   /** macros to customize wgsl shader for size of data and type of reduce*/
-  @reactively template2!: BinOpTemplate2;
+  @reactively template2!: BinOpModule;
 
   /** Debug label attached to gpu objects for error reporting */
   @reactively label?: string;
