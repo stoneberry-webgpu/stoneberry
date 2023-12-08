@@ -74,12 +74,6 @@ fn reduceBufferToWork(grid: vec2<u32>, localId: u32) {
     work[localId] = v;
 }
 
-// LATER benchmark striping/striding could reduce memory bank conflict
-// might be useful on other hardware.
-//
-// Current benchmarks are near the practical limit on memory bandwidth on my m1max 
-// theoretical limit is 400gb/sec, practical reports of 330 gb/sec for native apps,
-// and we're at 320 gb/sec.
 fn fetchSrcBuffer(gridX: u32) -> array<Output, 4> {  // #replace 4=blockArea
     let start = u.sourceOffset + (gridX * 4u); // #replace 4=blockArea
     let end = arrayLength(&src);
@@ -95,32 +89,6 @@ fn fetchSrcBuffer(gridX: u32) -> array<Output, 4> {  // #replace 4=blockArea
 
     return a;
 }
-
-// Reduce workgroup stored values to a single value in parallel
-// using the pattern:
-//   iter 1  0 = 0 + 1 
-//           2 = 2 + 3
-//             ...
-//   iter 2  0 = 0 + 2
-//             ...
-fn reduceWorkgroupToOut(outDex: u32, localId: u32) {
-    let workDex = localId << 1u;
-    for (var step = 1u; step < 4u; step <<= 1u) { // #replace 4=workgroupThreads
-        workgroupBarrier();
-        if localId % step == 0u {
-            work[workDex] = binaryOp(work[workDex], work[workDex + step]);
-        }
-    }
-    if localId == 0u {
-        out[outDex] = work[0];
-    }
-}
-
-
-// I tried an alternate pattern in 15169571 that allows the driver to 
-// reuse free threads by coalescing the free thread ids into a contiguous block,
-// but at the cost of some memory coherence. It was slightly slower in limited 
-// benchmarking on an M1Max, but worth exploring further.
 
 fn reduceSrcBlock(a: array<Output, 4>) -> Output { // #replace 4=blockArea
     var v = a[0];
