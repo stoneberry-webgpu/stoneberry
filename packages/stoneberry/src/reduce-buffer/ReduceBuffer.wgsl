@@ -30,13 +30,12 @@ struct Uniforms {
     resultOffset: u32,        // offset in Output elements to start writing in the results
 }
 
-@group(0) @binding(0) var<uniform> u: Uniforms;                     // uniforms
+@group(0) @binding(0) var<uniform> u: Uniforms;                     
 @group(0) @binding(1) var<storage, read> src: array<Input>; 
 @group(0) @binding(2) var<storage, read_write> out: array<Output>;  
 @group(0) @binding(11) var<storage, read_write> debug: array<f32>; // buffer to hold debug values
 
-
-const workgroupThreads= 4; // #replace 4=workgroupThreads
+const workgroupThreads= 4;                          // #replace 4=workgroupThreads
 
 var <workgroup> work: array<Output, workgroupThreads>; 
 
@@ -74,11 +73,11 @@ fn reduceBufferToWork(grid: vec2<u32>, localId: u32) {
     work[localId] = v;
 }
 
-fn fetchSrcBuffer(gridX: u32) -> array<Output, 4> {  // #replace 4=blockArea
-    let start = u.sourceOffset + (gridX * 4u); // #replace 4=blockArea
+fn fetchSrcBuffer(gridX: u32) -> array<Output, 4> {   // #replace 4=blockArea
+    let start = u.sourceOffset + (gridX * 4u);   // #replace 4=blockArea
     let end = arrayLength(&src);
     var a = array<Output,4>(); // #replace 4=blockArea
-    for (var i = 0u; i < 4u; i = i + 1u) { // #replace 4=blockArea
+    for (var i = 0u; i < 4u; i = i + 1u) {  // #replace 4=blockArea
         var idx = i + start;
         if idx < end {
             a[i] = loadOp(src[idx]);
@@ -90,7 +89,7 @@ fn fetchSrcBuffer(gridX: u32) -> array<Output, 4> {  // #replace 4=blockArea
     return a;
 }
 
-fn reduceSrcBlock(a: array<Output, 4>) -> Output { // #replace 4=blockArea
+fn reduceSrcBlock(a: array<Output, 4>) -> Output {   // #replace 4=blockArea
     var v = a[0];
     for (var i = 1u; i < 4u; i = i + 1u) { // #replace 4=blockArea
         v = binaryOp(v, a[i]);
