@@ -1,5 +1,6 @@
-// placeholder for typechecking
 var <workgroup> work:array<Elem, 18>; 
+struct Elem { sum: u32; }
+fn binaryOp(a: Elem, b: Elem) -> Elem {}
 
 // #template replacer
 
@@ -15,8 +16,3 @@ fn reduceWorkgroup(localId: u32) {
 }
 
 // #import binaryOp(Elem)
-
-// #if typecheck
-struct Elem { sum: u32; }
-fn binaryOp(a: Elem, b: Elem) -> Elem {}
-// #endif
