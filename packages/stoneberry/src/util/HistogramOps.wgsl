@@ -1,4 +1,4 @@
-// #template thimb2
+// #template replacer
 struct LoadElem {
 // #export LoadElemFields
     histogram: array<u32, 128>,                       // #replace 128=buckets

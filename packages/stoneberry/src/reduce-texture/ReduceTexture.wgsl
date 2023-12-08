@@ -1,4 +1,4 @@
-// #template thimb2
+// #template replacer
 
 // #import reduceWorkgroup(work, Output, workgroupThreads)
 // #import binaryOp(Output)

@@ -7,7 +7,7 @@
 // . one for the histogram (counts) per bucket
 // . one for the sum per bucket
 // 
-// #template thimb2
+// #template replacer
 
 // #import loadTexel
 

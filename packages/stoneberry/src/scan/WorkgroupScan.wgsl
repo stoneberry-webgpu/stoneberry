@@ -25,7 +25,7 @@
 // summation of the first and last layers is handled separately because they read/write 
 //   between storage and workgroup memory.
 
-// #template thimb2
+// #template replacer
 
 // #import loadOp(Input, Output)
 // #import identityOp(Output)

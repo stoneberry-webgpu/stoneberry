@@ -1,4 +1,4 @@
-// #template thimb2
+// #template replacer
 
 // #import binaryOp(Output)
 // #if typecheck

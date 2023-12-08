@@ -1,6 +1,6 @@
 import { memoizeWithDevice } from "thimbleberry";
 import { ModuleRegistry, linkWgsl } from "wgsl-linker";
-import { thimbTemplate } from "wgsl-linker/replace-template";
+import { replacerTemplate } from "wgsl-linker/replace-template";
 
 export type BindingEntry =
   | Pick<GPUBindGroupLayoutEntry, "buffer">
@@ -65,7 +65,7 @@ function makeComputePipeline(args: ComputePipelineArgs): ComputePipelineResults 
     entries,
   });
 
-  registry?.registerTemplate(thimbTemplate);
+  registry?.registerTemplate(replacerTemplate);
   const linkedWgsl = registry ? linkWgsl(wgsl, registry, wgslParams) : wgsl;
 
   if (logShader) {
