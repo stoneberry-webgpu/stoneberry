@@ -31,8 +31,8 @@ export interface TextureToBufferParams {
    */
   source: ValueOrFn<GPUTexture>;
 
-  /** {@inheritDoc ReduceTextureToBuffer#reduceTemplate} */
-  reduceTemplate: BinOpModule;
+  /** {@inheritDoc ReduceTextureToBuffer#binOps} */
+  binOps: BinOpModule;
 
   /** {@inheritDoc ReduceTextureToBuffer#blockSize} */
   blockSize?: Vec2;
@@ -70,7 +70,7 @@ export class ReduceTextureToBuffer extends HasReactive implements ComposableShad
   @reactively source!: GPUTexture;
 
   /** macros to customize wgsl shader for size of data and type of reduce*/
-  @reactively reduceTemplate!: BinOpModule;
+  @reactively binOps!: BinOpModule;
 
   /** macros to select component from vec4 */
   @reactively loadComponent!: LoadComponent;
@@ -113,7 +113,7 @@ export class ReduceTextureToBuffer extends HasReactive implements ComposableShad
 
   /** results of the reduction from frame to service */
   @reactively get reducedResult(): GPUBuffer {
-    const size = this.resultElems * this.reduceTemplate.outputElementSize;
+    const size = this.resultElems * this.binOps.outputElementSize;
     const buffer = this.device.createBuffer({
       label: "texture reduce result buffer",
       size,
@@ -139,7 +139,7 @@ export class ReduceTextureToBuffer extends HasReactive implements ComposableShad
   }
 
   @reactively private get registry(): ModuleRegistry {
-    const registry = new ModuleRegistry(reduceWorkgroup, this.reduceTemplate.wgsl);
+    const registry = new ModuleRegistry(reduceWorkgroup, this.binOps.wgsl);
     const loadWgsl = this.loadComponent;
     if (loadWgsl.kind === "template") {
       registry.registerModules(loadWgsl.wgsl);
@@ -169,7 +169,7 @@ export class ReduceTextureToBuffer extends HasReactive implements ComposableShad
           blockWidth: blockSize[0],
           blockHeight: blockSize[1],
           blockArea: blockSize[0] * blockSize[1],
-          ...this.reduceTemplate,
+          ...this.binOps,
           ...this.loadComponent,
         },
         registry: this.registry,

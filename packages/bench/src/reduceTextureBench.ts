@@ -17,7 +17,7 @@ export async function reduceTextureBench(
   const reduce = new ReduceTexture({
     device,
     source: texture,
-    reduceTemplate: sumU32,
+    binOps: sumU32,
     sourceComponent: "r",
     forceWorkgroupSize: [32, 8],
     blockSize: [2, 2],

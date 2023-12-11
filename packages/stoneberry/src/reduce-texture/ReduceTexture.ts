@@ -34,8 +34,8 @@ export interface ReduceTextureParams {
   /** {@inheritDoc ReduceTexture#forceWorkgroupSize} */
   forceWorkgroupSize?: Vec2;
 
-  /** {@inheritDoc ReduceTexture#reduceTemplate} */
-  reduceTemplate: BinOpModule;
+  /** {@inheritDoc ReduceTexture#binOps} */
+  binOps: BinOpModule;
 
   /** {@inheritDoc ReduceTexture#sourceComponent} */
   sourceComponent?: ComponentName | LoadComponent;
@@ -81,7 +81,7 @@ export class ReduceTexture extends HasReactive implements ComposableShader {
   @reactively forceWorkgroupSize!: Vec2 | undefined;
 
   /** wgsl macros for a binary operation to reduce two elements to one */
-  @reactively reduceTemplate!: BinOpModule;
+  @reactively binOps!: BinOpModule;
 
   /** select or synthesize a component from the source texture */
   @reactively sourceComponent!: ComponentName | LoadComponent;
@@ -112,7 +112,7 @@ export class ReduceTexture extends HasReactive implements ComposableShader {
    */
   async reduce(): Promise<number[]> {
     const label = `${this.label} reduceTexture`;
-    return runAndFetchResult(this, this.reduceTemplate.outputElements!, label);
+    return runAndFetchResult(this, this.binOps.outputElements!, label);
   }
 
   /** result of the final reduction pass, one element in size */
@@ -142,7 +142,7 @@ export class ReduceTexture extends HasReactive implements ComposableShader {
       source: () => this.source,
       blockSize: this.blockSize,
       forceWorkgroupSize: this.forceWorkgroupSize,
-      reduceTemplate: this.reduceTemplate,
+      binOps: this.binOps,
       loadComponent: this.loadComponent,
       pipelineCache: this.pipelineCache,
       componentName,
@@ -163,7 +163,7 @@ export class ReduceTexture extends HasReactive implements ComposableShader {
       label: this.label,
       blockLength: this.bufferBlockLength,
       pipelineCache: this.pipelineCache,
-      binOp: this.reduceTemplate,
+      binOp: this.binOps,
     });
     reactiveTrackUse(shader, this.usageContext);
 

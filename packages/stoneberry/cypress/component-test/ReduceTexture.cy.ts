@@ -23,7 +23,7 @@ it("reduce texture, no internal reduction", async () => {
         device,
         source,
         blockSize: [2, 2],
-        reduceTemplate: sumF32,
+        binOps: sumF32,
         sourceComponent: "r",
       });
       trackUse(shader);
@@ -50,7 +50,7 @@ it("reduce texture, with buffer reduction", async () => {
         blockSize: [2, 2],
         bufferBlockLength: 4,
         forceWorkgroupSize: [2, 2],
-        reduceTemplate: sumF32,
+        binOps: sumF32,
         sourceComponent: "r",
       });
       trackUse(shader);

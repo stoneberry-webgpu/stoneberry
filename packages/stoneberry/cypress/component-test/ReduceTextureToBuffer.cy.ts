@@ -28,7 +28,7 @@ it("reduce texture to buffer, workgroup size = 1", async () => {
         source,
         blockSize: [2, 2],
         forceWorkgroupSize: [1, 1],
-        reduceTemplate: sumF32,
+        binOps: sumF32,
         loadComponent: loadTexelCodeGen("r"),
       });
       trackUse(rt);
@@ -55,7 +55,7 @@ it("reduce texture to buffer, workgroup size = 4", async () => {
         source,
         blockSize: [2, 2],
         forceWorkgroupSize: [2, 2], // shader will need reduce buffer to out buffer
-        reduceTemplate: sumF32,
+        binOps: sumF32,
         loadComponent: loadTexelCodeGen("r"),
       });
       trackUse(tr);
@@ -83,7 +83,7 @@ it("reduce texture to buffer, min/max workgroup size = 4", async () => {
         source,
         blockSize: [2, 2],
         forceWorkgroupSize: [2, 2],
-        reduceTemplate: minMaxF32,
+        binOps: minMaxF32,
         loadComponent: loadTexelCodeGen("r", 2),
       });
       trackUse(rt);
@@ -111,7 +111,7 @@ it("reduce texture to buffer, r32uint", async () => {
         source,
         blockSize: [2, 2],
         forceWorkgroupSize: [2, 2],
-        reduceTemplate: sumU32,
+        binOps: sumU32,
         loadComponent: loadTexelCodeGen("r"),
       });
       trackUse(rt);
