@@ -22,7 +22,7 @@ export interface WorkgroupScanArgs {
   forceWorkgroupLength?: ValueOrFn<number>;
   forceMaxWorkgroups?: ValueOrFn<number | undefined>;
   label?: ValueOrFn<string>;
-  template?: ValueOrFn<BinOpModule>;
+  binOps?: ValueOrFn<BinOpModule>;
   exclusiveSmall?: boolean;
   initialValue?: ValueOrFn<number>;
   sourceOffset?: ValueOrFn<number>;
@@ -35,7 +35,7 @@ const defaults: Partial<WorkgroupScanArgs> = {
   emitBlockSums: true,
   pipelineCache: undefined,
   label: "",
-  template: sumU32,
+  binOps: sumU32,
   exclusiveSmall: false,
   initialValue: 0,
   forceMaxWorkgroups: undefined,
@@ -57,11 +57,11 @@ const defaults: Partial<WorkgroupScanArgs> = {
  * @internal
  */
 export class WorkgroupScan extends HasReactive implements ComposableShader {
-  /** source data to be scanned. Data element format should match the template. */
+  /** source data to be scanned. Data element format should match the binOps module. */
   @reactively source!: GPUBuffer;
 
   /** macros to customize wgsl shader for size of data and type of scan */
-  @reactively template!: BinOpModule;
+  @reactively binOps!: BinOpModule;
 
   /** emit the final value of each block into a separate output buffer. (true) */
   @reactively emitBlockSums!: boolean;
@@ -156,7 +156,7 @@ export class WorkgroupScan extends HasReactive implements ComposableShader {
   }
 
   @reactively private get registry(): ModuleRegistry {
-    return new ModuleRegistry(this.template.wgsl);
+    return new ModuleRegistry(this.binOps.wgsl);
   }
 
   @reactively private get pipeline(): GPUComputePipeline {
@@ -171,7 +171,7 @@ export class WorkgroupScan extends HasReactive implements ComposableShader {
         wgsl: workgroupScanWgsl,
         registry: this.registry,
         wgslParams: {
-          ...this.template,
+          ...this.binOps,
           workgroupSizeX: this.workgroupLength,
           blockSums: this.emitBlockSums,
         },
