@@ -36,7 +36,7 @@ it("scan sequence: unevenly sized buffer, two workgroups, one level block scanni
     const scan = new PrefixScan({
       device,
       source: makeBuffer(device, srcData, "source", Uint32Array),
-      template: sumU32,
+      binOps: sumU32,
       forceWorkgroupLength: 4,
     });
     const shaderGroup = new ShaderGroup(device, scan);
@@ -67,7 +67,7 @@ it("scan sequence: large buffer, two levels of block scanning", async () => {
     const scan = new PrefixScan({
       device,
       source: makeBuffer(device, srcData, "source", Uint32Array),
-      template: sumU32,
+      binOps: sumU32,
       forceWorkgroupLength: 4,
     });
     const shaderGroup = new ShaderGroup(device, scan);
@@ -92,7 +92,7 @@ it("scan sequence: large buffer, three levels of block scanning", async () => {
       const scan = new PrefixScan({
         device,
         source: makeBuffer(device, srcData, "source", Uint32Array),
-        template: sumU32,
+        binOps: sumU32,
         forceWorkgroupLength: 4,
       });
       trackUse(scan);
@@ -154,7 +154,7 @@ it("scan f32", async () => {
     const expected = inclusiveSum(srcData);
     const source = makeBuffer(device, srcData, "source", Float32Array);
 
-    const scan = new PrefixScan({ device, source, template: sumF32 });
+    const scan = new PrefixScan({ device, source, binOps: sumF32 });
     const result = await scan.scan();
 
     expect(result).deep.equals(expected);

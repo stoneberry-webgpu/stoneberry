@@ -24,8 +24,8 @@ export interface PrefixScanArgs {
    */
   source: ValueOrFn<GPUBuffer>;
 
-  /** {@inheritDoc PrefixScan#template} */
-  template?: BinOpModule;
+  /** {@inheritDoc PrefixScan#binOps} */
+  binOps?: BinOpModule;
 
   /** {@inheritDoc PrefixScan#exclusive} */
   exclusive?: boolean;
@@ -49,7 +49,7 @@ export interface PrefixScanArgs {
 const defaults: Partial<PrefixScanArgs> = {
   forceWorkgroupLength: undefined,
   maxWorkgroups: undefined,
-  template: sumU32,
+  binOps: sumU32,
   pipelineCache: undefined,
   label: "",
   initialValue: 0,
@@ -60,8 +60,8 @@ const defaults: Partial<PrefixScanArgs> = {
  * A cascade of shaders to do a prefix scan operation, based on a shader that
  * does a prefix scan of a workgroup sized chunk of data (e.g. 64 or 256 elements).
  *
- * The scan operation is parameterized by a template mechanism. The user can
- * instantiate a PrefixScan with sum to get prefix-sum, or use another template for
+ * The scan operation is parameterized by the module mechanism. The user can
+ * instantiate a PrefixScan with sum to get prefix-sum, or use another module for
  * other parallel scan applications.
  *
  * For small data sets that fit in workgroup, only a single shader pass is needed.
@@ -81,7 +81,7 @@ const defaults: Partial<PrefixScanArgs> = {
  */
 export class PrefixScan<T = number> extends HasReactive implements ComposableShader {
   /** customize the type of scan (e.g. prefix sum on 32 bit floats) */
-  @reactively template!: BinOpModule;
+  @reactively binOps!: BinOpModule;
 
   /** Source data to be scanned */
   @reactively source!: GPUBuffer;
@@ -146,7 +146,7 @@ export class PrefixScan<T = number> extends HasReactive implements ComposableSha
    */
   async scan(): Promise<number[]> {
     const label = `${this.label} prefixScan`;
-    return runAndFetchResult(this, this.template.outputElements!, label);
+    return runAndFetchResult(this, this.binOps.outputElements!, label);
   }
 
   /** Buffer containing results of the scan after the shader has run. */
@@ -171,7 +171,7 @@ export class PrefixScan<T = number> extends HasReactive implements ComposableSha
       emitBlockSums: true,
       exclusiveSmall,
       initialValue: this.initialValue,
-      binOps: this.template,
+      binOps: this.binOps,
       forceWorkgroupLength: this.forceWorkgroupLength,
       forceMaxWorkgroups: this.maxWorkgroups,
       label: `${this.label} sourceScan`,
@@ -199,7 +199,7 @@ export class PrefixScan<T = number> extends HasReactive implements ComposableSha
         device: this.device,
         source,
         emitBlockSums: !last,
-        binOps: this.template,
+        binOps: this.binOps,
         forceWorkgroupLength: this.forceWorkgroupLength,
         forceMaxWorkgroups: this.maxWorkgroups,
         label: `${this.label} blockScan`,
@@ -248,7 +248,7 @@ export class PrefixScan<T = number> extends HasReactive implements ComposableSha
         device: this.device,
         partialScan: targetPrefixes[i],
         blockSums,
-        binOps: this.template,
+        binOps: this.binOps,
         exclusiveLarge,
         initialValue: this.initialValue,
         forceWorkgroupLength: this.forceWorkgroupLength,
