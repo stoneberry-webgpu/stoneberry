@@ -248,7 +248,7 @@ export class PrefixScan<T = number> extends HasReactive implements ComposableSha
         device: this.device,
         partialScan: targetPrefixes[i],
         blockSums,
-        template: this.template,
+        binOps: this.template,
         exclusiveLarge,
         initialValue: this.initialValue,
         forceWorkgroupLength: this.forceWorkgroupLength,

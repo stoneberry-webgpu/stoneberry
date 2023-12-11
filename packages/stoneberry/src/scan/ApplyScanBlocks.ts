@@ -22,7 +22,7 @@ export interface ApplyScanBlocksArgs {
   forceWorkgroupLength?: number;
   forceMaxWorkgroups?: number | undefined;
   label?: string;
-  template?: BinOpModule;
+  binOps?: BinOpModule;
   exclusiveLarge?: boolean;
   initialValue?: number;
   partialScanOffset?: number;
@@ -32,7 +32,7 @@ export interface ApplyScanBlocksArgs {
 }
 
 const defaults: Partial<ApplyScanBlocksArgs> = {
-  template: sumU32,
+  binOps: sumU32,
   label: "",
   exclusiveLarge: false,
   initialValue: undefined,
@@ -49,7 +49,7 @@ export class ApplyScanBlocks extends HasReactive implements ComposableShader {
   @reactively partialScan!: GPUBuffer;
   @reactively blockSums!: GPUBuffer;
   @reactively forceWorkgroupLength?: number;
-  @reactively template!: BinOpModule;
+  @reactively binOps!: BinOpModule;
   @reactively label!: string;
   @reactively exclusiveLarge!: boolean;
   @reactively initialValue!: number;
@@ -104,7 +104,7 @@ export class ApplyScanBlocks extends HasReactive implements ComposableShader {
   
   
   @reactively private get registry(): ModuleRegistry {
-    return new ModuleRegistry(this.template.wgsl);
+    return new ModuleRegistry(this.binOps.wgsl);
   }
 
   @reactively private get pipeline(): GPUComputePipeline {
@@ -116,7 +116,7 @@ export class ApplyScanBlocks extends HasReactive implements ComposableShader {
         registry: this.registry,
         wgslParams: {
           workgroupSizeX: this.workgroupLength,
-          ...this.template,
+          ...this.binOps,
         },
         bindings: [
           { buffer: { type: "uniform" } },
