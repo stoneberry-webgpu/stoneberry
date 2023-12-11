@@ -65,7 +65,7 @@ const defaults: Partial<BufferReduceParams> = {
  * Reduce a buffer of data to a single value by running an associative
  * binary operation over every element.
  *
- * The binary operation is specified by a template. Possible binary
+ * The binary operation is specified by a BinOpModule. Possible binary
  * operations include sum, min, and max.
  */
 export class ReduceBuffer extends HasReactive implements ComposableShader {
