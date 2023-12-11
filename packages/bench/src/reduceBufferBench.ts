@@ -22,7 +22,7 @@ export async function reduceBufferBench(
   const reduce = new ReduceBuffer({
     device,
     source,
-    template2: sumU32,
+    binOp: sumU32,
     forceWorkgroupLength: 256,
     blockLength: 4,
   });

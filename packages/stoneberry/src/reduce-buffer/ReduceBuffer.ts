@@ -42,8 +42,8 @@ export interface BufferReduceParams {
   /** {@inheritDoc ReduceBuffer#forceMaxWorkgroups} */
   forceMaxWorkgroups?: number | undefined;
 
-  /** {@inheritDoc ReduceBuffer#template2} */
-  template2: BinOpModule;
+  /** {@inheritDoc ReduceBuffer#binOp} */
+  binOp: BinOpModule;
 
   /** cache for GPUComputePipeline */
   pipelineCache?: <T extends object>() => Cache<T>;
@@ -73,7 +73,7 @@ export class ReduceBuffer extends HasReactive implements ComposableShader {
   @reactively source!: GPUBuffer;
 
   /** macros to customize wgsl shader for size of data and type of reduce*/
-  @reactively template2!: BinOpModule;
+  @reactively binOp!: BinOpModule;
 
   /** Debug label attached to gpu objects for error reporting */
   @reactively label?: string;
@@ -152,7 +152,7 @@ export class ReduceBuffer extends HasReactive implements ComposableShader {
    * @returns a single reduced result value in an array
    */
   async reduce(): Promise<number[]> {
-    const format = this.template2.outputElements!;
+    const format = this.binOp.outputElements!;
     return runAndFetchResult(this, format, `${this.label} reduceBuffer`);
   }
 
@@ -208,13 +208,13 @@ export class ReduceBuffer extends HasReactive implements ComposableShader {
 
   @reactively private get sourceReductionBuffer(): GPUBuffer {
     const sourceDispatches = this.sourceReductions.reduce((a, b) => a + b, 0);
-    const sourceSize = sourceDispatches * this.template2.outputElementSize;
+    const sourceSize = sourceDispatches * this.binOp.outputElementSize;
     return this.createBuffer(sourceSize, `S${sourceDispatches}`);
   }
 
   @reactively private get layerReductionBuffers(): GPUBuffer[] {
     return this.layerReductions.map(dispatchSize => {
-      const size = dispatchSize * this.template2.outputElementSize;
+      const size = dispatchSize * this.binOp.outputElementSize;
       return this.createBuffer(size, `L${dispatchSize}`);
     });
   }
@@ -230,7 +230,7 @@ export class ReduceBuffer extends HasReactive implements ComposableShader {
   }
 
   @reactively private get registry(): ModuleRegistry {
-    return new ModuleRegistry(reduceWorkgroup, this.template2.wgsl);
+    return new ModuleRegistry(reduceWorkgroup, this.binOp.wgsl);
   }
 
   /** all dispatches use the same pipeline */
@@ -242,7 +242,7 @@ export class ReduceBuffer extends HasReactive implements ComposableShader {
         wgslParams: {
           workgroupThreads: this.workgroupLength,
           blockArea: this.blockLength,
-          ...this.template2,
+          ...this.binOp,
         },
         registry: this.registry,
         bindings: [
@@ -271,7 +271,7 @@ export class ReduceBuffer extends HasReactive implements ComposableShader {
     const uniforms = this.uniforms;
     // chain source -> result1 -> result2 -> ...
     return this.layerReductionBuffers.map(resultBuf => {
-      const resultElems = resultBuf.size / this.template2.outputElementSize;
+      const resultElems = resultBuf.size / this.binOp.outputElementSize;
       const bindLabel = `${srcElems}`;
       const bindGroup = this.createBindGroup(uniforms, srcBuf, resultBuf, bindLabel);
       srcElems = resultElems;
@@ -333,7 +333,7 @@ export class ReduceBuffer extends HasReactive implements ComposableShader {
 
     // limit on threads based on workgroup storage required
     const storageMaxThreads = Math.floor(
-      device.limits.maxComputeWorkgroupStorageSize / this.template2.outputElementSize
+      device.limits.maxComputeWorkgroupStorageSize / this.binOp.outputElementSize
     );
     // also limit by max threads per workgroup
     const maxThreads = Math.min(
@@ -349,7 +349,7 @@ export class ReduceBuffer extends HasReactive implements ComposableShader {
   }
 
   @reactively private get sourceElems(): number {
-    return this.source.size / this.template2.inputElementSize - this.sourceOffset;
+    return this.source.size / this.binOp.inputElementSize - this.sourceOffset;
   }
 
   @reactively private get maxWorkgroups(): number {

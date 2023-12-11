@@ -17,8 +17,8 @@ it("reduce 2 histograms within one src block", async () => {
     const sourceData = [...histA, ...histB];
     const source = makeBuffer(device, sourceData, "source buffer", Uint32Array);
     const histogramSize = 4;
-    const template2 = histogramTemplate(histogramSize);
-    const shader = new ReduceBuffer({ device, source, template2 });
+    const binOp = histogramTemplate(histogramSize);
+    const shader = new ReduceBuffer({ device, source, binOp });
     trackUse(shader);
 
     const result = await shader.reduce();
@@ -35,11 +35,11 @@ it("reduce histograms across workgroup threads", async () => {
     const sourceData = histograms.flat(2);
     const source = makeBuffer(device, sourceData, "source buffer", Uint32Array);
     const histogramSize = 4;
-    const template2 = histogramTemplate(histogramSize);
+    const binOp = histogramTemplate(histogramSize);
     const shader = new ReduceBuffer({
       device,
       source,
-      template2,
+      binOp,
       blockLength: 2,
     });
     trackUse(shader);
@@ -58,11 +58,11 @@ it("reduce histograms across workgroups (2nd layer)", async () => {
     const sourceData = histograms.flat(2);
     const source = makeBuffer(device, sourceData, "source buffer", Uint32Array);
     const histogramSize = 4;
-    const template2 = histogramTemplate(histogramSize);
+    const binOp = histogramTemplate(histogramSize);
     const shader = new ReduceBuffer({
       device,
       source,
-      template2,
+      binOp,
       forceWorkgroupLength: 2,
       blockLength: 2,
     });

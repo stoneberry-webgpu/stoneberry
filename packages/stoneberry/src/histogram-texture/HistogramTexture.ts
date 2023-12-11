@@ -247,7 +247,7 @@ export class HistogramTexture extends HasReactive implements ComposableShader {
       label: this.label,
       blockLength: this.bufferBlockLength,
       pipelineCache: this.pipelineCache,
-      template2: this.histogramTemplate,
+      binOp: this.histogramTemplate,
     });
     reactiveTrackUse(shader, this.usageContext);
 
@@ -265,7 +265,7 @@ export class HistogramTexture extends HasReactive implements ComposableShader {
       label: this.label,
       blockLength: this.bufferBlockLength,
       pipelineCache: this.pipelineCache,
-      template2: this.histogramTemplate,
+      binOp: this.histogramTemplate,
     });
     reactiveTrackUse(shader, this.usageContext);
 
