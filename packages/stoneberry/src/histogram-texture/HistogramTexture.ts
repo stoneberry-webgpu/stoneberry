@@ -35,8 +35,8 @@ export interface HistogramTextureParams {
   /** {@inheritDoc HistogramTexture#forceWorkgroupSize} */
   forceWorkgroupSize?: Vec2;
 
-  /** {@inheritDoc HistogramTexture#histogramTemplate} */
-  histogramTemplate: HistogramModule;
+  /** {@inheritDoc HistogramTexture#histogramOps} */
+  histogramOps: HistogramModule;
 
   /** {@inheritDoc HistogramTexture#minMaxBuffer} */
   minMaxBuffer?: GPUBuffer;
@@ -97,7 +97,7 @@ export class HistogramTexture extends HasReactive implements ComposableShader {
   /** wgsl macros for histogram reduction and histogram size.
    * Typically call `histogramTemplate()`
    */
-  @reactively histogramTemplate!: HistogramModule;
+  @reactively histogramOps!: HistogramModule;
 
   /** select or synthesize a component from the source texture
    * @defaultValue "r"
@@ -225,7 +225,7 @@ export class HistogramTexture extends HasReactive implements ComposableShader {
       source: () => this.source,
       blockSize: this.blockSize,
       forceWorkgroupSize: this.forceWorkgroupSize,
-      histogramTemplate: this.histogramTemplate,
+      histogramOps: this.histogramOps,
       sourceComponent: this.sourceComponent,
       pipelineCache: this.pipelineCache,
       label: this.label,
@@ -247,7 +247,7 @@ export class HistogramTexture extends HasReactive implements ComposableShader {
       label: this.label,
       blockLength: this.bufferBlockLength,
       pipelineCache: this.pipelineCache,
-      binOp: this.histogramTemplate,
+      binOp: this.histogramOps,
     });
     reactiveTrackUse(shader, this.usageContext);
 
@@ -265,7 +265,7 @@ export class HistogramTexture extends HasReactive implements ComposableShader {
       label: this.label,
       blockLength: this.bufferBlockLength,
       pipelineCache: this.pipelineCache,
-      binOp: this.histogramTemplate,
+      binOp: this.histogramOps,
     });
     reactiveTrackUse(shader, this.usageContext);
 

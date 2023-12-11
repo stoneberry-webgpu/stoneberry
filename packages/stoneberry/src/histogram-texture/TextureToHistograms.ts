@@ -39,8 +39,8 @@ export interface TextureToHistogramsParams {
    */
   minMaxBuffer: ValueOrFn<GPUBuffer>;
 
-  /** {@inheritDoc TextureToHistograms#histogramTemplate} */
-  histogramTemplate: HistogramModule;
+  /** {@inheritDoc TextureToHistograms#histogramOps} */
+  histogramOps: HistogramModule;
 
   /** {@inheritDoc TextureToHistograms#blockSize} */
   blockSize?: Vec2;
@@ -88,7 +88,7 @@ export class TextureToHistograms extends HasReactive implements ComposableShader
   @reactively minMaxBuffer!: GPUBuffer;
 
   /** macros to customize wgsl shader for size of data and size of histogram */
-  @reactively histogramTemplate!: HistogramModule;
+  @reactively histogramOps!: HistogramModule;
 
   /** select or synthesize a component (e.g. r,g,b,a) from the source texture */
   @reactively sourceComponent!: ComponentName | LoadComponent;
@@ -135,7 +135,7 @@ export class TextureToHistograms extends HasReactive implements ComposableShader
 
   /** histogram bucket counts */
   @reactively get histogramsResult(): GPUBuffer {
-    const size = this.resultElems * this.histogramTemplate.outputElementSize;
+    const size = this.resultElems * this.histogramOps.outputElementSize;
     const buffer = this.device.createBuffer({
       label: "texture histograms counts",
       size,
@@ -149,7 +149,7 @@ export class TextureToHistograms extends HasReactive implements ComposableShader
     if (!this.bucketSums) {
       console.error("sumsResult requested but bucketSums is false");
     }
-    const size = this.resultElems * this.histogramTemplate.outputElementSize;
+    const size = this.resultElems * this.histogramOps.outputElementSize;
     const buffer = this.device.createBuffer({
       label: "texture histograms sums",
       size,
@@ -203,14 +203,14 @@ export class TextureToHistograms extends HasReactive implements ComposableShader
           blockArea: blockSize[0] * blockSize[1],
           bucketSums: this.bucketSums,
           saturateMax: this.saturateMax,
-          floatElements: this.histogramTemplate.outputElements === "f32",
-          ...this.histogramTemplate, // TODO do we need all this?
-          inputElements: this.histogramTemplate.outputElements,
+          floatElements: this.histogramOps.outputElements === "f32",
+          ...this.histogramOps, // TODO do we need all this?
+          inputElements: this.histogramOps.outputElements,
         },
         constants: {
           workgroupSizeX: this.workgroupSize[0],
           workgroupSizeY: this.workgroupSize[1],
-          numBuckets: this.histogramTemplate.buckets,
+          numBuckets: this.histogramOps.buckets,
         },
         bindings: [
           { buffer: { type: "uniform" } },

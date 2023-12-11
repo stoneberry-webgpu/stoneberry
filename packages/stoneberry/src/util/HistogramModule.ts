@@ -6,7 +6,7 @@ export interface HistogramModule extends BinOpModule {
   buckets: number;
 }
 
-export function histogramTemplate(   // TODO rename
+export function histogramModule(   
   buckets: number,
 ): HistogramModule {
   const params = { buckets };

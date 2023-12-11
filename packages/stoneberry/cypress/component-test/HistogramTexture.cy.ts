@@ -6,7 +6,7 @@ import {
   withAsyncUsage,
   withLeakTrack,
 } from "thimbleberry";
-import { histogramTemplate, HistogramTexture } from "stoneberry/histogram-texture";
+import { histogramModule, HistogramTexture } from "stoneberry/histogram-texture";
 import { makeTexture } from "thimbleberry";
 
 it("histogram texture, no internal reduction", async () => {
@@ -24,7 +24,7 @@ it("histogram texture, no internal reduction", async () => {
         device,
         source,
         blockSize: [2, 2],
-        histogramTemplate: histogramTemplate(4),
+        histogramOps: histogramModule(4),
         sourceComponent: "r",
         range: [1, 10],
       });
@@ -53,7 +53,7 @@ it("histogram texture, with reduction", async () => {
         source,
         blockSize: [2, 2],
         forceWorkgroupSize: [1, 1],
-        histogramTemplate: histogramTemplate(4),
+        histogramOps: histogramModule(4),
         sourceComponent: "r",
         range: [1, 10],
       });
@@ -82,7 +82,7 @@ it("histogram texture, with reduction, float", async () => {
         source,
         blockSize: [2, 2],
         forceWorkgroupSize: [1, 1],
-        histogramTemplate: histogramTemplate(4),
+        histogramOps: histogramModule(4),
         sourceComponent: "r",
         range: [1, 10],
       });
@@ -111,7 +111,7 @@ it("histogram texture, with reduction, r8uint", async () => {
         source,
         blockSize: [2, 2],
         forceWorkgroupSize: [1, 1],
-        histogramTemplate: histogramTemplate(4),
+        histogramOps: histogramModule(4),
         sourceComponent: "r",
         range: [1, 10],
       });
@@ -140,7 +140,7 @@ it("histogram texture, with reduction, r32sint", async () => {
         source,
         blockSize: [2, 2],
         forceWorkgroupSize: [1, 1],
-        histogramTemplate: histogramTemplate(4),
+        histogramOps: histogramModule(4),
         sourceComponent: "r",
         range: [-10, 10],
       });
@@ -169,7 +169,7 @@ it("histogram texture, with reduction, with bucketSums", async () => {
         source,
         blockSize: [2, 2],
         forceWorkgroupSize: [1, 1],
-        histogramTemplate: histogramTemplate(4),
+        histogramOps: histogramModule(4),
         sourceComponent: "r",
         range: [1, 10],
         bucketSums: true,
