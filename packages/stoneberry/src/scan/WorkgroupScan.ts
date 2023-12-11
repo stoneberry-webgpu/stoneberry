@@ -146,7 +146,7 @@ export class WorkgroupScan extends HasReactive implements ComposableShader {
    * (multiple dispatches are needed for large sources) */
   @reactively private get dispatchSizes(): number[] {
     const sourceElems =
-      this.sourceSize / Uint32Array.BYTES_PER_ELEMENT - this.sourceOffset; // TODO support other src element sizes, via template
+      this.sourceSize / this.binOps.inputElementSize - this.sourceOffset;
     const max = this.maxWorkgroups;
     return calcDispatchSizes(sourceElems, this.workgroupLength, max);
   }
