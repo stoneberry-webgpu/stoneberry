@@ -14,7 +14,7 @@ import {
   trackContext,
 } from "thimbleberry";
 import { computePipeline } from "../util/ComputePipeline.js";
-import { HistogramTemplate2 } from "../util/HistogramModule.js";
+import { HistogramModule } from "../util/HistogramModule.js";
 import { maxWorkgroupSize } from "../util/LimitWorkgroupSize.js";
 import { ComponentName, LoadComponent, texelLoader } from "../util/LoadTemplate.js";
 import { BindingEntry } from "./../util/ComputePipeline";
@@ -40,7 +40,7 @@ export interface TextureToHistogramsParams {
   minMaxBuffer: ValueOrFn<GPUBuffer>;
 
   /** {@inheritDoc TextureToHistograms#histogramTemplate} */
-  histogramTemplate: HistogramTemplate2;
+  histogramTemplate: HistogramModule;
 
   /** {@inheritDoc TextureToHistograms#blockSize} */
   blockSize?: Vec2;
@@ -88,7 +88,7 @@ export class TextureToHistograms extends HasReactive implements ComposableShader
   @reactively minMaxBuffer!: GPUBuffer;
 
   /** macros to customize wgsl shader for size of data and size of histogram */
-  @reactively histogramTemplate!: HistogramTemplate2;
+  @reactively histogramTemplate!: HistogramModule;
 
   /** select or synthesize a component (e.g. r,g,b,a) from the source texture */
   @reactively sourceComponent!: ComponentName | LoadComponent;

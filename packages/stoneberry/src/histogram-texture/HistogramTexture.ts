@@ -10,7 +10,7 @@ import {
   trackContext,
 } from "thimbleberry";
 import { ReduceBuffer } from "../reduce-buffer/ReduceBuffer.js";
-import { HistogramTemplate2 } from "../util/HistogramModule.js";
+import { HistogramModule } from "../util/HistogramModule.js";
 import { ComponentName, LoadComponent } from "../util/LoadTemplate.js";
 import { runAndFetchResult } from "../util/RunAndFetch.js";
 import { TextureToHistograms } from "./TextureToHistograms.js";
@@ -36,7 +36,7 @@ export interface HistogramTextureParams {
   forceWorkgroupSize?: Vec2;
 
   /** {@inheritDoc HistogramTexture#histogramTemplate} */
-  histogramTemplate: HistogramTemplate2;
+  histogramTemplate: HistogramModule;
 
   /** {@inheritDoc HistogramTexture#minMaxBuffer} */
   minMaxBuffer?: GPUBuffer;
@@ -97,7 +97,7 @@ export class HistogramTexture extends HasReactive implements ComposableShader {
   /** wgsl macros for histogram reduction and histogram size.
    * Typically call `histogramTemplate()`
    */
-  @reactively histogramTemplate!: HistogramTemplate2;
+  @reactively histogramTemplate!: HistogramModule;
 
   /** select or synthesize a component from the source texture
    * @defaultValue "r"
