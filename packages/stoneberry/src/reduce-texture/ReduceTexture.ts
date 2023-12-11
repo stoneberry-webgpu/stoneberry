@@ -10,7 +10,7 @@ import {
 } from "thimbleberry";
 import { ReduceBuffer } from "../reduce-buffer/ReduceBuffer.js";
 import { BinOpModule } from "../util/BinOpModules.js";
-import { ComponentName, LoadComponent, texelLoader } from "../util/LoadTemplate.js";
+import { ComponentName, LoadComponent, texelLoader } from "../util/GenerateLoadTexel.js";
 import { runAndFetchResult } from "../util/RunAndFetch.js";
 import { ReduceTextureToBuffer } from "./ReduceTextureToBuffer.js";
 

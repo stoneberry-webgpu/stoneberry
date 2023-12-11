@@ -11,7 +11,7 @@ import {
 } from "thimbleberry";
 import { ReduceBuffer } from "../reduce-buffer/ReduceBuffer.js";
 import { HistogramModule } from "../util/HistogramModule.js";
-import { ComponentName, LoadComponent } from "../util/LoadTemplate.js";
+import { ComponentName, LoadComponent } from "../util/GenerateLoadTexel.js";
 import { runAndFetchResult } from "../util/RunAndFetch.js";
 import { TextureToHistograms } from "./TextureToHistograms.js";
 

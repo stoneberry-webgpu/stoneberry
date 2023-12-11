@@ -12,7 +12,7 @@ import {
 } from "thimbleberry";
 import { ReduceTextureToBuffer } from "../../src/reduce-texture/ReduceTextureToBuffer.js";
 import { minMaxF32, sumF32, sumU32 } from "../../src/util/BinOpModules.js";
-import { loadTexelCodeGen } from "../../src/util/LoadTemplate.js";
+import { loadTexelCodeGen } from "../../src/util/GenerateLoadTexel.js";
 import { minMaxReds, sumReds } from "./util/Reductions.js";
 
 it("reduce texture to buffer, workgroup size = 1", async () => {

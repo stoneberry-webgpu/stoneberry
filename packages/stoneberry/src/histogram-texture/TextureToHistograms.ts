@@ -16,7 +16,7 @@ import {
 import { computePipeline } from "../util/ComputePipeline.js";
 import { HistogramModule } from "../util/HistogramModule.js";
 import { maxWorkgroupSize } from "../util/LimitWorkgroupSize.js";
-import { ComponentName, LoadComponent, texelLoader } from "../util/LoadTemplate.js";
+import { ComponentName, LoadComponent, texelLoader } from "../util/GenerateLoadTexel.js";
 import { BindingEntry } from "./../util/ComputePipeline";
 import wgsl from "./TextureToHistograms.wgsl?raw";
 import { ModuleRegistry } from "wgsl-linker";

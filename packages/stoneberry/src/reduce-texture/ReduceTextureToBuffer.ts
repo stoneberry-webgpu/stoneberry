@@ -18,7 +18,7 @@ import reduceWorkgroup from "../reduce-buffer/reduceWorkgroup.wgsl?raw";
 import { BinOpModule } from "../util/BinOpModules.js";
 import { computePipeline } from "../util/ComputePipeline.js";
 import { maxWorkgroupSize } from "../util/LimitWorkgroupSize.js";
-import { ComponentName, LoadComponent } from "../util/LoadTemplate.js";
+import { ComponentName, LoadComponent } from "../util/GenerateLoadTexel.js";
 import wgsl from "./ReduceTexture.wgsl?raw";
 
 export interface TextureToBufferParams {
