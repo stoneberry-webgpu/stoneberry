@@ -163,7 +163,7 @@ export class ReduceTexture extends HasReactive implements ComposableShader {
       label: this.label,
       blockLength: this.bufferBlockLength,
       pipelineCache: this.pipelineCache,
-      binOp: this.binOps,
+      binOps: this.binOps,
     });
     reactiveTrackUse(shader, this.usageContext);
 

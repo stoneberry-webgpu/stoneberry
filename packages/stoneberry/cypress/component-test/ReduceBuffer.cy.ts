@@ -19,7 +19,7 @@ it("sum, simple api", async () => {
     const device = trackUse(await labeledGpuDevice());
     const sourceData = [0, 1, 2, 3, 4, 5, 6, 7];
     const source = makeBuffer(device, sourceData, "source buffer", Uint32Array);
-    const shader = new ReduceBuffer({ device, source, binOp: sumU32 });
+    const shader = new ReduceBuffer({ device, source, binOps: sumU32 });
     trackUse(shader);
     const result = await shader.reduce();
 
@@ -40,7 +40,7 @@ it("buffer reduce sum, two dispatches", async () => {
         source: makeBuffer(device, sourceData, "source buffer", Float32Array),
         blockLength: 2,
         forceWorkgroupLength: 2,
-        binOp: sumF32,
+        binOps: sumF32,
       });
       trackUse(shader);
 
@@ -62,7 +62,7 @@ it("buffer reduce max, two dispatches", async () => {
       source: makeBuffer(device, sourceData, "source buffer", Float32Array),
       blockLength: 2,
       forceWorkgroupLength: 2,
-      binOp: maxF32,
+      binOps: maxF32,
     });
 
     const result = await shader.reduce();
@@ -91,7 +91,7 @@ it("buffer reduce min/max, two dispatches", async () => {
       source: makeBuffer(device, sourceData.flat(), "source buffer", Float32Array),
       blockLength: 2,
       forceWorkgroupLength: 2,
-      binOp: minMaxF32,
+      binOps: minMaxF32,
     });
     const result = await shader.reduce();
 
@@ -109,7 +109,7 @@ it("sourceOffset", async () => {
     const shader = new ReduceBuffer({
       device,
       source,
-      binOp: sumU32,
+      binOps: sumU32,
       sourceOffset: 4,
     });
     trackUse(shader);
@@ -130,7 +130,7 @@ it("2 workgroups > max (1)", async () => {
     const shader = new ReduceBuffer({
       device,
       source,
-      binOp: sumU32,
+      binOps: sumU32,
       forceWorkgroupLength: 2,
       blockLength: 2,
       forceMaxWorkgroups: 1,
@@ -153,7 +153,7 @@ it("4 dispatched workgroups > max (2), 2 threads/workgroup ", async () => {
     const shader = new ReduceBuffer({
       device,
       source,
-      binOp: sumU32,
+      binOps: sumU32,
       forceWorkgroupLength: 2,
       blockLength: 2,
       forceMaxWorkgroups: 2,
