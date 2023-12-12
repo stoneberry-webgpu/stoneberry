@@ -1,2 +1,2 @@
 export * from "./HistogramTexture.js";
-export * from "../util/HistogramModule.js";
+export * from "../modules/HistogramModule.js";

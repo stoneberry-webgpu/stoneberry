@@ -11,8 +11,9 @@ import { computePipeline } from "../util/ComputePipeline.js";
 import { calcDispatchSizes } from "../util/DispatchSizes.js";
 import { Cache, ComposableShader } from "../util/Util.js";
 import wgsl from "./ApplyScanBlocks.wgsl?raw";
-import { BinOpModule, sumU32 } from "../util/BinOpModules.js";
+import { BinOpModule } from "../util/BinOpModules.js";
 import { ModuleRegistry } from "wgsl-linker";
+import { sumU32 } from "../modules/BinOpModuleSumU32.js";
 
 /** @internal */
 export interface ApplyScanBlocksArgs {

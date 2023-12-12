@@ -14,7 +14,7 @@ import {
   trackContext,
 } from "thimbleberry";
 import { computePipeline } from "../util/ComputePipeline.js";
-import { HistogramModule } from "../util/HistogramModule.js";
+import { HistogramModule } from "../modules/HistogramModule.js";
 import { maxWorkgroupSize } from "../util/LimitWorkgroupSize.js";
 import { ComponentName, LoadComponent, texelLoader } from "../util/GenerateLoadTexel.js";
 import { BindingEntry } from "./../util/ComputePipeline";

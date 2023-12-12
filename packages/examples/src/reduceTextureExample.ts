@@ -1,5 +1,6 @@
 import { renderTable, withGpuDevice } from "stoneberry-examples";
-import { ReduceTexture, sumF32 } from "stoneberry/reduce-texture";
+import { sumF32 } from "stoneberry/modules/BinOpModuleSumF32.js";
+import { ReduceTexture } from "stoneberry/reduce-texture";
 import { makeTexture, printTexture } from "thimbleberry";
 
 withGpuDevice(main);

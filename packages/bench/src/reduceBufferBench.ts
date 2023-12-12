@@ -1,4 +1,5 @@
-import { ReduceBuffer, sumU32 } from "stoneberry/reduce-buffer";
+import { ReduceBuffer } from "stoneberry/reduce-buffer";
+import { sumU32 } from "stoneberry/modules/BinOpModuleSumU32.js";
 import { ShaderAndSize } from "thimbleberry";
 
 export async function reduceBufferBench(

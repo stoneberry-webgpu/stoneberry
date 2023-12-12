@@ -10,7 +10,8 @@ import { runAndFetchResult } from "../util/RunAndFetch.js";
 import { Cache, ComposableShader, ValueOrFn } from "../util/Util.js";
 import { ApplyScanBlocks } from "./ApplyScanBlocks.js";
 import { WorkgroupScan } from "./WorkgroupScan.js";
-import { BinOpModule, sumU32 } from "../util/BinOpModules.js";
+import { BinOpModule } from "../util/BinOpModules.js";
+import { sumU32 } from "../modules/BinOpModuleSumU32.js";
 
 /** Parameters to construct a {@link PrefixScan} instance.  */
 export interface PrefixScanArgs {

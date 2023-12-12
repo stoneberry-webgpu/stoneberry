@@ -1,5 +1,5 @@
 import { applyTemplate } from "wgsl-linker/replace-template";
-import { BinOpModule } from "./BinOpModules.js";
+import { BinOpModule } from "../util/BinOpModules.js";
 import histogramWgsl from "./HistogramOps.wgsl?raw";
 
 export interface HistogramModule extends BinOpModule {
