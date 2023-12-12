@@ -9,7 +9,7 @@ async function main(device: GPUDevice): Promise<void> {
   const source = makeTexture(device, srcData, "r16float");
   await printTexture(device, source);
 
-  const reducer = new ReduceTexture({ device, source: source, reduceTemplate: sumF32 });
+  const reducer = new ReduceTexture({ device, source: source, binOps: sumF32 });
   const reduced = await reducer.reduce();
 
   renderTable({ source: srcData[0], sum: reduced });
