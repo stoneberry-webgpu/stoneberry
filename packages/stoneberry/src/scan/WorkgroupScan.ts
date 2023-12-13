@@ -172,7 +172,6 @@ export class WorkgroupScan extends HasReactive implements ComposableShader {
         wgsl: workgroupScanWgsl,
         registry: this.registry,
         wgslParams: {
-          ...this.binOps,
           workgroupSizeX: this.workgroupLength,
           blockSums: this.emitBlockSums,
         },

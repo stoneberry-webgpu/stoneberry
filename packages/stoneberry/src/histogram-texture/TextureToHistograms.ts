@@ -204,8 +204,7 @@ export class TextureToHistograms extends HasReactive implements ComposableShader
           bucketSums: this.bucketSums,
           saturateMax: this.saturateMax,
           floatElements: this.histogramOps.outputElements === "f32",
-          ...this.histogramOps, // TODO do we need all this?
-          inputElements: this.histogramOps.outputElements,
+          buckets: this.histogramOps.buckets,
         },
         constants: {
           workgroupSizeX: this.workgroupSize[0],

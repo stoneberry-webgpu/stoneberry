@@ -117,7 +117,6 @@ export class ApplyScanBlocks extends HasReactive implements ComposableShader {
         registry: this.registry,
         wgslParams: {
           workgroupSizeX: this.workgroupLength,
-          ...this.binOps,
         },
         bindings: [
           { buffer: { type: "uniform" } },
