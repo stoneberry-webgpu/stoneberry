@@ -12,7 +12,7 @@ import { calcDispatchSizes } from "../util/DispatchSizes.js";
 import { Cache, ComposableShader } from "../util/Util.js";
 import wgsl from "./ApplyScanBlocks.wgsl?raw";
 import { BinOpModule } from "../util/BinOpModules.js";
-import { ModuleRegistry } from "wgsl-linker";
+import { ModuleRegistry2 } from "wgsl-linker";
 import { sumU32 } from "../modules/BinOpModuleSumU32.js";
 
 /** @internal */
@@ -104,8 +104,8 @@ export class ApplyScanBlocks extends HasReactive implements ComposableShader {
   }
   
   
-  @reactively private get registry(): ModuleRegistry {
-    return new ModuleRegistry(this.binOps.wgsl);
+  @reactively private get registry(): ModuleRegistry2 {
+    return new ModuleRegistry2(this.binOps.wgsl);
   }
 
   @reactively private get pipeline(): GPUComputePipeline {

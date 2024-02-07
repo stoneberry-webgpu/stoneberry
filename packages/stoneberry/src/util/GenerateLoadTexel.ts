@@ -27,7 +27,7 @@ export function loadTexelCodeGen(
   component: ComponentName,
   elemParamCount = 1
 ): LoadCodeGen {
-  const loadTexel = (params: { Output: string; texelType: GPUElementFormat }): string => {
+  function loadTexel(fnName: string, params: Record<string, string>): string {
     const { Output: output, texelType = "texelType" } = params;
     let result: string;
     if (output) {
@@ -43,7 +43,7 @@ export function loadTexelCodeGen(
     // console.log(result);
     return result;
   };
-  return { kind: "function", fn: loadTexel as CodeGenFn };
+  return { kind: "function", fn: loadTexel};
 }
 
 export function texelLoader(

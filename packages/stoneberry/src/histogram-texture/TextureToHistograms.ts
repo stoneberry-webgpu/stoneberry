@@ -19,7 +19,7 @@ import { maxWorkgroupSize } from "../util/LimitWorkgroupSize.js";
 import { ComponentName, LoadComponent, texelLoader } from "../util/GenerateLoadTexel.js";
 import { BindingEntry } from "./../util/ComputePipeline";
 import wgsl from "./TextureToHistograms.wgsl?raw";
-import { ModuleRegistry } from "wgsl-linker";
+import { ModuleRegistry2 } from "wgsl-linker";
 
 export interface TextureToHistogramsParams {
   device: GPUDevice;
@@ -169,8 +169,8 @@ export class TextureToHistograms extends HasReactive implements ComposableShader
     reactiveTrackUse(buffer, this.usageContext);
     return buffer;
   }
-  @reactively private get registry(): ModuleRegistry {
-    const registry = new ModuleRegistry();
+  @reactively private get registry(): ModuleRegistry2 {
+    const registry = new ModuleRegistry2();
     const loadWgsl = texelLoader(this.sourceComponent);
     if (loadWgsl.kind === "template") {
       registry.registerModules(loadWgsl.wgsl);

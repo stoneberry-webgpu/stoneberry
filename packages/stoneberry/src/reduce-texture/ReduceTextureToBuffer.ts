@@ -13,7 +13,7 @@ import {
   textureSampleType,
   trackContext,
 } from "thimbleberry";
-import { ModuleRegistry } from "wgsl-linker";
+import { ModuleRegistry2 } from "wgsl-linker";
 import reduceWorkgroup from "../reduce-buffer/reduceWorkgroup.wgsl?raw";
 import { BinOpModule } from "../util/BinOpModules.js";
 import { computePipeline } from "../util/ComputePipeline.js";
@@ -138,8 +138,8 @@ export class ReduceTextureToBuffer extends HasReactive implements ComposableShad
     return textureSampleType(this.source.format);
   }
 
-  @reactively private get registry(): ModuleRegistry {
-    const registry = new ModuleRegistry(reduceWorkgroup, this.binOps.wgsl);
+  @reactively private get registry(): ModuleRegistry2 {
+    const registry = new ModuleRegistry2(reduceWorkgroup, this.binOps.wgsl);
     const loadWgsl = this.loadComponent;
     if (loadWgsl.kind === "template") {
       registry.registerModules(loadWgsl.wgsl);

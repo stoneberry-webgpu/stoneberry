@@ -9,7 +9,7 @@ import {
   reactiveTrackUse,
   trackContext,
 } from "thimbleberry";
-import { ModuleRegistry } from "wgsl-linker";
+import { ModuleRegistry2 } from "wgsl-linker";
 import { BinOpModule } from "../util/BinOpModules.js";
 import { computePipeline } from "../util/ComputePipeline.js";
 import { SlicingResults, inputSlicing } from "../util/InputSlicing.js";
@@ -229,8 +229,8 @@ export class ReduceBuffer extends HasReactive implements ComposableShader {
     return buffer;
   }
 
-  @reactively private get registry(): ModuleRegistry {
-    return new ModuleRegistry(reduceWorkgroup, this.binOps.wgsl);
+  @reactively private get registry(): ModuleRegistry2 {
+    return new ModuleRegistry2(reduceWorkgroup, this.binOps.wgsl);
   }
 
   /** all dispatches use the same pipeline */

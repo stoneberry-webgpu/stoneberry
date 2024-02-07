@@ -132,8 +132,8 @@ importers:
         specifier: ^0.2.9
         version: 0.2.9
       wgsl-linker:
-        specifier: ^0.2.0
-        version: 0.2.0
+        specifier: link:../../../wgsl-linker
+        version: link:../../../wgsl-linker
     devDependencies:
       '@typescript-eslint/eslint-plugin':
         specifier: ^5.59.9
@@ -17424,10 +17424,6 @@ packages:
   /websocket-extensions@0.1.4:
     resolution: {integrity: sha512-OqedPIGOfsDlo31UNwYbCFMSaO9m9G/0faIHj5/dZFDMFqPTcx6UwqyOy3COEaEOg/9VsGIpdqn62W5KhoKSpg==}
     engines: {node: '>=0.8.0'}
-
-  /wgsl-linker@0.2.0:
-    resolution: {integrity: sha512-ewhKrHgX6qSojIg0Y+1E6wwSsgv0QXD5Ri/vT+Xps5bIeBaIH789lE+Vnkt2Uery/hLrTtCzc72466aPIBhPog==}
-    dev: false
 
   /whatwg-url@5.0.0:
     resolution: {integrity: sha512-saE57nupxk6v3HY35+jzBwYa0rKSy0XR8JSxZPwgLr7ys0IBzhGviA1/TUGJLmSVqs8pb9AnvICXEuOHLprYTw==}
