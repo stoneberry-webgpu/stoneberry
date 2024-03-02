@@ -8,7 +8,7 @@ fn binaryOp(a: Elem, b: Elem) -> Elem {}
 
 // #template replacer
 
-// #export(work, Elem, threads) importing BinaryOp(Elem)
+// #export(work, Elem, threads) importing binaryOp(Elem)
 fn reduceWorkgroup(localId: u32) {
     let workDex = localId << 1u;
     for (var step = 1u; step < 4u; step <<= 1u) { // #replace 4=threads
