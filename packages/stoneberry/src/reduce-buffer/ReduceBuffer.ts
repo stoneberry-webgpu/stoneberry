@@ -231,13 +231,7 @@ export class ReduceBuffer extends HasReactive implements ComposableShader {
   }
 
   @reactively private get registry(): ModuleRegistry {
-    // console.log("this.binOps.wgsl\n", this.binOps.wgsl);
-    // console.log("reduceWorkgroup\n", reduceWorkgroupWgsl);
-    const r = new ModuleRegistry(reduceWorkgroupWgsl, this.binOps.wgsl);
-    // // r.registerTemplate(replaceTemplate);
-    // r.registerModules(this.wgslParams, this.binOps.wgsl);
-    // console.log("registry complete");
-    return r;
+    return new ModuleRegistry(this.binOps.wgsl, reduceWorkgroupWgsl);
   }
 
   /** all dispatches use the same pipeline */
