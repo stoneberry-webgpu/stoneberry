@@ -1,6 +1,6 @@
 import { memoizeWithDevice } from "thimbleberry";
-import { ModuleRegistry2, linkWgsl3 } from "wgsl-linker";
-import { replaceTemplate } from "wgsl-linker/replace-template";
+import { ModuleRegistry, linkWgsl } from "wgsl-linker";
+import { replaceTemplate } from "wgsl-linker/templates";
 
 export type BindingEntry =
   | Pick<GPUBindGroupLayoutEntry, "buffer">
@@ -22,7 +22,7 @@ export interface ComputePipelineArgs {
   wgslParams?: Record<string, any>;
 
   /** registry of modules available for linking */
-  registry?: ModuleRegistry2;
+  registry?: ModuleRegistry;
 
   /** debug label */
   label?: string;
@@ -66,7 +66,8 @@ function makeComputePipeline(args: ComputePipelineArgs): ComputePipelineResults 
   });
 
   registry?.registerTemplate(replaceTemplate);
-  const linkedWgsl = registry ? linkWgsl3(wgsl, registry, wgslParams) : wgsl;
+  console.log("wgsl\n", wgsl);
+  const linkedWgsl = registry ? linkWgsl(wgsl, registry, wgslParams) : wgsl;
 
   if (logShader) {
     const lines = linkedWgsl.split("\n");

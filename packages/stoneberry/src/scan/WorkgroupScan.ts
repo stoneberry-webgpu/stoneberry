@@ -11,7 +11,7 @@ import { BindingEntry, computePipeline } from "../util/ComputePipeline.js";
 import { calcDispatchSizes } from "../util/DispatchSizes.js";
 import { Cache, ComposableShader, ValueOrFn } from "../util/Util.js";
 import workgroupScanWgsl from "./WorkgroupScan.wgsl?raw";
-import { ModuleRegistry2 } from "wgsl-linker";
+import { ModuleRegistry } from "wgsl-linker";
 import { BinOpModule } from "../util/BinOpModules.js";
 import { sumU32 } from "../modules/BinOpModuleSumU32.js";
 
@@ -156,8 +156,8 @@ export class WorkgroupScan extends HasReactive implements ComposableShader {
     return this.forceMaxWorkgroups ?? this.device.limits.maxComputeWorkgroupsPerDimension;
   }
 
-  @reactively private get registry(): ModuleRegistry2 {
-    return new ModuleRegistry2(this.binOps.wgsl);
+  @reactively private get registry(): ModuleRegistry {
+    return new ModuleRegistry(this.binOps.wgsl);
   }
 
   @reactively private get pipeline(): GPUComputePipeline {

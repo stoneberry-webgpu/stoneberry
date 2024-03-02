@@ -9,13 +9,14 @@ import {
   reactiveTrackUse,
   trackContext,
 } from "thimbleberry";
-import { ModuleRegistry2 } from "wgsl-linker";
+import { ModuleRegistry } from "wgsl-linker";
 import { BinOpModule } from "../util/BinOpModules.js";
 import { computePipeline } from "../util/ComputePipeline.js";
 import { SlicingResults, inputSlicing } from "../util/InputSlicing.js";
 import { runAndFetchResult } from "../util/RunAndFetch.js";
 import wgsl from "./ReduceBuffer.wgsl?raw";
-import reduceWorkgroup from "./reduceWorkgroup.wgsl?raw";
+import reduceWorkgroupWgsl from "./reduceWorkgroup.wgsl?raw";
+import { replaceTemplate } from "wgsl-linker/templates";
 
 export interface BufferReduceParams {
   device: GPUDevice;
@@ -229,8 +230,14 @@ export class ReduceBuffer extends HasReactive implements ComposableShader {
     return buffer;
   }
 
-  @reactively private get registry(): ModuleRegistry2 {
-    return new ModuleRegistry2(reduceWorkgroup, this.binOps.wgsl);
+  @reactively private get registry(): ModuleRegistry {
+    // console.log("this.binOps.wgsl\n", this.binOps.wgsl);
+    // console.log("reduceWorkgroup\n", reduceWorkgroupWgsl);
+    const r = new ModuleRegistry(reduceWorkgroupWgsl, this.binOps.wgsl);
+    // // r.registerTemplate(replaceTemplate);
+    // r.registerModules(this.wgslParams, this.binOps.wgsl);
+    // console.log("registry complete");
+    return r;
   }
 
   /** all dispatches use the same pipeline */
@@ -254,6 +261,13 @@ export class ReduceBuffer extends HasReactive implements ComposableShader {
       this.pipelineCache
     );
     return cp.pipeline;
+  }
+
+  @reactively private get wgslParams(): Record<string, unknown> {
+    return {
+      workgroupThreads: this.workgroupLength,
+      blockArea: this.blockLength,
+    };
   }
 
   /** * One bind group for all source reductions,

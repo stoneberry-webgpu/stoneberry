@@ -1,26 +1,24 @@
-struct LoadElem {
-// #export LoadElemFields
+// #export 
+struct LoadBinOpElem {
     sum: f32,  
-// #endExport
 }
 
-struct Elem { 
-// #export ElemFields
+// #export 
+struct BinOpElem { 
     sum: f32,  
-// #endExport
 }
 
-// #export(Elem)
-fn binaryOp(a: Elem, b: Elem) -> Elem {
-    return Elem(a.sum + b.sum);
+// #export(BinOpElem)
+fn binaryOp(a: BinOpElem, b: BinOpElem) -> BinOpElem {
+    return BinOpElem(a.sum + b.sum);
 }
 
-// #export(LoadElem, Elem)
-fn loadOp(a: LoadElem) -> Elem {
-    return Elem(a.sum);  
+// #export(LoadElem, BinOpElem)
+fn loadOp(a: LoadElem) -> BinOpElem {
+    return BinOpElem(a.sum);  
 }
 
-// #export(Elem)
-fn identityOp() -> Elem {
-    return Elem(0.0);
+// #export(BinOpElem)
+fn identityOp() -> BinOpElem {
+    return BinOpElem(0.0);
 }

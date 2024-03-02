@@ -1,4 +1,4 @@
-import { replacer } from "wgsl-linker/replace-template";
+import { replacer } from "wgsl-linker/templates";
 import { BinOpModule } from "../util/BinOpModules.js";
 import histogramWgsl from "./HistogramOps.wgsl?raw";
 

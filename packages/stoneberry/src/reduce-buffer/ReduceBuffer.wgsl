@@ -9,19 +9,19 @@ fn reduceWorkgroup(localId: u32) {}
 fn binaryOp(a: Output, b: Output) -> Output {}
 fn loadOp(a: Input) -> Output {}
 fn identityOp() -> Output {}
-// #endif
+// endif
 
+// #importMerge LoadBinOpElem
 struct Input { 
-// #import LoadElemFields
-// #if typecheck 
+    // #if typecheck 
     sum: f32,   
 // #endif
 }
 
+// #importMerge BinOpElem
 struct Output { 
-// #import ElemFields
-// #if typecheck 
-    sum: f32,  
+    // #if typecheck 
+    sum: f32,   
 // #endif
 }
 
