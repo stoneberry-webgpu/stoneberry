@@ -12,7 +12,8 @@ import { sumF32 } from "../../src/modules/BinOpModuleSumF32.js";
 import { maxF32 } from "../../src/modules/BinOpModuleMaxF32.js";
 import { minMaxF32 } from "../../src/modules/BinOpModuleMinMaxF32.js";
 
-it("sum, simple api", async () => {
+it.only("sum, simple api", async () => {
+  console.clear()
   await withAsyncUsage(async () => {
     const device = trackUse(await labeledGpuDevice());
     const sourceData = [0, 1, 2, 3, 4, 5, 6, 7];
