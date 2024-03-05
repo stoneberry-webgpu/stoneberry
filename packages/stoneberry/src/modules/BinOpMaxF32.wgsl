@@ -1,26 +1,26 @@
-struct LoadElem {
-// #export LoadElemFields
-    max: f32,   
-// #endExport
-}
+// #module stoneberry.BinOpMax32
 
-struct Elem { 
-// #export ElemFields
+// #export
+struct LoadBinOpElem {
     max: f32,  
-// #endExport
 }
 
-// #export(Elem)
-fn binaryOp(a: Elem, b: Elem) -> Elem {
-    return Elem(max(a.max, b.max));
+// #export 
+struct BinOpElem { 
+    max: f32,  
 }
 
-// #export(LoadElem, Elem)
-fn loadOp(a: LoadElem) -> Elem {
-    return Elem(a.max);  
+// #export(BinOpElem)
+fn binaryOp(a: BinOpElem, b: BinOpElem) -> BinOpElem {
+    return BinOpElem(max(a.max, b.max));
 }
 
-// #export(Elem)
-fn identityOp() -> Elem {
-    return Elem(0.0);
+// #export(LoadElem, BinOpElem)
+fn loadOp(a: LoadElem) -> BinOpElem {
+    return BinOpElem(a.max);
+}
+
+// #export(BinOpElem)
+fn identityOp() -> BinOpElem {
+    return BinOpElem(0.0);
 }
