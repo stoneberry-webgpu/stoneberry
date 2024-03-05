@@ -1,4 +1,4 @@
-// #module stoneberry.BinOpMax32
+// #module stoneberry.BinOpMaxF32
 
 // #export
 struct LoadBinOpElem {
