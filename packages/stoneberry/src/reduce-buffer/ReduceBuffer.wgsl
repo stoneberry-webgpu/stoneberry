@@ -35,7 +35,7 @@ struct Uniforms {
 @group(0) @binding(2) var<storage, read_write> out: array<Output>;  
 @group(0) @binding(11) var<storage, read_write> debug: array<f32>; // buffer to hold debug values
 
-const workgroupThreads= 4;                          // #replace 4=workgroupThreads
+const workgroupThreads = 4;                          // #replace 4=workgroupThreads
 
 var <workgroup> work: array<Output, workgroupThreads>; 
 
