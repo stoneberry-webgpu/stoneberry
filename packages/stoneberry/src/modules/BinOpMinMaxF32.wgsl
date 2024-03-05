@@ -1,28 +1,29 @@
-struct LoadElem {
-// #export LoadElemFields
+// #module stoneberry.BinOpMinMaxF32
+
+
+// #export
+struct LoadBinOpElem {
     min: f32,  
     max: f32,  
-// #endExport
 }
 
-struct Elem { 
-// #export ElemFields
+// #export 
+struct BinOpElem { 
     min: f32,  
     max: f32,  
-// #endExport
 }
 
-// #export(Elem)
-fn binaryOp(a: Elem, b: Elem) -> Elem {
-    return Elem(min(a.min, b.min), max(a.max, b.max));
+// #export(BinOpElem)
+fn binaryOp(a: BinOpElem, b: BinOpElem) -> BinOpElem {
+    return BinOpElem(min(a.min, b.min), max(a.max, b.max));
 }
 
-// #export(LoadElem, Elem)
-fn loadOp(a: LoadElem) -> Elem {
-    return Elem(a.min, a.max);  
+// #export(LoadElem, BinOpElem)
+fn loadOp(a: LoadElem) -> BinOpElem {
+    return BinOpElem(a.min, a.max);
 }
 
-// #export(Elem)
-fn identityOp() -> Elem {
-    return Elem(1e38, -1e38);
+// #export(BinOpElem)
+fn identityOp() -> BinOpElem {
+    return BinOpElem(1e38, -1e38);
 }
