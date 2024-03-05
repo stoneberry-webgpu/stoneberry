@@ -1,4 +1,4 @@
-// #template replacer
+// #template replace
 // #import reduceWorkgroup(work, Output, workgroupThreads)
 // #import binaryOp(Output)
 // #import loadOp(Input, Output)
