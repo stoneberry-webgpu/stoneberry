@@ -6,7 +6,7 @@ struct Elem { sum: u32, }
 fn binaryOp(a: Elem, b: Elem) -> Elem {}
 // #endif
 
-// #template replacer
+// #template replace
 
 // #export(work, Elem, threads) importing binaryOp(Elem)
 fn reduceWorkgroup(localId: u32) {
