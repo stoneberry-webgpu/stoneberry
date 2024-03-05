@@ -1,3 +1,5 @@
+// #module stoneberry.HistogramTexture
+
 // Calculate a histogram from a source texture
 //
 // Only texture values between min and max (inclusive) are counted for the histogram
@@ -7,7 +9,7 @@
 // . one for the histogram (counts) per bucket
 // . one for the sum per bucket
 // 
-// #template replacer
+// #template replace
 
 // #import loadTexel
 

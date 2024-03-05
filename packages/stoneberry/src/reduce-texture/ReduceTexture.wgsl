@@ -1,4 +1,5 @@
-// #template replacer
+// #module stoneberry.ReduceTexture
+// #template replace
 
 // #import reduceWorkgroup(work, Output, workgroupThreads)
 // #import binaryOp(Output)

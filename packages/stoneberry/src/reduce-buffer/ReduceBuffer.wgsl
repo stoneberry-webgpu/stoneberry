@@ -1,3 +1,5 @@
+// #module stoneberry.ReduceBuffer
+
 // #template replace
 // #import reduceWorkgroup(work, Output, workgroupThreads)
 // #import binaryOp(Output)

@@ -1,3 +1,5 @@
+// #module stoneberry.WorkgroupScan
+
 // Kogge-Stone / Hillis Steele parallel prefix scan of a workgroup sized data array
 //
 // calculate the prefix scan of block of the input array
@@ -25,7 +27,7 @@
 // summation of the first and last layers is handled separately because they read/write 
 //   between storage and workgroup memory.
 
-// #template replacer
+// #template replace
 
 // #import loadOp(Input, Output)
 // #import identityOp(Output)

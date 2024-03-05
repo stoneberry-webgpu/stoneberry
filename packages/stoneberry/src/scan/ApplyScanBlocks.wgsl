@@ -1,4 +1,6 @@
-// #template replacer
+// #module stoneberry.ApplyScanBlocks
+
+// #template replace
 
 // #import binaryOp(Output)
 // #if typecheck
