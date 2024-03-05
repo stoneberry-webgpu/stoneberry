@@ -16,7 +16,6 @@ import { SlicingResults, inputSlicing } from "../util/InputSlicing.js";
 import { runAndFetchResult } from "../util/RunAndFetch.js";
 import wgsl from "./ReduceBuffer.wgsl?raw";
 import reduceWorkgroupWgsl from "./reduceWorkgroup.wgsl?raw";
-import { replaceTemplate } from "wgsl-linker/templates";
 
 export interface BufferReduceParams {
   device: GPUDevice;
