@@ -66,8 +66,9 @@ function makeComputePipeline(args: ComputePipelineArgs): ComputePipelineResults 
   });
 
   registry?.registerTemplate(replaceTemplate);
-  console.log("wgsl\n", wgsl);
+  // console.log("wgsl\n", wgsl);
   const linkedWgsl = registry ? linkWgsl(wgsl, registry, wgslParams) : wgsl;
+  // console.log("linkedWgsl\n", linkedWgsl)
 
   if (logShader) {
     const lines = linkedWgsl.split("\n");
