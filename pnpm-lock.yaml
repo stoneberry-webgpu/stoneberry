@@ -97,6 +97,9 @@ importers:
       thimbleberry:
         specifier: ^0.2.9
         version: 0.2.9
+      wgsl-linker:
+        specifier: link:../../../wgsl-linker/packages/linker
+        version: link:../../../wgsl-linker/packages/linker
     devDependencies:
       '@webgpu/types':
         specifier: ^0.1.32

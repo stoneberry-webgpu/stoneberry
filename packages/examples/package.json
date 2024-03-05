@@ -22,7 +22,8 @@
   ],
   "dependencies": {
     "stoneberry": "workspace:^",
-    "thimbleberry": "^0.2.9"
+    "thimbleberry": "^0.2.9",
+    "wgsl-linker": "link:../../../wgsl-linker/packages/linker"
   },
   "devDependencies": {
     "@webgpu/types": "^0.1.32",
