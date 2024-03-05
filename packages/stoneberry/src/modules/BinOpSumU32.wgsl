@@ -22,5 +22,5 @@ fn loadOp(a: LoadElem) -> BinOpElem {
 
 // #export(BinOpElem)
 fn identityOp() -> BinOpElem {
-    return BinOpElem(0.0);
+    return BinOpElem(0u);
 }
