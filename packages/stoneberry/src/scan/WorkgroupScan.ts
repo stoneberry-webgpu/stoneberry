@@ -7,13 +7,13 @@ import {
   reactiveTrackUse,
   trackContext,
 } from "thimbleberry";
+import { ModuleRegistry } from "wgsl-linker";
+import { sumU32 } from "../modules/BinOpModuleSumU32.js";
+import { BinOpModule } from "../util/BinOpModules.js";
 import { BindingEntry, computePipeline } from "../util/ComputePipeline.js";
 import { calcDispatchSizes } from "../util/DispatchSizes.js";
 import { Cache, ComposableShader, ValueOrFn } from "../util/Util.js";
 import workgroupScanWgsl from "./WorkgroupScan.wgsl?raw";
-import { ModuleRegistry } from "wgsl-linker";
-import { BinOpModule } from "../util/BinOpModules.js";
-import { sumU32 } from "../modules/BinOpModuleSumU32.js";
 
 /** @internal */
 export interface WorkgroupScanArgs {
