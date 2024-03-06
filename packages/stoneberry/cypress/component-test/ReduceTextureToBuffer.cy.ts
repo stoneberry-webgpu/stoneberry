@@ -8,7 +8,7 @@ import {
   trackRelease,
   trackUse,
   withAsyncUsage,
-  withLeakTrack
+  withLeakTrack,
 } from "thimbleberry";
 import { ReduceTextureToBuffer } from "../../src/reduce-texture/ReduceTextureToBuffer.js";
 import { loadTexelCodeGen } from "../../src/util/GenerateLoadTexel.js";

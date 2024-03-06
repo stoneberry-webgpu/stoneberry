@@ -1,4 +1,4 @@
-import { GPUElementFormat, mapN } from "thimbleberry";
+import { mapN } from "thimbleberry";
 import { CodeGenFn } from "wgsl-linker";
 
 /** code or template to load a value from vec4 */
