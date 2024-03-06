@@ -4,7 +4,7 @@
 // #import reduceWorkgroup(work, Output, workgroupThreads)
 // #import binaryOp(Output)
 // #import identityOp(Output)
-// #import loadTexel(Output)
+// #import loadTexel(Output, texelType) 
 
 // #if typecheck
 fn reduceWorkgroup(localId: u32) {}
@@ -13,8 +13,8 @@ fn identityOp() -> Output {}
 fn loadTexel(a: vec4<f32>) -> Output { return Output(1.0); }
 // #endif
 
+// #importMerge BinOpElem
 struct Output { 
-// #import ElemFields
 // #if typecheck 
     sum: f32,  
 // #endif
