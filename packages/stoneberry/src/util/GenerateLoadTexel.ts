@@ -32,7 +32,7 @@ export function loadTexelCodeGen(
   outputParams = 1
 ): LoadCodeGen {
   function loadTexel(fnName: string, params: Record<string, string>): string {
-    const { Output: output, texelType = "texelType" } = params;
+    const { output, texelType } = params;
     const args = mapN(outputParams, () => `a.${component}`).join(", ");
     const result = `fn ${fnName}(a: vec4<${texelType}>) -> ${output} { 
         return ${output}(${args});
@@ -44,9 +44,9 @@ export function loadTexelCodeGen(
   return { kind: "function", fn: loadTexel };
 }
 
-/** 
+/**
  * @return a function or template to generate wgsl to load a value from a texel
- * 
+ *
  * @param texelComponent - the component name to load from the texture e.g. "r" or "a",
  *  (or an already defined generator function or wgsl template which is just passed through)
  */
@@ -65,7 +65,7 @@ function texelGenerator(generate: CodeGenFn): RegisterGenerator {
     name: "loadTexel",
     moduleName: "stoneberry.loadTexel",
     generate,
-    args: ["Output", "texelType"],
+    args: ["output", "texelType"],
   };
 }
 
