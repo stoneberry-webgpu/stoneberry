@@ -174,7 +174,7 @@ export class ReduceTexture extends HasReactive implements ComposableShader {
     return this.reduceTexture.resultElems > 1;
   }
 
-  /** template for loading src data from the texture */
+  /** template or generator for loading src data from the texture */
   @reactively private get loadComponent(): LoadComponent {
     return texelLoader(this.sourceComponent);
   }

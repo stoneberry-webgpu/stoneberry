@@ -1,7 +1,7 @@
 import { mapN } from "thimbleberry";
 import { CodeGenFn } from "wgsl-linker";
 
-/** code or template to load a value from vec4 */
+/** code generator or template to create wgsl that load a value from vec4 */
 export type LoadComponent = LoadTemplate | LoadCodeGen;
 
 /** wgsl template for loading a value from a wgsl vec4 */
@@ -29,18 +29,10 @@ export function loadTexelCodeGen(
 ): LoadCodeGen {
   function loadTexel(fnName: string, params: Record<string, string>): string {
     const { Output: output, texelType = "texelType" } = params;
-    let result: string;
-    if (output) {
-      const args = mapN(elemParamCount, () => `a.${component}`).join(", ");
-      result = `fn loadTexel(a: vec4<${texelType}>) -> ${output} { 
+    const args = mapN(elemParamCount, () => `a.${component}`).join(", ");
+    const result = `fn loadTexel(a: vec4<${texelType}>) -> ${output} { 
         return ${output}(${args});
       }`;
-    } else {
-      // TODO unused, we always set output
-      result = `fn loadTexel(a: vec4<${texelType}>) -> ${texelType} { 
-        return a.${component};
-      }`;
-    }
     return result;
   }
   return { kind: "function", fn: loadTexel };
