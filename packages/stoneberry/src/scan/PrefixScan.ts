@@ -11,7 +11,7 @@ import { Cache, ComposableShader, ValueOrFn } from "../util/Util.js";
 import { ApplyScanBlocks } from "./ApplyScanBlocks.js";
 import { WorkgroupScan } from "./WorkgroupScan.js";
 import { BinOpModule } from "../util/BinOpModules.js";
-import { sumU32 } from "../modules/BinOpModuleSumU32.js";
+import { sumU32 } from "../binop/BinOpModuleSumU32.js";
 
 /** Parameters to construct a {@link PrefixScan} instance.  */
 export interface PrefixScanArgs {

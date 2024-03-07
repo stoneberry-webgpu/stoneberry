@@ -5,12 +5,12 @@
   "type": "module",
   "scripts": {
     "prepublish": "rimraf dist && pnpm run build && pnpm run build:types",
-    "build": "run-s build:scan build:bufReduce build:texReduce build:histogram build:modules build:util",
+    "build": "run-s build:scan build:bufReduce build:texReduce build:histogram build:binop build:util",
     "build:scan": "esbuild src/scan/index.ts                   --outbase=src --external:../util/* --bundle --packages=external --format=esm --loader:.wgsl=text --sourcemap --outdir=dist",
     "build:bufReduce": "esbuild src/reduce-buffer/index.ts     --outbase=src --external:../util/* --bundle --packages=external --format=esm --loader:.wgsl=text --sourcemap --outdir=dist",
     "build:texReduce": "esbuild src/reduce-texture/index.ts    --outbase=src --external:../util/* --bundle --packages=external --format=esm --loader:.wgsl=text --sourcemap --outdir=dist",
     "build:histogram": "esbuild src/histogram-texture/index.ts --outbase=src --external:../util/* --bundle --packages=external --format=esm --loader:.wgsl=text --sourcemap --outdir=dist",
-    "build:modules": "esbuild src/modules/*.ts             --outbase=src --external:../util/* --bundle --packages=external --format=esm --loader:.wgsl=text --sourcemap --outdir=dist",
+    "build:binop": "esbuild src/binop/*.ts             --outbase=src --external:../util/* --bundle --packages=external --format=esm --loader:.wgsl=text --sourcemap --outdir=dist",
     "build:util": "esbuild src/util/*.ts                       --outbase=src                               --packages=external --format=esm --loader:.wgsl=text --sourcemap --outdir=dist",
     "build:types": "tsc --project tsconfig.build.json",
     "mac-canary": "$npm_execPath open -a 'Google Chrome Canary' --args --enable-dawn-features=allow_unsafe_apis",
@@ -50,10 +50,10 @@
       "module": "./dist/util/index.js",
       "types": "./dist/util/index.d.ts"
     },
-    "./modules/*.js": {
-      "import": "./dist/modules/*.js",
-      "module": "./dist/modules/*.js",
-      "types": "./dist/modules/*.d.ts"
+    "./binop/*.js": {
+      "import": "./dist/binop/*.js",
+      "module": "./dist/binop/*.js",
+      "types": "./dist/binop/*.d.ts"
     }
   },
   "keywords": [

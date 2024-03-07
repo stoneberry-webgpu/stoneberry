@@ -1,6 +1,6 @@
 import { renderTable, withGpuDevice } from "stoneberry-examples";
 import { ReduceBuffer } from "stoneberry/reduce-buffer";
-import { sumF32 } from "stoneberry/modules/BinOpModuleSumF32.js";
+import { sumF32 } from "stoneberry/binop/BinOpModuleSumF32.js";
 import { bufferF32 } from "thimbleberry";
 
 withGpuDevice(main);

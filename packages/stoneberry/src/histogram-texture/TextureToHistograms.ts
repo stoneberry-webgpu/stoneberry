@@ -14,7 +14,7 @@ import {
   trackContext,
 } from "thimbleberry";
 import { ModuleRegistry } from "wgsl-linker";
-import { HistogramModule } from "../modules/HistogramModule.js";
+import { HistogramModule } from "../binop/HistogramModule.js";
 import { computePipeline } from "../util/ComputePipeline.js";
 import {
   ComponentName,

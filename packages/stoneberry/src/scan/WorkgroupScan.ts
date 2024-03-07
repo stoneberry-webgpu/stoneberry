@@ -8,7 +8,7 @@ import {
   trackContext,
 } from "thimbleberry";
 import { ModuleRegistry } from "wgsl-linker";
-import { sumU32 } from "../modules/BinOpModuleSumU32.js";
+import { sumU32 } from "../binop/BinOpModuleSumU32.js";
 import { BinOpModule } from "../util/BinOpModules.js";
 import { BindingEntry, computePipeline } from "../util/ComputePipeline.js";
 import { calcDispatchSizes } from "../util/DispatchSizes.js";

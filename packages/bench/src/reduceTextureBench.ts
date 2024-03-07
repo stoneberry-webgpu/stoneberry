@@ -1,4 +1,4 @@
-import { sumU32 } from "stoneberry/modules/BinOpModuleSumU32.js";
+import { sumU32 } from "../../stoneberry/src/binop/BinOpModuleSumU32.js";
 import { ShaderAndSize, Vec2, textureFromArray } from "thimbleberry";
 import { ReduceTexture } from "./../../stoneberry/src/reduce-texture/ReduceTexture";
 

@@ -23,6 +23,7 @@
       "stoneberry/reduce-buffer": ["../stoneberry/src/reduce-buffer"],
       "stoneberry/reduce-texture": ["../stoneberry/src/reduce-texture"],
       "stoneberry/histogram-texture": ["../stoneberry/src/histogram-texture"],
+      "stoneberry/binop/*": ["../stoneberry/src/binop/*"],
       "stoneberry-examples": ["./src/exampleUtils"]
     }
   },

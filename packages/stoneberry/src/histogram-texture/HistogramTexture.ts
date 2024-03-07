@@ -10,7 +10,7 @@ import {
   trackContext,
 } from "thimbleberry";
 import { ReduceBuffer } from "../reduce-buffer/ReduceBuffer.js";
-import { HistogramModule } from "../modules/HistogramModule.js";
+import { HistogramModule } from "../binop/HistogramModule.js";
 import { ComponentName, LoadComponent } from "../util/GenerateLoadTexel.js";
 import { runAndFetchResult } from "../util/RunAndFetch.js";
 import { TextureToHistograms } from "./TextureToHistograms.js";

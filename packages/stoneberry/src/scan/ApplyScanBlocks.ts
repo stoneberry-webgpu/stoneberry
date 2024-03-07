@@ -13,7 +13,7 @@ import { Cache, ComposableShader } from "../util/Util.js";
 import wgsl from "./ApplyScanBlocks.wgsl?raw";
 import { BinOpModule } from "../util/BinOpModules.js";
 import { ModuleRegistry } from "wgsl-linker";
-import { sumU32 } from "../modules/BinOpModuleSumU32.js";
+import { sumU32 } from "../binop/BinOpModuleSumU32.js";
 
 /** @internal */
 export interface ApplyScanBlocksArgs {
