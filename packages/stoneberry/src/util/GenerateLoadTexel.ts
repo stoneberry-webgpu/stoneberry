@@ -77,11 +77,11 @@ export function registerTexelLoader(
   if (typeof texelComponent === "string") {
     const ll = loadTexelCodeGen(texelComponent);
     const generator = texelGenerator(ll.fn);
-    registry.registerGenerator2(generator);
+    registry.registerGenerator(generator);
   } else if (texelComponent.kind === "template") {
     registry.registerModules({}, texelComponent.wgsl);
   } else if (texelComponent.kind === "function") {
     const generator = texelGenerator(texelComponent.fn);
-    registry.registerGenerator2(generator);
+    registry.registerGenerator(generator);
   }
 }
