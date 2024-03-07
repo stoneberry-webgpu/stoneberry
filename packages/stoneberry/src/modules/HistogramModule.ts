@@ -10,7 +10,6 @@ export function histogramModule(
   buckets: number,
 ): HistogramModule {
   const params = { buckets };
-  // TODO is this necessary? it should be handled by the linker anyway..
   const wgsl = replacer(histogramWgsl, params); 
 
   return {
