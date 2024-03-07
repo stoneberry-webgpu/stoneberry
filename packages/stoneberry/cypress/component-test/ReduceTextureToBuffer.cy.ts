@@ -11,7 +11,7 @@ import {
   withLeakTrack,
 } from "thimbleberry";
 import { ReduceTextureToBuffer } from "../../src/reduce-texture/ReduceTextureToBuffer.js";
-import { loadTexelCodeGen } from "../../src/util/GenerateLoadTexel.js";
+import { loadTexelCodeGen, texelLoader } from "../../src/util/GenerateLoadTexel.js";
 import { minMaxReds, sumReds } from "./util/Reductions.js";
 import { sumF32 } from "../../src/modules/BinOpModuleSumF32.js";
 import { minMaxF32 } from "../../src/modules/BinOpModuleMinMaxF32.js";
@@ -31,7 +31,7 @@ it("reduce texture to buffer, workgroup size = 1", async () => {
         blockSize: [2, 2],
         forceWorkgroupSize: [1, 1],
         binOps: sumF32,
-        loadComponent: loadTexelCodeGen("r"),
+        loadComponent: texelLoader("r"),
       });
       trackUse(rt);
       const shaderGroup = new ShaderGroup(device, rt);
@@ -58,7 +58,7 @@ it("reduce texture to buffer, workgroup size = 4", async () => {
         blockSize: [2, 2],
         forceWorkgroupSize: [2, 2], // shader will need reduce buffer to out buffer
         binOps: sumF32,
-        loadComponent: loadTexelCodeGen("r"),
+        loadComponent: texelLoader("r"),
       });
       trackUse(tr);
       const shaderGroup = new ShaderGroup(device, tr);
@@ -114,7 +114,7 @@ it("reduce texture to buffer, r32uint", async () => {
         blockSize: [2, 2],
         forceWorkgroupSize: [2, 2],
         binOps: sumU32,
-        loadComponent: loadTexelCodeGen("r"),
+        loadComponent: texelLoader("r"),
       });
       trackUse(rt);
       const shaderGroup = new ShaderGroup(device, rt);

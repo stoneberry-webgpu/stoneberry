@@ -17,7 +17,11 @@ import { ModuleRegistry } from "wgsl-linker";
 import reduceWorkgroup from "../reduce-buffer/reduceWorkgroup.wgsl?raw";
 import { BinOpModule } from "../util/BinOpModules.js";
 import { computePipeline } from "../util/ComputePipeline.js";
-import { ComponentName, LoadComponent } from "../util/GenerateLoadTexel.js";
+import {
+  ComponentName,
+  LoadComponent,
+  registerTexelLoader,
+} from "../util/GenerateLoadTexel.js";
 import { maxWorkgroupSize } from "../util/LimitWorkgroupSize.js";
 import wgsl from "./ReduceTexture.wgsl?raw";
 
@@ -140,17 +144,7 @@ export class ReduceTextureToBuffer extends HasReactive implements ComposableShad
 
   @reactively private get registry(): ModuleRegistry {
     const registry = new ModuleRegistry(reduceWorkgroup, this.binOps.wgsl);
-    const loadWgsl = this.loadComponent;
-    if (loadWgsl.kind === "template") {
-      registry.registerModules({}, loadWgsl.wgsl);
-    } else {
-      registry.registerGenerator(
-        "loadTexel",
-        loadWgsl.fn,
-        ["Output", "texelType"],
-        "ReduceTextureToBuffer"
-      );
-    }
+    registerTexelLoader(this.loadComponent, registry);
     return registry;
   }
 

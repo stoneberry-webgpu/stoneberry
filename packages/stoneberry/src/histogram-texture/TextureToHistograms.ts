@@ -13,13 +13,17 @@ import {
   textureSampleType,
   trackContext,
 } from "thimbleberry";
-import { computePipeline } from "../util/ComputePipeline.js";
+import { ModuleRegistry } from "wgsl-linker";
 import { HistogramModule } from "../modules/HistogramModule.js";
+import { computePipeline } from "../util/ComputePipeline.js";
+import {
+  ComponentName,
+  LoadComponent,
+  registerTexelLoader,
+} from "../util/GenerateLoadTexel.js";
 import { maxWorkgroupSize } from "../util/LimitWorkgroupSize.js";
-import { ComponentName, LoadComponent, texelLoader } from "../util/GenerateLoadTexel.js";
 import { BindingEntry } from "./../util/ComputePipeline";
 import wgsl from "./TextureToHistograms.wgsl?raw";
-import { ModuleRegistry } from "wgsl-linker";
 
 export interface TextureToHistogramsParams {
   device: GPUDevice;
@@ -171,17 +175,7 @@ export class TextureToHistograms extends HasReactive implements ComposableShader
   }
   @reactively private get registry(): ModuleRegistry {
     const registry = new ModuleRegistry();
-    const loadWgsl = texelLoader(this.sourceComponent);
-    if (loadWgsl.kind === "template") {
-      registry.registerModules({}, loadWgsl.wgsl);
-    } else {
-      registry.registerGenerator(
-        "loadTexel",
-        loadWgsl.fn,
-        ["Output", "texelType"],
-        "TextureToHistograms"
-      );
-    }
+    registerTexelLoader(this.sourceComponent, registry);
     return registry;
   }
 
