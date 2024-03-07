@@ -11,9 +11,9 @@
 // 
 // #template replace
 
-// #import loadTexel(u32, texelType)
+// #import loadTexel(texelType, texelType)
 
-//#if typecheck
+// #if typecheck
 fn loadTexel(a: vec4<u32>) -> u32 { return a.r; }
 // #endif
 

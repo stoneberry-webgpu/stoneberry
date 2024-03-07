@@ -36,14 +36,14 @@ export function loadTexelCodeGen(
         return ${output}(${args});
       }`;
     } else {
+      // TODO unused, we always set output
       result = `fn loadTexel(a: vec4<${texelType}>) -> ${texelType} { 
         return a.${component};
       }`;
     }
-    // console.log(result);
     return result;
-  };
-  return { kind: "function", fn: loadTexel};
+  }
+  return { kind: "function", fn: loadTexel };
 }
 
 export function texelLoader(
