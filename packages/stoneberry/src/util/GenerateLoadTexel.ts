@@ -20,7 +20,7 @@ export interface LoadCodeGen {
 export type ComponentName = "r" | "g" | "b" | "a";
 
 /**
- * A function to generate wgsl to load a value from a texture.
+ * A function to generate wgsl to load a value from a texel.
  * @param component - the component to load from the texture e.g. "r" or "a"
  * @param outputParams - the number of elements in the output struct
  * The wgsl importer should pass two paramaters:
@@ -44,6 +44,12 @@ export function loadTexelCodeGen(
   return { kind: "function", fn: loadTexel };
 }
 
+/** 
+ * @return a function or template to generate wgsl to load a value from a texel
+ * 
+ * @param texelComponent - the component name to load from the texture e.g. "r" or "a",
+ *  (or an already defined generator function or wgsl template which is just passed through)
+ */
 export function texelLoader(
   texelComponent: ComponentName | LoadComponent
 ): LoadComponent {
