@@ -267,7 +267,7 @@ importers:
         version: 5.0.1
       rollup-plugin-sourcefiles:
         specifier: ^0.3.0
-        version: 0.3.0
+        version: 0.3.1
       typescript:
         specifier: ^5.1.6
         version: 5.1.6
@@ -10216,13 +10216,13 @@ packages:
       path-scurry: 1.10.1
     dev: true
 
-  /glob@10.3.3:
-    resolution: {integrity: sha512-92vPiMb/iqpmEgsOoIDvTjc50wf9CCCvMzsi6W0JLPeUKE8TWP1a73PgqSrqy7iAZxaSD1YdzU7QZR5LF51MJw==}
+  /glob@10.3.10:
+    resolution: {integrity: sha512-fa46+tv1Ak0UPK1TOy/pZrIybNNt4HCv7SDzwyfiOZkvZLEbjsZkJBPtDHVshZjbecAoAGSC20MjLDG/qr679g==}
     engines: {node: '>=16 || 14 >=14.17'}
     hasBin: true
     dependencies:
       foreground-child: 3.1.1
-      jackspeak: 2.2.1
+      jackspeak: 2.3.6
       minimatch: 9.0.3
       minipass: 7.0.2
       path-scurry: 1.10.1
@@ -11010,8 +11010,8 @@ packages:
     engines: {node: '>=6'}
     dev: true
 
-  /import-meta-resolve@3.0.0:
-    resolution: {integrity: sha512-4IwhLhNNA8yy445rPjD/lWh++7hMDOml2eHtd58eG7h+qK3EryMuuRbsHGPikCoAgIkkDnckKfWSk2iDla/ejg==}
+  /import-meta-resolve@3.1.1:
+    resolution: {integrity: sha512-qeywsE/KC3w9Fd2ORrRDUw6nS/nLwZpXgfrOc2IILvZYnCaEMd+D56Vfg9k4G29gIeVi3XKql1RQatME8iYsiw==}
     dev: true
 
   /imurmurhash@0.1.4:
@@ -11591,6 +11591,15 @@ packages:
 
   /jackspeak@2.2.1:
     resolution: {integrity: sha512-MXbxovZ/Pm42f6cDIDkl3xpwv1AGwObKwfmjs2nQePiy85tP3fatofl3FC1aBsOtP/6fq5SbtgHwWcMsLP+bDw==}
+    engines: {node: '>=14'}
+    dependencies:
+      '@isaacs/cliui': 8.0.2
+    optionalDependencies:
+      '@pkgjs/parseargs': 0.11.0
+    dev: true
+
+  /jackspeak@2.3.6:
+    resolution: {integrity: sha512-N3yCS/NegsOBokc8GAdM8UcmfsKiSS8cipheD/nivzr700H+nsMOxJjQnvwOcRYVuFkdH0wGUvW2WbXGmrZGbQ==}
     engines: {node: '>=14'}
     dependencies:
       '@isaacs/cliui': 8.0.2
@@ -13119,7 +13128,7 @@ packages:
     resolution: {integrity: sha512-UgTSNWlBvx+f4nxVSH3fOyJPJKol8GkFuG8mN8q9FqtmJgwaEx0azPRlXXX0klNlRxoP2gwme00TPDSm6rm/IA==}
     engines: {node: '>= 12.17'}
     dependencies:
-      es-module-lexer: 1.3.0
+      es-module-lexer: 1.3.1
       slashes: 3.0.12
     dev: true
 
@@ -15032,13 +15041,13 @@ packages:
       rollup-plugin-inject: 3.0.2
     dev: true
 
-  /rollup-plugin-sourcefiles@0.3.0:
-    resolution: {integrity: sha512-rZaNY0bDkrU/2mqp2ktb1aVIDF+Ya8Sc9SanF+TiLqSx+91TeRr6uq3vgOPaUQpkmgU9Wf4Tl30iH5cFG5evZA==}
+  /rollup-plugin-sourcefiles@0.3.1:
+    resolution: {integrity: sha512-ngfrWBAjb5zKfI1zeDpxKQQbM4cjtNoQZO66rgnSaSf8lMZF0HGobWDrro0NCxbR0ksxPblDTiVLJkvVD5HItw==}
     dependencies:
       blueimp-md5: 2.19.0
       esbuild: 0.18.15
-      glob: 10.3.3
-      import-meta-resolve: 3.0.0
+      glob: 10.3.10
+      import-meta-resolve: 3.1.1
       parse-imports: 1.1.2
     dev: true
 
