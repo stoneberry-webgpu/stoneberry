@@ -10,8 +10,8 @@ import {
 import { PrefixScan } from "../../src/scan/PrefixScan.js";
 import { makeBuffer } from "./util/MakeBuffer.js";
 import { exclusiveSum, inclusiveSum } from "./util/PrefixSum.js";
-import { sumU32 } from "../../src/modules/BinOpModuleSumU32.js";
-import { sumF32 } from "../../src/modules/BinOpModuleSumF32.js";
+import { sumU32 } from "../../src/binop/BinOpModuleSumU32.js";
+import { sumF32 } from "../../src/binop/BinOpModuleSumF32.js";
 
 it("scan api", async () => {
   await withAsyncUsage(async () => {

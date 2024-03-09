@@ -9,7 +9,7 @@ import {
 } from "thimbleberry";
 import { makeBuffer } from "./util/MakeBuffer";
 import { TextureToHistograms } from "../../src/histogram-texture/TextureToHistograms.js";
-import { histogramModule } from "../../src/modules/HistogramModule.js";
+import { histogramModule } from "../../src/binop/HistogramModule.js";
 
 it("texture to one histogram, one thread", async () => {
   await withAsyncUsage(async () => {

@@ -13,9 +13,9 @@ import {
 import { ReduceTextureToBuffer } from "../../src/reduce-texture/ReduceTextureToBuffer.js";
 import { loadTexelCodeGen, texelLoader } from "../../src/util/GenerateLoadTexel.js";
 import { minMaxReds, sumReds } from "./util/Reductions.js";
-import { sumF32 } from "../../src/modules/BinOpModuleSumF32.js";
-import { minMaxF32 } from "../../src/modules/BinOpModuleMinMaxF32.js";
-import { sumU32 } from "../../src/modules/BinOpModuleSumU32.js";
+import { sumF32 } from "../../src/binop/BinOpModuleSumF32.js";
+import { minMaxF32 } from "../../src/binop/BinOpModuleMinMaxF32.js";
+import { sumU32 } from "../../src/binop/BinOpModuleSumU32.js";
 
 it("reduce texture to buffer, workgroup size = 1", async () => {
   await withAsyncUsage(async () => {

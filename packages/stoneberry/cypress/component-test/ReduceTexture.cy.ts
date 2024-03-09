@@ -9,7 +9,7 @@ import {
 } from "thimbleberry";
 import { ReduceTexture } from "./../../src/reduce-texture/ReduceTexture";
 import { sumReds } from "./util/Reductions.js";
-import { sumF32 } from "../../src/modules/BinOpModuleSumF32.js";
+import { sumF32 } from "../../src/binop/BinOpModuleSumF32.js";
 
 it("reduce texture, no internal reduction", async () => {
   await withAsyncUsage(async () => {

@@ -6,10 +6,10 @@ import {
   withAsyncUsage,
   withLeakTrack
 } from "thimbleberry";
-import { maxF32 } from "../../src/modules/BinOpModuleMaxF32.js";
-import { minMaxF32 } from "../../src/modules/BinOpModuleMinMaxF32.js";
-import { sumF32 } from "../../src/modules/BinOpModuleSumF32.js";
-import { sumU32 } from "../../src/modules/BinOpModuleSumU32.js";
+import { maxF32 } from "../../src/binop/BinOpModuleMaxF32.js";
+import { minMaxF32 } from "../../src/binop/BinOpModuleMinMaxF32.js";
+import { sumF32 } from "../../src/binop/BinOpModuleSumF32.js";
+import { sumU32 } from "../../src/binop/BinOpModuleSumU32.js";
 import { makeBuffer } from "./util/MakeBuffer";
 
 it("sum, simple api", async () => {
