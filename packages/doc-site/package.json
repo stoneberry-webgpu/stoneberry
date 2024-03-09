@@ -13,7 +13,7 @@
     "write-translations": "docusaurus write-translations",
     "write-heading-ids": "docusaurus write-heading-ids",
     "typecheck": "tsc",
-    "pages:dev": "pnpm wrangler pages dev --compatibility-date=2023-06-11 --proxy 3000 -- pnpm run start",
+    "pages:dev": "pnpm wrangler pages dev --compatibility-date=2023-09-22 --proxy 3000 -- pnpm run start",
     "pages:deploy": "pnpm wrangler pages deploy --project-name stoneberry ./build"
   },
   "dependencies": {
