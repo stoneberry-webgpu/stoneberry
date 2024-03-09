@@ -28,7 +28,7 @@
     "./scan": {
       "import": "./dist/scan/index.js",
       "module": "./dist/scan/index.js",
-      "types": "./dist/scan/PrefixScan.d.ts"
+      "types": "./dist/scan/index.d.ts"
     },
     "./histogram-texture": {
       "import": "./dist/histogram-texture/index.js",
