@@ -23,14 +23,14 @@
   "dependencies": {
     "stoneberry": "workspace:^",
     "thimbleberry": "^0.2.9",
-    "wgsl-linker": "^0.3.0"
+    "wgsl-linker": "^0.3.1"
   },
   "devDependencies": {
-    "@webgpu/types": "^0.1.32",
-    "esbuild": "^0.17.19",
-    "rimraf": "^5.0.1",
-    "typescript": "^5.0.4",
-    "vite": "^4.4.6",
-    "vite-tsconfig-paths": "^4.2.0"
+    "@webgpu/types": "^0.1.40",
+    "esbuild": "^0.20.1",
+    "rimraf": "^5.0.5",
+    "typescript": "^5.4.2",
+    "vite": "^5.1.5",
+    "vite-tsconfig-paths": "^4.3.1"
   }
 }
