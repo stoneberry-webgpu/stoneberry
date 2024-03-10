@@ -7,7 +7,7 @@
 fn binaryOp(a: Output, b: Output) -> Output { return Output(0); }
 // #endif
 
-// #importMerge BinOpElem
+// #extends BinOpElem
 struct Output { 
 // #if typecheck
     sum: u32,

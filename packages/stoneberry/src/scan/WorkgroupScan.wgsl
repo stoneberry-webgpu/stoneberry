@@ -39,14 +39,14 @@ fn identityOp() -> Output { return Output(0); }
 fn binaryOp(a: Output, b: Output) -> Output { return Output(0);  }
 // #endif
 
-// #importMerge LoadBinOpElem
+// #extends LoadBinOpElem
 struct Input { 
 // #if typecheck
     sum: u32,  
 // #endif
 }
 
-// #importMerge BinOpElem
+// #extends BinOpElem
 struct Output { 
 // #if typecheck
     sum: u32,  

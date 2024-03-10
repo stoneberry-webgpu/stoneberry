@@ -13,7 +13,7 @@ fn identityOp() -> Output {}
 fn loadTexel(a: vec4<f32>) -> Output { return Output(1.0); }
 // #endif
 
-// #importMerge BinOpElem
+// #extends BinOpElem
 struct Output { 
 // #if typecheck 
     sum: f32,  

@@ -13,14 +13,14 @@ fn loadOp(a: Input) -> Output {}
 fn identityOp() -> Output {}
 // #endif
 
-// #importMerge LoadBinOpElem
+// #extends LoadBinOpElem
 struct Input { 
 // #if typecheck 
     sum: f32,   
 // #endif
 }
 
-// #importMerge BinOpElem
+// #extends BinOpElem
 struct Output { 
 // #if typecheck 
     sum: f32,   
