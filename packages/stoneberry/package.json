@@ -4,8 +4,9 @@
   "description": "core WebGPU shaders",
   "type": "module",
   "scripts": {
-    "prepublishOnly": "rimraf dist && pnpm run build && pnpm run build:types build:readme",
-    "build": "run-s build:scan build:bufReduce build:texReduce build:histogram build:binop build:util",
+    "prepublishOnly": "run-s build:clear build build:types",
+    "build": "run-s build:scan build:bufReduce build:texReduce build:histogram build:binop build:util build:readme",
+    "build:clear": "rimraf dist",
     "build:readme": "ncp ../../README.md README.md",
     "build:scan": "esbuild src/scan/index.ts                   --outbase=src --external:../util/* --bundle --packages=external --format=esm --loader:.wgsl=text --sourcemap --outdir=dist",
     "build:bufReduce": "esbuild src/reduce-buffer/index.ts     --outbase=src --external:../util/* --bundle --packages=external --format=esm --loader:.wgsl=text --sourcemap --outdir=dist",
