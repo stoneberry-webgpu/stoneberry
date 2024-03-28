@@ -1,2 +1,5 @@
 # generated docs for experimenting with typedoc w/o docusaurus
 docs-tmp
+
+# (we copy the README from the root dir)
+README.md
