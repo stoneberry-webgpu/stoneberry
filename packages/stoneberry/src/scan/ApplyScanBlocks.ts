@@ -11,11 +11,7 @@ import {
 import { computePipeline } from "../util/ComputePipeline.js";
 import { calcDispatchSizes } from "../util/DispatchSizes.js";
 import { Cache, ComposableShader } from "../util/Util.js";
-const wgsl: Record<string, string> = import.meta.glob("./ApplyScanBlocks.wgsl", {
-  query: "?raw",
-  eager: true,
-  import: "default",
-});
+import wgsl from "./ApplyScanBlocks.wgsl?raw";
 import { BinOpModule } from "../util/BinOpModules.js";
 import { ModuleRegistry } from "wgsl-linker";
 import { sumU32 } from "../binop/BinOpModuleSumU32.js";
@@ -109,7 +105,7 @@ export class ApplyScanBlocks extends HasReactive implements ComposableShader {
   }
 
   @reactively private get registry(): ModuleRegistry {
-    return new ModuleRegistry({ wgsl, rawWgsl: [this.binOps.wgsl] });
+    return new ModuleRegistry({ wgsl: { main: wgsl }, rawWgsl: [this.binOps.wgsl] });
   }
 
   @reactively private get pipeline(): GPUComputePipeline {
@@ -118,7 +114,6 @@ export class ApplyScanBlocks extends HasReactive implements ComposableShader {
         device: this.device,
         label: this.label,
         registry: this.registry,
-        mainModule: "stoneberry.ApplyScanBlocks",
         wgslParams: {
           workgroupSizeX: this.workgroupLength,
         },
