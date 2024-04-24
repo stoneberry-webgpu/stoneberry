@@ -4,7 +4,7 @@
 
 // #import binaryOp(Output)
 // #if typecheck
-fn binaryOp(a: Output, b: Output) -> Output { return Output(0); }
+fn binaryOp(a: Output, b: Output) -> Output { return Output(0u); }
 // #endif
 
 // #extends BinOpElem
