@@ -1,3 +1,4 @@
+/// <reference types="vite/client" />
 import { HasReactive, reactively } from "@reactively/decorate";
 import {
   assignParams,
@@ -10,7 +11,11 @@ import {
 import { computePipeline } from "../util/ComputePipeline.js";
 import { calcDispatchSizes } from "../util/DispatchSizes.js";
 import { Cache, ComposableShader } from "../util/Util.js";
-import wgsl from "./ApplyScanBlocks.wgsl?raw";
+const wgsl: Record<string, string> = import.meta.glob("./ApplyScanBlocks.wgsl", {
+  query: "?raw",
+  eager: true,
+  import: "default",
+});
 import { BinOpModule } from "../util/BinOpModules.js";
 import { ModuleRegistry } from "wgsl-linker";
 import { sumU32 } from "../binop/BinOpModuleSumU32.js";
@@ -104,7 +109,7 @@ export class ApplyScanBlocks extends HasReactive implements ComposableShader {
   }
 
   @reactively private get registry(): ModuleRegistry {
-    return new ModuleRegistry(this.binOps.wgsl);
+    return new ModuleRegistry({ wgsl, rawWgsl: [this.binOps.wgsl] });
   }
 
   @reactively private get pipeline(): GPUComputePipeline {
@@ -112,8 +117,8 @@ export class ApplyScanBlocks extends HasReactive implements ComposableShader {
       {
         device: this.device,
         label: this.label,
-        wgsl,
         registry: this.registry,
+        mainModule: "stoneberry.ApplyScanBlocks",
         wgslParams: {
           workgroupSizeX: this.workgroupLength,
         },
@@ -125,7 +130,7 @@ export class ApplyScanBlocks extends HasReactive implements ComposableShader {
         ],
         debugBuffer: true,
       },
-      this.pipelineCache
+      this.pipelineCache,
     );
     return compute.pipeline;
   }
@@ -201,7 +206,7 @@ export class ApplyScanBlocks extends HasReactive implements ComposableShader {
     uniforms: GPUBuffer,
     partialScanOffset: number,
     scanOffset: number,
-    blockSumsOffset: number
+    blockSumsOffset: number,
   ): void {
     const exclusive = this.exclusiveLarge ? 1 : 0;
     const initialValue = this.initialValue;

@@ -1,5 +1,5 @@
 import { memoizeWithDevice } from "thimbleberry";
-import { ModuleRegistry, linkWgsl } from "wgsl-linker";
+import { ModuleRegistry } from "wgsl-linker";
 import { replaceTemplate } from "wgsl-linker/templates";
 
 export type BindingEntry =
@@ -12,8 +12,8 @@ export type BindingEntry =
 export interface ComputePipelineArgs {
   device: GPUDevice;
 
-  /** shader source code text */
-  wgsl: string;
+  /** shader main module name or path, defaults to "main" */
+  mainModule?: string;
 
   /** portion of a GPUBindGroupLayoutEntry, for defining binding layout */
   bindings: BindingEntry[];
@@ -22,7 +22,7 @@ export interface ComputePipelineArgs {
   wgslParams?: Record<string, any>;
 
   /** registry of modules available for linking */
-  registry?: ModuleRegistry;
+  registry: ModuleRegistry;
 
   /** debug label */
   label?: string;
@@ -45,7 +45,14 @@ export interface ComputePipelineResults {
 export const computePipeline = memoizeWithDevice(makeComputePipeline);
 
 function makeComputePipeline(args: ComputePipelineArgs): ComputePipelineResults {
-  const { device, wgsl, wgslParams = {}, constants, registry, logShader } = args;
+  const {
+    device,
+    mainModule = "main",
+    wgslParams = {},
+    constants,
+    registry,
+    logShader,
+  } = args;
   const { debugBuffer = false, bindings, label = "computeShader" } = args;
   const entries = bindings.map((binding, i) => ({
     binding: i,
@@ -68,7 +75,7 @@ function makeComputePipeline(args: ComputePipelineArgs): ComputePipelineResults 
 
   registry?.registerTemplate(replaceTemplate);
   // console.log("wgsl\n", wgsl);
-  const linkedWgsl = registry ? linkWgsl(wgsl, registry, wgslParams) : wgsl;
+  const linkedWgsl = registry.link(mainModule, wgslParams);
   // console.log("linkedWgsl\n", linkedWgsl);
 
   if (logShader) {
