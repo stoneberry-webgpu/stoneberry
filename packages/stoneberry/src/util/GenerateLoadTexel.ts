@@ -1,6 +1,5 @@
 import { mapN } from "thimbleberry";
 import { CodeGenFn, ModuleRegistry, RegisterGenerator } from "wgsl-linker";
-import { dlog } from "berry-pretty";
 
 /** code generator or template to create wgsl that load a value from vec4 */
 export type LoadComponent = LoadTemplate | LoadCodeGen;
@@ -79,7 +78,7 @@ export function registerTexelLoader(
     const generator = texelGenerator(ll.fn);
     registry.registerGenerator(generator);
   } else if (texelComponent.kind === "template") {
-    registry.registerModules({}, texelComponent.wgsl);
+    registry.registerModules({"texelComponent": texelComponent.wgsl});
   } else if (texelComponent.kind === "function") {
     const generator = texelGenerator(texelComponent.fn);
     registry.registerGenerator(generator);

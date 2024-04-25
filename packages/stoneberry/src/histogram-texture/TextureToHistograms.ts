@@ -23,7 +23,7 @@ import {
 } from "../util/GenerateLoadTexel.js";
 import { maxWorkgroupSize } from "../util/LimitWorkgroupSize.js";
 import { BindingEntry } from "./../util/ComputePipeline";
-import wgsl from "./TextureToHistograms.wgsl?raw";
+import wgslMain from "./TextureToHistograms.wgsl?raw";
 
 export interface TextureToHistogramsParams {
   device: GPUDevice;
@@ -174,7 +174,7 @@ export class TextureToHistograms extends HasReactive implements ComposableShader
     return buffer;
   }
   @reactively private get registry(): ModuleRegistry {
-    const registry = new ModuleRegistry();
+    const registry = new ModuleRegistry({ wgsl: {"main": wgslMain}});
     registerTexelLoader(this.sourceComponent, registry);
     return registry;
   }
@@ -188,7 +188,6 @@ export class TextureToHistograms extends HasReactive implements ComposableShader
     const compute = computePipeline(
       {
         device: this.device,
-        wgsl,
         registry: this.registry,
         wgslParams: {
           texelType: texelLoadType(this.source.format),

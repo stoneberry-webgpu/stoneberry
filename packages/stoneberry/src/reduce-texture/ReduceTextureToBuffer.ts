@@ -23,7 +23,7 @@ import {
   registerTexelLoader,
 } from "../util/GenerateLoadTexel.js";
 import { maxWorkgroupSize } from "../util/LimitWorkgroupSize.js";
-import wgsl from "./ReduceTexture.wgsl?raw";
+import wgslMain from "./ReduceTexture.wgsl?raw";
 
 export interface TextureToBufferParams {
   device: GPUDevice;
@@ -143,7 +143,10 @@ export class ReduceTextureToBuffer extends HasReactive implements ComposableShad
   }
 
   @reactively private get registry(): ModuleRegistry {
-    const registry = new ModuleRegistry(reduceWorkgroup, this.binOps.wgsl);
+    const registry = new ModuleRegistry({
+      wgsl: { main: wgslMain },
+      rawWgsl: [reduceWorkgroup, this.binOps.wgsl],
+    });
     registerTexelLoader(this.loadComponent, registry);
     return registry;
   }
@@ -155,7 +158,6 @@ export class ReduceTextureToBuffer extends HasReactive implements ComposableShad
       {
         label: "textureReduce",
         device: this.device,
-        wgsl,
         wgslParams: {
           texelType: texelLoadType(this.source.format),
           loadComponentName: this.componentName,
@@ -177,7 +179,7 @@ export class ReduceTextureToBuffer extends HasReactive implements ComposableShad
         ],
         debugBuffer: true,
       },
-      this.pipelineCache
+      this.pipelineCache,
     );
     return compute.pipeline;
   }

@@ -14,7 +14,7 @@ import { BinOpModule } from "../util/BinOpModules.js";
 import { computePipeline } from "../util/ComputePipeline.js";
 import { SlicingResults, inputSlicing } from "../util/InputSlicing.js";
 import { runAndFetchResult } from "../util/RunAndFetch.js";
-import wgsl from "./ReduceBuffer.wgsl?raw";
+import wgslMain from "./ReduceBuffer.wgsl?raw";
 import reduceWorkgroupWgsl from "./reduceWorkgroup.wgsl?raw";
 
 export interface BufferReduceParams {
@@ -130,7 +130,7 @@ export class ReduceBuffer extends HasReactive implements ComposableShader {
     bindGroup: GPUBindGroup,
     dispatch: number,
     dynamicOffsets: Uint32Array | number[] | undefined,
-    dispatchLabel: string
+    dispatchLabel: string,
   ): void {
     const label = `${this.label} bufferReduce ${dispatchLabel}`;
     const timestampWrites = gpuTiming?.timestampWrites(label);
@@ -230,7 +230,10 @@ export class ReduceBuffer extends HasReactive implements ComposableShader {
   }
 
   @reactively private get registry(): ModuleRegistry {
-    return new ModuleRegistry(this.binOps.wgsl, reduceWorkgroupWgsl);
+    return new ModuleRegistry({
+      wgsl: { main: wgslMain },
+      rawWgsl: [this.binOps.wgsl, reduceWorkgroupWgsl],
+    });
   }
 
   /** all dispatches use the same pipeline */
@@ -238,7 +241,6 @@ export class ReduceBuffer extends HasReactive implements ComposableShader {
     const cp = computePipeline(
       {
         device: this.device,
-        wgsl,
         wgslParams: {
           workgroupThreads: this.workgroupLength,
           blockArea: this.blockLength,
@@ -251,7 +253,7 @@ export class ReduceBuffer extends HasReactive implements ComposableShader {
         ],
         debugBuffer: true,
       },
-      this.pipelineCache
+      this.pipelineCache,
     );
     return cp.pipeline;
   }
@@ -290,7 +292,7 @@ export class ReduceBuffer extends HasReactive implements ComposableShader {
     uniforms: GPUBuffer,
     src: GPUBuffer,
     result: GPUBuffer,
-    bindLabel: string
+    bindLabel: string,
   ): GPUBindGroup {
     const uniformSlice = this.inputSlicing.uniformsSliceSize;
     return this.device.createBindGroup({
@@ -339,12 +341,12 @@ export class ReduceBuffer extends HasReactive implements ComposableShader {
 
     // limit on threads based on workgroup storage required
     const storageMaxThreads = Math.floor(
-      device.limits.maxComputeWorkgroupStorageSize / this.binOps.outputElementSize
+      device.limits.maxComputeWorkgroupStorageSize / this.binOps.outputElementSize,
     );
     // also limit by max threads per workgroup
     const maxThreads = Math.min(
       device.limits.maxComputeInvocationsPerWorkgroup,
-      storageMaxThreads
+      storageMaxThreads,
     );
 
     if (!proposedLength || proposedLength > maxThreads) {

@@ -157,7 +157,7 @@ export class WorkgroupScan extends HasReactive implements ComposableShader {
   }
 
   @reactively private get registry(): ModuleRegistry {
-    return new ModuleRegistry(this.binOps.wgsl);
+    return new ModuleRegistry({wgsl: {"main": workgroupScanWgsl, "binOps": this.binOps.wgsl}});
   }
 
   @reactively private get pipeline(): GPUComputePipeline {
@@ -169,8 +169,8 @@ export class WorkgroupScan extends HasReactive implements ComposableShader {
       {
         device: this.device,
         label: this.label,
-        wgsl: workgroupScanWgsl,
         registry: this.registry,
+        logShader: true,
         wgslParams: {
           workgroupSizeX: this.workgroupLength,
           blockSums: this.emitBlockSums,

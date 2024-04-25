@@ -35,8 +35,8 @@
 
 // #if typecheck
 fn loadOp(a: Input) -> Output { return Output(a.sum);  }
-fn identityOp() -> Output { return Output(0); }
-fn binaryOp(a: Output, b: Output) -> Output { return Output(0);  }
+fn identityOp() -> Output { return Output(0u); }
+fn binaryOp(a: Output, b: Output) -> Output { return Output(0u);  }
 // #endif
 
 // #extends LoadBinOpElem
