@@ -78,7 +78,7 @@ export function registerTexelLoader(
     const generator = texelGenerator(ll.fn);
     registry.registerGenerator(generator);
   } else if (texelComponent.kind === "template") {
-    registry.registerModules({"texelComponent": texelComponent.wgsl});
+    registry.addModuleSrc(texelComponent.wgsl);
   } else if (texelComponent.kind === "function") {
     const generator = texelGenerator(texelComponent.fn);
     registry.registerGenerator(generator);
