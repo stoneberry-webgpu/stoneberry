@@ -28,7 +28,7 @@ export type ComponentName = "r" | "g" | "b" | "a";
  */
 export function loadTexelCodeGen(
   component: ComponentName,
-  outputParams = 1
+  outputParams = 1,
 ): LoadCodeGen {
   function loadTexel(fnName: string, params: Record<string, string>): string {
     const { output, texelType } = params;
@@ -50,7 +50,7 @@ export function loadTexelCodeGen(
  *  (or an already defined generator function or wgsl template which is just passed through)
  */
 export function texelLoader(
-  texelComponent: ComponentName | LoadComponent
+  texelComponent: ComponentName | LoadComponent,
 ): LoadComponent {
   if (typeof texelComponent === "string") {
     return loadTexelCodeGen(texelComponent);
@@ -70,7 +70,7 @@ function texelGenerator(generate: CodeGenFn): RegisterGenerator {
 
 export function registerTexelLoader(
   texelComponent: ComponentName | LoadComponent,
-  registry: ModuleRegistry
+  registry: ModuleRegistry,
 ): void {
   // dlog({ texelComponent });
   if (typeof texelComponent === "string") {
