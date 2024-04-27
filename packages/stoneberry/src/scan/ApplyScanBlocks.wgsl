@@ -1,7 +1,5 @@
 // #module stoneberry.ApplyScanBlocks
 
-// #template replace
-
 // #import binaryOp(Output)
 // #if typecheck
 fn binaryOp(a: Output, b: Output) -> Output { return Output(0u); }
@@ -28,7 +26,7 @@ struct Uniforms {
 @group(0) @binding(3) var<storage, read_write> prefixScan: array<Output>; // output prefix scan
 @group(0) @binding(11) var<storage, read_write> debug: array<f32>;        // buffer to hold debug values
 
-const workgroupSizeX = 4u;      // #replace 4=workgroupSizeX
+override workgroupSizeX = 4u;     
 
 // apply block sums to partial scan results
 @compute
