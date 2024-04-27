@@ -11,8 +11,7 @@ import { WorkgroupScan } from "../../src/scan/WorkgroupScan.js";
 import { makeBuffer } from "./util/MakeBuffer.js";
 import { exclusiveSum, inclusiveSum } from "./util/PrefixSum.js";
 
-it.only("workgroup scan one evenly sized buffer, with middle layers", async () => {
-  console.clear();
+it("workgroup scan one evenly sized buffer, with middle layers", async () => {
   await withAsyncUsage(async () => {
     const device = trackUse(await labeledGpuDevice());
 
