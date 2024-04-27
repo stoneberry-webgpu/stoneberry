@@ -242,8 +242,11 @@ export class ReduceBuffer extends HasReactive implements ComposableShader {
       {
         device: this.device,
         wgslParams: {
-          workgroupThreads: this.workgroupLength,
           blockArea: this.blockLength,
+          workgroupThreads: this.workgroupLength,
+        },
+        constants: {
+          workgroupThreads: this.workgroupLength,
         },
         registry: this.registry,
         bindings: [

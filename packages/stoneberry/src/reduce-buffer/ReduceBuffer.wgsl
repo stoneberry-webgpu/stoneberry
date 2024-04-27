@@ -8,8 +8,8 @@
 
 // #if typecheck
 fn reduceWorkgroup(localId: u32) {}
-fn binaryOp(a: Output, b: Output) -> Output {}
-fn loadOp(a: Input) -> Output {}
+fn binaryOp(a: Output, b: Output) -> Output { return a; }
+fn loadOp(a: Input) -> Output { return Output(0) }
 fn identityOp() -> Output {}
 // #endif
 
@@ -37,7 +37,7 @@ struct Uniforms {
 @group(0) @binding(2) var<storage, read_write> out: array<Output>;  
 @group(0) @binding(11) var<storage, read_write> debug: array<f32>; // buffer to hold debug values
 
-const workgroupThreads = 4;                          // #replace 4=workgroupThreads
+override workgroupThreads = 4;                          
 
 var <workgroup> work: array<Output, workgroupThreads>; 
 
