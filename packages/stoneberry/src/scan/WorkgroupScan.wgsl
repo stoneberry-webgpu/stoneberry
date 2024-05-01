@@ -27,7 +27,7 @@
 // summation of the first and last layers is handled separately because they read/write 
 //   between storage and workgroup memory.
 
-// #template replace
+// #template simple
 
 // #import loadOp(Input, Output)
 // #import identityOp(Output)
@@ -37,6 +37,7 @@
 fn loadOp(a: Input) -> Output { return Output(a.sum);  }
 fn identityOp() -> Output { return Output(0u); }
 fn binaryOp(a: Output, b: Output) -> Output { return Output(0u);  }
+const WorkgroupX = 4u; // workgroup size
 // #endif
 
 // #extends LoadBinOpElem
@@ -69,9 +70,9 @@ struct Uniforms {
 // #endif
 @group(0) @binding(11) var<storage, read_write> debug: array<f32>;        // buffer to hold debug values
 
-const workgroupSizeX = 4u;      // #replace 4=workgroupSizeX
+override workgroupSizeX = 4u;      
 
-const srcElems = workgroupSizeX * 2u; 
+const srcElems = WorkgroupX * 2u; 
 
 // doubled buffered intermediate sums
 var <workgroup> bankA: array<Output, workgroupSizeX>;  
