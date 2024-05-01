@@ -9,12 +9,17 @@
 // . one for the histogram (counts) per bucket
 // . one for the sum per bucket
 // 
-// #template replace
+// #template simple
 
 // #import loadTexel(texelType, texelType)
 
 // #if typecheck
 fn loadTexel(a: vec4<u32>) -> u32 { return a.r; }
+alias texelType = u32;
+const buckets = 100u;
+const blockWidth = 4u;
+const blockHeight= 4u;
+fn texelType(a:u32) { return a; }
 // #endif
 
 struct Uniforms {
@@ -22,24 +27,24 @@ struct Uniforms {
 }
 
 struct Range {
-    min: f32, // #replace f32=texelType
-    max: f32, // #replace f32=texelType
+    min: texelType, 
+    max: texelType, 
 }
 
 @group(0) @binding(0) var<uniform> u: Uniforms;
-@group(0) @binding(1) var srcTexture: texture_2d<u32>; // source data // #replace u32=texelType
+@group(0) @binding(1) var srcTexture: texture_2d<texelType>; // source data 
 @group(0) @binding(2) var<storage, read> maxBuffer: array<Range>; 
-@group(0) @binding(3) var<storage, read_write> histogramOut: array<array<u32, 128>>; // #replace 128=buckets
+@group(0) @binding(3) var<storage, read_write> histogramOut: array<array<u32, buckets>>; 
 // #if bucketSums
-@group(0) @binding(4) var<storage, read_write> sumOut: array<array<u32, 128>>; //#replace u32=texelType 128=buckets 
+@group(0) @binding(4) var<storage, read_write> sumOut: array<array<texelType, buckets>>; 
 // #endif
 @group(0) @binding(11) var<storage, read_write> debug: array<f32>; // buffer to hold debug values
 
 override workgroupSizeX = 4;      
 override workgroupSizeY = 4;      
 override numBuckets = 10u;      
-const numBucketsFloat= f32(100);  // #replace 100=buckets 
-const maxBucket = i32(100u - 1u);  // #replace 100=buckets
+const numBucketsFloat= f32(buckets);  
+const maxBucket = i32(buckets - 1u);  
 
 var <private>valueRange: f32;
 var <private>toUIntRange: f32 = 1.0;
@@ -47,7 +52,7 @@ var <private>toUIntRange: f32 = 1.0;
 // we accumulate bucket totals in workgroup memory and then copy the local buckets to global memory
 var<workgroup> localHistogram: array<atomic<u32>, numBuckets>;
 // #if bucketSums
-var<workgroup> localSum: array<atomic<u32>, numBuckets>; // #replace u32=texelType 
+var<workgroup> localSum: array<atomic<texelType>, numBuckets>; 
 // #endif
 
 @compute 
@@ -59,8 +64,8 @@ fn main(
     @builtin(workgroup_id) workgroupId: vec3<u32>      // workgroup id in the dispatch
 ) {
     let minMax = maxBuffer[arrayLength(&maxBuffer) - 1u];
-    let minValue = u32(minMax.min); // #replace u32=texelType
-    let maxValue = u32(minMax.max); // #replace u32=texelType
+    let minValue = texelType(i32(minMax.min));  // (useless i32 cast for wgsl-analyzer)
+    let maxValue = texelType(i32(minMax.max)); 
     valueRange = f32(maxValue) - f32(minValue);
 // #if floatElements
     let largeU32 = 1000.0 * 1000.0 * 1000.0; // near to max u32 (4 billion), with some room for overflow 
@@ -78,17 +83,17 @@ fn main(
 
 // collect histogram for one block into workgroup local array
 fn collectBlock(grid: vec2<u32>,
-    minValue: u32, // #replace u32=texelType
-    maxValue: u32) { //#replace u32=texelType
+    minValue: texelType, // 
+    maxValue: texelType) { 
     let srcDim = vec2<u32>(
         textureDimensions(srcTexture).x,
         textureDimensions(srcTexture).y
     );
-    var blockStart = vec2<u32>(grid.x * 4u, grid.y * 4u); // #replace 4=blockWidth 4=blockHeight
+    var blockStart = vec2<u32>(grid.x * blockWidth, grid.y * blockHeight); 
 
     // LATER try striding/striping, should reduce memory bank conflicts
-    for (var x = 0u; x < 4u; x++) { // #replace 4=blockWidth
-        for (var y = 0u; y < 4u; y++) { // #replace 4=blockHeight
+    for (var x = 0u; x < blockWidth; x++) { 
+        for (var y = 0u; y < blockHeight; y++) { 
             let spot = blockStart + vec2<u32>(x, y);
             if spot.x < srcDim.x && spot.y < srcDim.y {
                 collectPixel(spot, minValue, maxValue);
@@ -99,8 +104,8 @@ fn collectBlock(grid: vec2<u32>,
 
 // add one pixel into workgroup local histogram bucket and local sum 
 fn collectPixel(spot: vec2<u32>,
-    minValue: u32, // #replace u32=texelType
-    maxValue: u32) { // #replace u32=texelType
+    minValue: texelType, 
+    maxValue: texelType) { 
     let texel = textureLoad(srcTexture, vec2<i32>(spot), 0);
     let p = loadTexel(texel);
     if p >= minValue && checkMax(p, maxValue) {
@@ -121,7 +126,7 @@ fn collectPixel(spot: vec2<u32>,
     }
 }
 
-fn checkMax(p: u32, max: u32) -> bool { // #replace u32=texelType u32=texelType
+fn checkMax(p: texelType, max: texelType) -> bool { 
 // #if !saturateMax
     if p > max {
         return false;
@@ -131,7 +136,7 @@ fn checkMax(p: u32, max: u32) -> bool { // #replace u32=texelType u32=texelType
 }
 
 // return the bucket index for this value
-fn toBucket(p: u32, min: u32, max: u32) -> i32 { // #replace u32=texelType u32=texelType u32=texelType
+fn toBucket(p: texelType, min: texelType, max: texelType) -> i32 { 
     var bucket: i32;
     if p >= max {
         bucket = maxBucket;
