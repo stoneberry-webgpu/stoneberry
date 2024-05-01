@@ -7,9 +7,6 @@ fn binaryOp(a: Elem, b: Elem) -> Elem {}
 const <private> threads = 10u;
 // #endif
 
-// #template replace
-
-
 // #export(work, Elem, threads) importing binaryOp(Elem)
 fn reduceWorkgroup(localId: u32) {
     let workDex = localId << 1u;
