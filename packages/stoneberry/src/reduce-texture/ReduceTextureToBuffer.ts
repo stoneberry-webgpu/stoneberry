@@ -159,12 +159,11 @@ export class ReduceTextureToBuffer extends HasReactive implements ComposableShad
         label: "textureReduce",
         device: this.device,
         wgslParams: {
-          texelType: texelLoadType(this.source.format),
+          TexelType: texelLoadType(this.source.format),
           loadComponentName: this.componentName,
-          workgroupThreads: workgroupSize[0] * workgroupSize[1],
-          blockWidth: blockSize[0],
-          blockHeight: blockSize[1],
-          blockArea: blockSize[0] * blockSize[1],
+          BlockWidth: blockSize[0],
+          BlockHeight: blockSize[1],
+          BlockArea: blockSize[0] * blockSize[1],
         },
         registry: this.registry,
         constants: {

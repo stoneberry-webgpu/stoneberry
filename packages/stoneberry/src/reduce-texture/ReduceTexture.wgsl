@@ -1,16 +1,20 @@
 // #module stoneberry.ReduceTexture
-// #template replace
+// #template simple
 
 // #import reduceWorkgroup(work, Output, workgroupThreads)
 // #import binaryOp(Output)
 // #import identityOp(Output)
-// #import loadTexel(Output, texelType) 
+// #import loadTexel(Output, TexelType) 
 
 // #if typecheck
 fn reduceWorkgroup(localId: u32) {}
 fn binaryOp(a: Output, b: Output) -> Output {}
 fn identityOp() -> Output {}
 fn loadTexel(a: vec4<f32>) -> Output { return Output(1.0); }
+alias TexelType = f32;
+const BlockArea = 4u;
+const BlockWidth= 2u;
+const BlockHeight= 2u;
 // #endif
 
 // #extends BinOpElem
@@ -25,11 +29,11 @@ struct Uniforms {
 }
 
 @group(0) @binding(0) var<uniform> u: Uniforms;      
-@group(0) @binding(1) var srcTexture: texture_2d<f32>; // source data   // #replace f32=texelType 
+@group(0) @binding(1) var srcTexture: texture_2d<TexelType>; // source data   
 @group(0) @binding(2) var<storage, read_write> out: array<Output>;  
 @group(0) @binding(11) var<storage, read_write> debug: array<f32>; // buffer to hold debug values
 
-override workgroupThreads = 4; 
+override workgroupThreads = 4u; 
 override workgroupSizeX = 2; 
 override workgroupSizeY = 2; 
 
@@ -60,16 +64,16 @@ fn reduceSrcToWork(grid: vec2<u32>, localIndex: u32) {
 }
 
 // fetch a block of data fro the source texture
-fn fetchSrc(grid: vec2<u32>) -> array<Output, 4> {              // #replace 4=blockArea
+fn fetchSrc(grid: vec2<u32>) -> array<Output, BlockArea> {
     var outDex = 0u; // output index
-    var result = array<Output, 4>();     // #replace 4=blockArea
+    var result = array<Output, BlockArea>();
     let srcWidth = textureDimensions(srcTexture).x;
     let srcHeight = textureDimensions(srcTexture).y;
 
-    for (var ix = 0u; ix < 2u; ix = ix + 1u) {        // #replace 2=blockWidth
-        var x = grid.x * 2u + ix;                     // #replace 2=blockWidth
-        for (var iy = 0u; iy < 2u; iy = iy + 1u) {    // #replace 2=blockHeight
-            var y = grid.y * 2u + iy;                 // #replace 2=blockHeight
+    for (var ix = 0u; ix < BlockWidth; ix = ix + 1u) {
+        var x = grid.x * BlockWidth + ix;
+        for (var iy = 0u; iy < BlockHeight; iy = iy + 1u) {
+            var y = grid.y * BlockHeight + iy;
             if x >= srcWidth || y >= srcHeight {
                 result[outDex] = identityOp();
             } else {
@@ -84,9 +88,9 @@ fn fetchSrc(grid: vec2<u32>) -> array<Output, 4> {              // #replace 4=bl
 }
 
 // reduce a block of source pixels to a single output structure
-fn reduceBlock(a: array<Output, 4>) -> Output {                 // #replace 4=blockArea
+fn reduceBlock(a: array<Output, BlockArea>) -> Output {
     var v = a[0];
-    for (var i = 1u; i < 4u; i = i + 1u) {            // #replace 4=blockArea
+    for (var i = 1u; i < BlockArea; i = i + 1u) {
         v = binaryOp(v, a[i]);
     }
     return v;
