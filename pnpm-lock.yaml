@@ -98,8 +98,8 @@ importers:
         specifier: ^0.2.9
         version: 0.2.9
       wgsl-linker:
-        specifier: ^0.3.1
-        version: 0.3.1
+        specifier: ^0.4.0
+        version: 0.4.0
     devDependencies:
       '@webgpu/types':
         specifier: ^0.1.40
@@ -135,8 +135,8 @@ importers:
         specifier: ^0.2.9
         version: 0.2.9
       wgsl-linker:
-        specifier: link:../../../wgsl-linker/packages/linker
-        version: link:../../../wgsl-linker/packages/linker
+        specifier: ^0.4.0
+        version: 0.4.0
     devDependencies:
       '@typescript-eslint/eslint-plugin':
         specifier: ^7.1.1
@@ -12932,8 +12932,8 @@ packages:
       webpack: 5.88.2(esbuild@0.17.19)
     dev: false
 
-  /mini-parse@0.2.1:
-    resolution: {integrity: sha512-IXAHnuZZktZypssmoZK3Nh2/JNbxqsMqzudIof0SDgCt0XLF+i4D1NEw2241OPIHGh6axxTA8OshUXyjKm6tZA==}
+  /mini-parse@0.4.0:
+    resolution: {integrity: sha512-vG5MRJXMzHSCbhHsXf4GRfw5iFrF0122Z4fc4omYIwlbqd99oA1HCtaVT+edBn7MIdLtSXbmAysB+AcqK/XQjg==}
     dev: false
 
   /miniflare@3.20230922.0:
@@ -18060,10 +18060,10 @@ packages:
     resolution: {integrity: sha512-OqedPIGOfsDlo31UNwYbCFMSaO9m9G/0faIHj5/dZFDMFqPTcx6UwqyOy3COEaEOg/9VsGIpdqn62W5KhoKSpg==}
     engines: {node: '>=0.8.0'}
 
-  /wgsl-linker@0.3.1:
-    resolution: {integrity: sha512-MGVkQ2PcVwFcXks7rrMmtr/B7amdZaioKgBp6IQdSTAu0UFWgt3zCO0RlfKyBK1PXn4xLJBtmef050PEdEv0NQ==}
+  /wgsl-linker@0.4.0:
+    resolution: {integrity: sha512-ypR53f+FwxojJgp9Qgl1/YBuefrSlNg1dV43cp81inb6fFRZq+UoC4WDuznvEyMrAZhsQzqdTUqj+aGXs8XtQw==}
     dependencies:
-      mini-parse: 0.2.1
+      mini-parse: 0.4.0
     dev: false
 
   /whatwg-url@5.0.0:
