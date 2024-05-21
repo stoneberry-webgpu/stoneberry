@@ -1,5 +1,11 @@
 // #module stoneberry.BinOpMinMaxF32
 
+// #if typecheck
+struct LoadElem {
+    min:f32,
+    max:f32
+}
+// #endif
 
 // #export
 struct LoadBinOpElem {
@@ -17,6 +23,7 @@ struct BinOpElem {
 fn binaryOp(a: BinOpElem, b: BinOpElem) -> BinOpElem {
     return BinOpElem(min(a.min, b.min), max(a.max, b.max));
 }
+
 
 // #export(LoadElem, BinOpElem)
 fn loadOp(a: LoadElem) -> BinOpElem {

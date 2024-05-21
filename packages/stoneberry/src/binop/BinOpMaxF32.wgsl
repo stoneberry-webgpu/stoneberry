@@ -1,5 +1,12 @@
 // #module stoneberry.BinOpMaxF32
 
+// #if typecheck
+struct LoadElem {
+    min:f32,
+    max:f32
+}
+// #endif
+
 // #export
 struct LoadBinOpElem {
     max: f32,  

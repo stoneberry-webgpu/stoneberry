@@ -17,7 +17,7 @@ struct Uniforms {
     scanOffset: u32,                // offset in Output elements to writing in the prefixScan buffer
     blockSumsOffset: u32,           // offset in Output elements to reading in the blockSum buffer
     exclusiveSmall: u32,            // nonzero for exclusive scan where the source fits in one workgroup
-    @align(16) initialValue: Output // initial value for exclusive scan
+    @align(16) initialValue: Output, // initial value for exclusive scan
 }
 
 @group(0) @binding(0) var<uniform> u: Uniforms;      

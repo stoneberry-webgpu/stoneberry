@@ -1,5 +1,12 @@
 // #module stoneberry.BinOpSumU32
 
+
+// #if typecheck
+struct LoadElem {
+    sum:u32
+}
+// #endif
+
 // #export
 struct LoadBinOpElem {
     sum: u32,  

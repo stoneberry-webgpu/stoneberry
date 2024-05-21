@@ -3,8 +3,8 @@
 // #if typecheck
 var <workgroup> work:array<Elem, 18>; 
 struct Elem { sum: u32, }
-fn binaryOp(a: Elem, b: Elem) -> Elem {}
-const <private> threads = 10u;
+fn binaryOp(a: Elem, b: Elem) -> Elem { return Elem(0u); }
+const threads = 10u;
 // #endif
 
 // #export(work, Elem, threads) importing binaryOp(Elem)

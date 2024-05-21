@@ -10,7 +10,7 @@
 // #if typecheck
 fn reduceWorkgroup(localId: u32) {}
 fn binaryOp(a: Output, b: Output) -> Output { return a; }
-fn loadOp(a: Input) -> Output { return Output(0) }
+fn loadOp(a: Input) -> Output { return Output(0); }
 fn identityOp() -> Output {}
 const BlockArea = 4u;
 // #endif
